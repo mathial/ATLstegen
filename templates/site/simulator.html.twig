@@ -1,0 +1,18 @@
+{% form_theme form 'bootstrap/bootstrap_4_layout.html.twig' %}
+
+  {% extends "common/layout.html.twig" %}
+
+  {% block body %}
+
+    <h3>Simulator</h3>
+
+    <div class="form">
+      {{ form(form) }}
+    </div>
+
+    {% if arrRt|length > 0 %}
+    	<p>Player 1's evolution: <b>{{ arrRt[1] }}</b></p>
+    	<p>Player 2's evolution: <b>{{ arrRt[2] }}</b></p>
+    {% endif %}
+
+  {% endblock %}

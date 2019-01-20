@@ -1,0 +1,44 @@
+{% extends "common/layout.html.twig" %}
+
+{% block body %}
+
+  <h3>List Players ({{ listPlayers|length }}) - Page {{ page }} / {{ nbPages }}</h3>
+
+  {% include "common/filter.html.twig" %}
+
+  <table class="table">
+    <tr>
+      <th>{{ knp_pagination_sortable(listPlayers, 'Id', 'p.id') }}</th>
+      <th>{{ knp_pagination_sortable(listPlayers, 'Name', 'p.namelong') }}</th>
+      <th>{{ knp_pagination_sortable(listPlayers, 'Mail', 'p.email') }}</th>
+      <th>Status</th>
+      <th>Roles</th>
+      <th>Action</th>
+    </tr>
+    {% for player in listPlayers %}
+
+      <tr>
+        <td><a href="{{ path('player_view', {'id': player.id}) }}">{{ player.id }}</a></td>
+        <td>{{ player.namelong }}</td>
+        <td>{{ player.email }}</td>
+        <td>{{ player.active }}</td>
+        <td>{{ player.roles|join(', ') }}</td>
+        <td>
+{#           <a class="btn-default btn" href="{{ path('admin_access.view_player', {'id': player.id}) }}"><img class="icon-list" src="{{ asset('bundles/app/images/edit.png') }}"></a>
+          {% if player.status == 1 %} 
+            <a class="btn-default btn" href="{{ path('admin_access.disable_player', {'id': player.id}) }}" onclick="return confirm('Please confirm the disabling of the player');"><img class="icon-list" src="{{ asset('bundles/app/images/delete.png') }}"></a>
+          {% else %}
+            <a class="btn-default btn" href="{{ path('admin_access.activate_player', {'id': player.id}) }}" onclick="return confirm('Please confirm the activation of the player');"><img class="icon-list" src="{{ asset('bundles/app/images/add.png') }}"></a>
+          {% endif %} #}
+
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+
+  {% set page_list = 'players_list' 
+  %}
+  {% include "common/pager.html.twig" %}
+
+{% endblock %}
+

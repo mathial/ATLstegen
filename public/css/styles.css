@@ -1,0 +1,16 @@
+.pager-active{
+	color: #fff;
+	cursor: default;
+	background-color: #337ab7;
+	border-color: #337ab7;
+	padding: 5px;
+}
+
+.winner-player{
+	background-color: #FFFFE0;
+}
+
+.inactive-player{
+	background-color: silver;
+
+}

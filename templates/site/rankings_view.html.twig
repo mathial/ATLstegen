@@ -1,0 +1,62 @@
+{% form_theme form 'bootstrap/bootstrap_4_layout.html.twig' %}
+
+  {% extends "common/layout.html.twig" %}
+
+  {% block body %}
+
+    <h3>View Rankings</h3>
+
+    <div class="form">
+      {{ form(form) }}
+    </div>
+
+    
+    {% if detailsRankings|length >0 %}
+
+      <h3>Rankings {{ ranking.date|date("Y-m-d") }}</h3>
+      <table class="table">
+      <tr>
+        <th>#</th>
+        <th>Player</th>
+        <th>Rating</th>
+        <th>Evol</th>
+        <th>W</th>
+        <th>D</th>
+        <th>T</th>
+      </tr>
+
+      {% for det in detailsRankings %}
+
+        {% if det.idplayer.active == 1 %}
+        <tr>
+        {% else %}
+        <tr class="inactive-player">
+        {% endif %}
+          <td>{{ det.position }}</td>
+          <td>{{ det.idplayer.nameshort }}</td>
+          <td>{{ det.score|number_format(0, '.', ' ') }}</td>
+          <td>{{ detailsPlayer[det.idplayer.id]["evol"] }}</td>
+          <td>{{ detailsPlayer[det.idplayer.id]["wins"] }}</td>
+          <td>{{ detailsPlayer[det.idplayer.id]["defeats"] }}</td>
+          <td>{{ detailsPlayer[det.idplayer.id]["ties"] }}</td>
+        </tr>
+      {% endfor %}
+
+      {% if arrTotal|length >0 %}
+        <tr>
+          <th></th>
+          <th></th>
+          <th>{{ arrTotal["score"]|number_format(0, '.', ' ') }}</th>
+          <th>{{ arrTotal["evolscore"]|number_format(0, '.', ' ') }}</th>
+          <th>{{ arrTotal["wins"] }}</th>
+          <th>{{ arrTotal["defeats"] }}</th>
+          <th>{{ arrTotal["ties"] }}</th>
+        </tr>
+      {% endif %}
+
+      </table>
+      <p class="inactive-player"><i>Inactive player</i></p>
+      <p><i>W: wins - D: defeats - T: ties</i></p>
+    {% endif %}
+  {% endblock %}
+

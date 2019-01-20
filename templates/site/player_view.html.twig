@@ -1,0 +1,45 @@
+
+{% extends "common/layout.html.twig" %}
+
+{% block body %}
+
+  <h3>View player {{ player.namelong }}</h3>
+
+  <div>
+  	<label>Name</label>
+  	{{ player.namelong }}
+  </div>
+
+	<div>
+  	<label>Name short</label>
+  	{{ player.nameshort }}
+  </div>
+
+	<div>
+  	<label>Birthdate</label>
+  	{{ player.birthdate|format("YYYY-mm-dd") }}
+  </div>
+
+	<div>
+  	<label>Level</label>
+  	{{ player.level }}
+  </div>    
+
+  {% if arrStatsOpponents|length >0 %}
+
+  	<h3>Stats opponents - {{ nbMTot }} match(s)</h3>
+      <table class="table">
+      <tr>
+        <th>Player</th>
+        <th>Nb matches</th>
+      </tr>
+
+      {% for opp in arrStatsOpponents %}
+        <tr>
+          <td><a href="{{ path('player_view', {'id':opp.id}) }}">{{ opp.name }}</a></td>
+          <td>{{ opp.nbM }}</td>
+        </tr>
+      {% endfor %}
+
+  {% endif %}
+{% endblock %}

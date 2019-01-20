@@ -1,0 +1,107 @@
+<ul class="pagination">
+
+  {% set params = app.request.uri|split('?') 
+  %}
+  {% if params[1] is defined %}
+    {% set paramsUrl = "?" ~ params[1] 
+    %}
+  {% else %}
+    {% set paramsUrl = "" 
+    %}
+  {% endif %}
+
+  <p>
+    Number of elements per page 
+    <a href="{{ path(page_list, {'maxpage': 10, 'page': 1}) }}{{ paramsUrl }}" class="{% if maxpage == 10 %}pager-active{% endif %}">10</a> - 
+    <a href="{{ path(page_list, {'maxpage': 50, 'page': 1}) }}{{ paramsUrl }}" class="{% if maxpage == 50 %}pager-active{% endif %}">50</a> - 
+    <a href="{{ path(page_list, {'maxpage': 100, 'page': 1}) }}{{ paramsUrl }}" class="{% if maxpage == 100 %}pager-active{% endif %}">100</a> - 
+    <a href="{{ path(page_list, {'maxpage': 500, 'page': 1}) }}{{ paramsUrl }}" class="{% if maxpage == 500 %}pager-active{% endif %}">500</a> - 
+    <a href="{{ path(page_list, {'maxpage': 1000, 'page': 1}) }}{{ paramsUrl }}" class="{% if maxpage == 1000 %}pager-active{% endif %}">1000</a> -
+    <a href="{{ path(page_list, {'maxpage': 'All', 'page': 1}) }}{{ paramsUrl }}" class="{% if maxpage == "All" %}pager-active{% endif %}">All</a> 
+  </p>
+
+  {# On utilise la fonction range(a, b) qui crée un tableau de valeurs entre a et b #}
+  {% if nbPages<20 %}
+    {% for p in range(1, nbPages) %}
+      <li
+      {% if p == page %} class="active"{% endif %}>
+        <a href="{{ path(page_list, {'maxpage': maxpage, 'page': p}) }}{{ paramsUrl }}">{{ p }}</a>
+      </li>
+    {% endfor %}
+  {% else %}
+
+    {% if page<11 %}
+      {# first 10 #}
+      {% for p in range(1, 10) %}
+        <li
+        {% if p == page %} class="active"{% endif %}>
+          <a href="{{ path(page_list, {'maxpage': maxpage, 'page': p}) }}{{ paramsUrl }}">{{ p }}</a>
+        </li>
+      {% endfor %}
+
+      <li><a>...</a></li>
+
+      {# last 3 #}
+      {% for p in range(nbPages-2, nbPages) %}
+        <li
+        {% if p == page %} class="active"{% endif %}>
+          <a href="{{ path(page_list, {'maxpage': maxpage, 'page': p}) }}{{ paramsUrl }}">{{ p }}</a>
+        </li>
+      {% endfor %}
+
+    {% elseif page>(nbPages-10) %}
+
+      {# first 3 #}
+      {% for p in range(1, 3) %}
+        <li
+        {% if p == page %} class="active"{% endif %}>
+          <a href="{{ path(page_list, {'maxpage': maxpage, 'page': p}) }}{{ paramsUrl }}">{{ p }}</a>
+        </li>
+      {% endfor %}
+
+      <li><a>...</a></li>
+
+      {# last 10 #}
+      {% for p in range(nbPages-10, nbPages) %}
+        <li
+        {% if p == page %} class="active"{% endif %}>
+          <a href="{{ path(page_list, {'maxpage': maxpage, 'page': p}) }}{{ paramsUrl }}">{{ p }}</a>
+        </li>
+      {% endfor %}
+
+    {% else %}
+
+
+      {# first 3 #}
+      {% for p in range(1, 3) %}
+        <li
+        {% if p == page %} class="active"{% endif %}>
+          <a href="{{ path(page_list, {'maxpage': maxpage, 'page': p}) }}{{ paramsUrl }}">{{ p }}</a>
+        </li>
+      {% endfor %}
+
+      <li><a>...</a></li>
+
+      {# +/- 5 #}
+      {% for p in range(page-5, page+5) %}
+        <li
+        {% if p == page %} class="active"{% endif %}>
+          <a href="{{ path(page_list, {'maxpage': maxpage, 'page': p}) }}{{ paramsUrl }}">{{ p }}</a>
+        </li>
+      {% endfor %}
+
+      <li><a>...</a></li>
+
+      {# last 3 #}
+      {% for p in range(nbPages-2, nbPages) %}
+        <li
+        {% if p == page %} class="active"{% endif %}>
+          <a href="{{ path(page_list, {'maxpage': maxpage, 'page': p}) }}{{ paramsUrl }}">{{ p }}</a>
+        </li>
+      {% endfor %}
+
+    {% endif %}
+
+  {% endif %}
+
+</ul>
