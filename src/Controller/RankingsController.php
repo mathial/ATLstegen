@@ -53,6 +53,8 @@ class RankingsController extends AbstractController
 		$defaultData = array('message' => 'Type your message here');
 		$formBuilder = $this->createFormBuilder($defaultData);
 
+		$arrPlayersDisplay=array();
+	  
 	  $formBuilder
 	  ->add('date_ranking', DateType::class, array(
 	    'required'   => true,
@@ -115,6 +117,7 @@ class RankingsController extends AbstractController
 			$matchs = $stmt->fetchAll();
 
 			$arrPlayers=array();
+			$arrPlayersDisplay=array();
 
 			foreach ($players1 as $row) {
 				$arrPlayers[]=$row["idPlayer1"];
@@ -127,7 +130,8 @@ class RankingsController extends AbstractController
 
 			foreach($arrPlayers as $pId) {
 				$player = $em->getRepository('App:Player')->findOneBy(array("id" => $pId));
-				
+				$arrPlayersDisplay[$pId]=$player->getNameshort();
+
 				// get the ranking expected
 				if ($based_ranking=="init") {
 					$basedRate=$player->getInitialRating();
@@ -228,6 +232,7 @@ class RankingsController extends AbstractController
 	    'arrRankFinal' => $arrRankFinal,
 	    'dateFrom' => $date_from,
 	    'arrMatchs' => $matchs,
+	    'arrPlayersDisplay' => $arrPlayersDisplay,
 	  ]);
 	}
 
@@ -258,6 +263,10 @@ class RankingsController extends AbstractController
 		  'required' => true,
 		  'data' => $defaultId,
 		))
+		->add('active_only', CheckboxType::class, array(
+			'label' => "Only active players.",
+		  'required' => false,
+		))
 		->add("Select", SubmitType::class);
 
 		$form = $formBuilder->getForm();
@@ -268,8 +277,9 @@ class RankingsController extends AbstractController
 			$data = $form->getData();
 
       $idRanking=$data['id_ranking'];
+      $activeOnly=$data['active_only'];
 
-      $url = $this->generateUrl('rankings_view_id', array('id' => $idRanking));
+      $url = $this->generateUrl('rankings_view_id', array('id' => $idRanking, 'AO' => $activeOnly));
       return $this->redirect($url);
 	  }	
 		elseif ($id<>null) {

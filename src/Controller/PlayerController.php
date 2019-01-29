@@ -36,6 +36,7 @@ class PlayerController extends Controller
 
     $player = $em->getRepository('App:Player')->findOneBy(array('id'=>$id));
 
+    $arrStatsOpponents=array();
     $arrStatsOpponentsDetails=array();
 
     if ($player) {
@@ -67,7 +68,9 @@ class PlayerController extends Controller
       }
 
       // sorting array
-      arsort($arrStatsOpponents);
+      if (count($arrStatsOpponents)>0) {
+        arsort($arrStatsOpponents);
+      }
 
       foreach ($arrStatsOpponents as $idP => $nbM) {
         $dataPlayer = $em->getRepository('App:Player')->findOneBy(array('id'=>$idP));
@@ -161,7 +164,7 @@ class PlayerController extends Controller
       'required'   => true,
     ))
     ->add('email', EmailType::class, array(
-      'required'   => true,
+      'required'   => false,
     ))
     ->add('phone', TextType::class, array(
       'required'   => false,
@@ -180,6 +183,9 @@ class PlayerController extends Controller
             ->orderBy('c.name', 'ASC');
       },
       'choice_label' => 'name',
+    ))
+    ->add('initialRating', TextType::class, array(
+      'required'   => false,
     ))
     ->add('username', TextType::class, array(
       'required'   => false,

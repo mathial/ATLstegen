@@ -38,18 +38,18 @@
         </ul>
 
 
-        {% if is_granted('ROLE_USER') %} 
+        {# {% if is_granted('ROLE_USER') %}  #}
           <ul class="nav nav-pills nav-stacked">
             <li><a href="{{ path('matchs_new') }}">MATCHS - new</a></li>
           </ul>
-        {% endif %}
+        {# {% endif %} #}
 
-        {% if is_granted('ROLE_ADMIN') %} 
+        {# {% if is_granted('ROLE_ADMIN') %}  #}
           <ul class="nav nav-pills nav-stacked">
             <li><a href="{{ path('rankings_generate_test') }}">RANKINGS - generate</a></li>
             <li><a href="{{ path('player_new') }}">PLAYERS - new</a></li>
           </ul>
-        {% endif %}
+        {# {% endif %} #}
         </ul>
 
       </div>

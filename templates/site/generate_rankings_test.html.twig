@@ -24,8 +24,8 @@
       {% for match in arrMatchs %}
         <tr>
           <td>{{ match.id }}</td>
-          <td>{{ match.idPlayer1 }}</td>
-          <td>{{ match.idPlayer2 }}</td>
+          <td>[{{ match.idPlayer1 }}] {{ arrPlayersDisplay[match.idPlayer1] }}</td>
+          <td>[{{ match.idPlayer2 }}] {{ arrPlayersDisplay[match.idPlayer2] }}</td>
           <td>{{ match.tie }}</td>
         </tr>
       {% endfor %}
