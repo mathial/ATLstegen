@@ -185,22 +185,22 @@ class PlayerController extends Controller
       'choice_label' => 'name',
     ))
     ->add('initialRating', TextType::class, array(
-      'required'   => false,
+      'required'   => true,
     ))
-    ->add('username', TextType::class, array(
-      'required'   => false,
-    ))
-    ->add('password', TextType::class, array(
-      'required'   => false,
-    ))
-    ->add('roles', ChoiceType::class, array(
-      'multiple' => true,
-      'choices' => array(
-        'ROLE_USER' => 'ROLE_USER',
-        'ROLE_ADMIN' => 'ROLE_ADMIN',
-      ),
-      'required'   => false,
-    ))
+    // ->add('username', TextType::class, array(
+    //   'required'   => false,
+    // ))
+    // ->add('password', TextType::class, array(
+    //   'required'   => false,
+    // ))
+    // ->add('roles', ChoiceType::class, array(
+    //   'multiple' => true,
+    //   'choices' => array(
+    //     'ROLE_USER' => 'ROLE_USER',
+    //     'ROLE_ADMIN' => 'ROLE_ADMIN',
+    //   ),
+    //   'required'   => false,
+    // ))
     ;
 
     // $form = $formBuilder->getForm();
@@ -212,9 +212,9 @@ class PlayerController extends Controller
     }
     else {
       $formBuilder
-      ->add('password', TextType::class, array(
-        'required'   => true,
-      ))
+      // ->add('password', TextType::class, array(
+      //   'required'   => true,
+      // ))
       ->add("Create", SubmitType::class);
     }
 
@@ -243,9 +243,9 @@ class PlayerController extends Controller
 
       if ($form->isValid()) {
 
-        $rolesString=implode(",", $form->get('roles')->getData());
-        $player->setRoles($rolesString);
-        $player->setPassword(password_hash($form->get('password')->getData(), PASSWORD_DEFAULT));
+        // $rolesString=implode(",", $form->get('roles')->getData());
+        // $player->setRoles($rolesString);
+        // $player->setPassword(password_hash($form->get('password')->getData(), PASSWORD_DEFAULT));
 
         try {
           $em->persist($player);
@@ -295,8 +295,8 @@ class PlayerController extends Controller
       if ($form->isValid()) {
 
         try {
-          $rolesString=implode(",", $form->get('roles')->getData());
-          $player->setRoles($rolesString);
+          // $rolesString=implode(",", $form->get('roles')->getData());
+          // $player->setRoles($rolesString);
 
           $em->persist($player);
           $em->flush();

@@ -77,26 +77,6 @@ class Player
      */
     private $details;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="username", type="string", length=50, nullable=true)
-     */
-    private $username;
-
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="password", type="string", length=255, nullable=true)
-     */
-    private $password;
-
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="roles", type="string", length=255, nullable=true)
-     */
-    private $roles = array();
 
     /**
      * @var bool
@@ -220,54 +200,6 @@ class Player
     public function setDetails(?string $details): self
     {
         $this->details = $details;
-
-        return $this;
-    }
-
-    public function getUsername(): ?string
-    {
-        return $this->username;
-    }
-
-    public function setUsername(?string $username): self
-    {
-        $this->username = $username;
-
-        return $this;
-    }
-
-    public function getPassword(): ?string
-    {
-        return $this->password;
-    }
-
-    public function setPassword(?string $password): self
-    {
-        $this->password = $password;
-
-        return $this;
-    }
-
-    /**
-     * Get roles
-     *
-     * @return array
-     */
-    public function getRoles()
-    {
-        if (is_array($this->roles)) {
-            return $this->roles;
-        }
-        else {
-            $expl=explode(",", $this->roles);
-
-            return $expl;
-        }
-    }
-
-    public function setRoles(?string $roles): self
-    {
-        $this->roles = $roles;
 
         return $this;
     }

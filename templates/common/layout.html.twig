@@ -22,7 +22,9 @@
       <div id="menu" class="col-md-3">
 
         {% if app.user %}
-          <a href="{{ path('logout') }}">Logout {{ app.user.username }}</a>
+          <a href="{{ path('app_logout') }}">Logout {{ app.user.username }}</a>
+        {% else %}
+          <a href="{{ path('app_login') }}">Log in</a>
         {% endif %}
 
         <h3>Menu</h3>
@@ -38,18 +40,20 @@
         </ul>
 
 
-        {# {% if is_granted('ROLE_USER') %}  #}
-          <ul class="nav nav-pills nav-stacked">
+        {% if is_granted('ROLE_USER') %} 
+          <ul class="nav nav-pills nav-stacked"><i>USER</i>
             <li><a href="{{ path('matchs_new') }}">MATCHS - new</a></li>
           </ul>
-        {# {% endif %} #}
+        {% endif %}
 
-        {# {% if is_granted('ROLE_ADMIN') %}  #}
-          <ul class="nav nav-pills nav-stacked">
+        {% if is_granted('ROLE_ADMIN') %} 
+          <ul class="nav nav-pills nav-stacked"><i>ADMIN</i>
             <li><a href="{{ path('rankings_generate_test') }}">RANKINGS - generate</a></li>
             <li><a href="{{ path('player_new') }}">PLAYERS - new</a></li>
+            <li><a href="{{ path('user_new') }}">USERS - new</a></li>
+            <li><a href="{{ path('user_list') }}">USERS - list</a></li>
           </ul>
-        {# {% endif %} #}
+        {% endif %}
         </ul>
 
       </div>

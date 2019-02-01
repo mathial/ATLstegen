@@ -1,0 +1,22 @@
+{% extends "common/layout.html.twig" %}
+
+{% block body %}
+
+  <h3>List Users ({{ listUsers|length }})</h3>
+
+  <table class="table">
+    <tr>
+      <th>username</th>
+      <th>roles</th>
+    </tr>
+    {% for user in listUsers %}
+
+      <tr>
+        <td>{{ user.username }}</td>
+        <td>{{ user.roles|join(', ') }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+
+{% endblock %}
+

@@ -12,7 +12,6 @@
       <th>{{ knp_pagination_sortable(listPlayers, 'Name', 'p.namelong') }}</th>
       <th>{{ knp_pagination_sortable(listPlayers, 'Mail', 'p.email') }}</th>
       <th>Status</th>
-      <th>Roles</th>
       <th>Action</th>
     </tr>
     {% for player in listPlayers %}
@@ -22,7 +21,6 @@
         <td>{{ player.namelong }}</td>
         <td>{{ player.email }}</td>
         <td>{{ player.active }}</td>
-        <td>{{ player.roles|join(', ') }}</td>
         <td>
 {#           <a class="btn-default btn" href="{{ path('admin_access.view_player', {'id': player.id}) }}"><img class="icon-list" src="{{ asset('bundles/app/images/edit.png') }}"></a>
           {% if player.status == 1 %} 
