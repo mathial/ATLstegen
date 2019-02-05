@@ -20,18 +20,18 @@
     {% for match in listMatchs %}
 
       <tr>
-        <td align=center>{{ match.id }}</td>
-        <td align=center>{{ match.date|date("Y-m-d") }}</td>
+        <td>{{ match.id }}</td>
+        <td>{{ match.date|date("Y-m-d") }}</td>
         {% if match.tie!=1 %}
-          <td class="winner-player" align=center>
+          <td class="winner-player">
         {% else %}
-          <td align=center>
+          <td>
         {% endif %}
-        {{ match.idplayer1.nameshort }}</td>
-        <td align=center>{{ match.idplayer2.nameshort }}</td>
-        <td align=center>{{ match.score }}</td>
-        <td align=center>{{ match.context }}</td>
-        <td align=center>{{ match.conditions }}</td>
+        <a href="{{ path('player_view', {'id':match.idplayer1.id}) }}">{{ match.idplayer1.nameshort }}</a></td>
+        <td><a href="{{ path('player_view', {'id':match.idplayer2.id}) }}">{{ match.idplayer2.nameshort }}</a></td>
+        <td>{{ match.score }}</td>
+        <td>{{ match.context }}</td>
+        <td>{{ match.conditions }}</td>
         {# <td>{{ match.ranking }}</td> #}
         <td></td>
       </tr>

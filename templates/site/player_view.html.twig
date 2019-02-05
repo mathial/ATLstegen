@@ -10,15 +10,19 @@
   	{{ player.namelong }}
   </div>
 
-	<div>
+  <div>
+    <label>Rankings</label>
+    #{{ lastR.position }} - {{ lastR.score|number_format(0, ',', '') }}pts
+  </div>
+{# 	<div>
   	<label>Name short</label>
   	{{ player.nameshort }}
-  </div>
+  </div> #}
 
-	<div>
+{# 	<div>
   	<label>Birthdate</label>
   	{{ player.birthdate|format("YYYY-mm-dd") }}
-  </div>
+  </div> #}
 
 	<div>
   	<label>Level</label>
@@ -31,15 +35,30 @@
       <table class="table">
       <tr>
         <th>Player</th>
-        <th>Nb matches</th>
+        <th>Wins</th>
+        <th>Def.</th>
+        <th>Ties</th>
+        <th>Tot</th>
       </tr>
 
       {% for opp in arrStatsOpponents %}
         <tr>
           <td><a href="{{ path('player_view', {'id':opp.id}) }}">{{ opp.name }}</a></td>
-          <td>{{ opp.nbM }}</td>
+          <td>{{ opp.nbW }}</td>
+          <td>{{ opp.nbD }}</td>
+          <td>{{ opp.nbT }}</td>
+          {% if opp.sold > 0 %}
+            <td class="sold-positiv">
+          {% elseif opp.sold < 0 %}
+            <td class="sold-negativ">
+          {% else %}
+            <td> 
+          {% endif %} 
+          <b>{{ opp.nbM }}</b></td>
+                    
+          
         </tr>
       {% endfor %}
-
+    </table>
   {% endif %}
 {% endblock %}

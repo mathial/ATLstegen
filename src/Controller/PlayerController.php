@@ -35,13 +35,15 @@ class PlayerController extends Controller
     $em = $this->getDoctrine()->getManager();
 
     $player = $em->getRepository('App:Player')->findOneBy(array('id'=>$id));
+    $lastR = $em->getRepository('App:Player')->getLastRanking($id);
 
     $arrStatsOpponents=array();
+    $arrStatsMatchs=array();
     $arrStatsOpponentsDetails=array();
 
     if ($player) {
       $sql = '
-        SELECT idplayer1, idplayer2 FROM Matchs, Player P1, Player P2
+        SELECT idplayer1, idplayer2, tie FROM Matchs, Player P1, Player P2
         WHERE idplayer1=P1.id
         AND idplayer2=P2.id
         AND (idplayer1 = :idPlayer OR idplayer2 = :idPlayer)
@@ -59,26 +61,49 @@ class PlayerController extends Controller
         }
         else $oppId=$opp["idplayer1"];
 
-        if (isset($arrStatsOpponents[$oppId])) {
-          $arrStatsOpponents[$oppId]++;
+        if (!isset($arrStatsMatchs[$oppId])) {
+          $arrStatsMatchs[$oppId]["nbM"]=0;
+          $arrStatsMatchs[$oppId]["nbW"]=0;
+          $arrStatsMatchs[$oppId]["nbD"]=0;
+          $arrStatsMatchs[$oppId]["nbT"]=0;
+          $arrStatsMatchs[$oppId]["sold"]=0;
         }
+
+        $arrStatsMatchs[$oppId]["nbM"]++;
+
+        if ($opp["tie"]==1) $arrStatsMatchs[$oppId]["nbT"]++;
         else {
-          $arrStatsOpponents[$oppId]=1;
+          if ($opp["idplayer1"]==$id) {
+            $arrStatsMatchs[$oppId]["nbW"]++;
+            $arrStatsMatchs[$oppId]["sold"]++;
+          }
+          else {
+            $arrStatsMatchs[$oppId]["nbD"]++;
+            $arrStatsMatchs[$oppId]["sold"]--;
+          }
         }
-      }
 
+      }
+      
       // sorting array
-      if (count($arrStatsOpponents)>0) {
-        arsort($arrStatsOpponents);
-      }
+      // if (count($arrStatsOpponents)>0) {
+      //   arsort($arrStatsOpponents);
+      // }
 
-      foreach ($arrStatsOpponents as $idP => $nbM) {
+      foreach ($arrStatsMatchs as $idP => $data) {
         $dataPlayer = $em->getRepository('App:Player')->findOneBy(array('id'=>$idP));
+
         $arrStatsOpponentsDetails[$idP]["name"]=$dataPlayer->getNameLong();
         $arrStatsOpponentsDetails[$idP]["id"]=$idP;
-        $arrStatsOpponentsDetails[$idP]["nbM"]=$nbM;
+        $arrStatsOpponentsDetails[$idP]["nbM"]=$data["nbM"];
+        $arrStatsOpponentsDetails[$idP]["nbW"]=$data["nbW"];
+        $arrStatsOpponentsDetails[$idP]["nbD"]=$data["nbD"];
+        $arrStatsOpponentsDetails[$idP]["nbT"]=$data["nbT"];
+        $arrStatsOpponentsDetails[$idP]["sold"]=$data["sold"];
 
       }
+
+      
     }
     else {
 
@@ -88,6 +113,7 @@ class PlayerController extends Controller
     return $this->render('site/player_view.html.twig', [
       'controller_name' => 'PlayerController',
       'player' => $player,
+      'lastR' => $lastR,
       'arrStatsOpponents' => $arrStatsOpponentsDetails,
       'nbMTot' => $nbMTot,
     ]);

@@ -46,9 +46,9 @@ class MatchsController extends Controller
     $filter="";
     $where="";
     if ($request->isMethod('GET')) {
-      if ($request->query->get('filter') && strlen($request->query->get('filter'))>2 ) {
+      if ($request->query->get('filter')) {
         $filter=$request->query->get('filter');
-        $where = " WHERE c.nameshort LIKE '%".$filter."%' OR p.namelong LIKE '%".$filter."%' OR p.email LIKE '%".$filter."%' ";
+        $where = " WHERE m.idplayer1 = ".$filter." OR m.idplayer2 = ".$filter;
       }
     }
 

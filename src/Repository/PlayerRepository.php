@@ -30,4 +30,24 @@ class PlayerRepository extends EntityRepository {
 
     return new Paginator($query, true);
   }
+
+  public function getLastRanking($id){
+    $em = $this->getEntityManager();
+    $sql = '
+        SELECT position, score, date 
+        FROM RankingPos RP, Ranking R 
+        WHERE R.id=RP.idRanking AND RP.idPlayer=:idPlayer 
+        ORDER BY date DESC 
+        LIMIT 0,1
+        ';
+    $stmt = $em->getConnection()->prepare($sql);
+    $stmt->execute(['idPlayer' => $id]);
+    $lastR = $stmt->fetchAll();
+
+    $rt=array();
+    $rt["score"]=$lastR[0]["score"];
+    $rt["position"]=$lastR[0]["position"];
+
+    return $rt;
+  }
 }

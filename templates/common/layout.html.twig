@@ -15,7 +15,7 @@
 <body>
   <div class="container">
     <div id="header" class="jumbotron">
-      <h1>ATL Stegen</h1>
+      <a href="{{ path('homepage') }}"><h1>ATL Stegen</h1></a>
     </div>
 
     <div class="row">
@@ -36,7 +36,6 @@
           <li><a href="{{ path('rankings_view') }}">RANKINGS - view</a></li>
           <li><a href="{{ path('simulator') }}">POINTS SIMULATOR</a></li>
           <li><a href="{{ path('matchs_list', {'maxpage':50, 'page':1}) }}">MATCHS - list</a></li>
-          <li><a href="{{ path('players_list', {'maxpage':50, 'page':1}) }}">PLAYERS - list</a></li>
         </ul>
 
 
@@ -50,6 +49,7 @@
           <ul class="nav nav-pills nav-stacked"><i>ADMIN</i>
             <li><a href="{{ path('rankings_generate_test') }}">RANKINGS - generate</a></li>
             <li><a href="{{ path('player_new') }}">PLAYERS - new</a></li>
+            <li><a href="{{ path('players_list', {'maxpage':50, 'page':1}) }}">PLAYERS - list</a></li>
             <li><a href="{{ path('user_new') }}">USERS - new</a></li>
             <li><a href="{{ path('user_list') }}">USERS - list</a></li>
           </ul>

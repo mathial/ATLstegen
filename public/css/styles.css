@@ -14,3 +14,14 @@
 	background-color: silver;
 
 }
+
+th, td{
+	text-align:center;
+}
+
+.sold-positiv{
+	background-color:#98FB98;
+}
+.sold-negativ{
+	background-color:#DC143C;
+}

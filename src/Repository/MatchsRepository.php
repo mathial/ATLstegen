@@ -12,10 +12,9 @@ class MatchsRepository extends EntityRepository {
 
     if ($filter!="") {
       $query
-      ->where(' m.nameshort LIKE :filter')
-      ->orWhere('m.namelong LIKE :filter')
-      ->orWhere('m.email LIKE :filter')
-      ->setParameter('filter', "%".$filter."%");
+      ->where(' m.idplayer1 = :filter')
+      ->orWhere('m.idplayer2 = :filter')
+      ->setParameter('filter', $filter);
     }
     $query
     ->orderBy('m.id', 'DESC')
