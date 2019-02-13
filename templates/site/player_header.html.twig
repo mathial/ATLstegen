@@ -1,0 +1,31 @@
+<h3>View player {{ player.namelong }}</h3>
+
+<div>
+	<label>Name</label>
+	{{ player.namelong }}
+</div>
+
+<div>
+  <label>Rankings</label>
+  #{{ lastR.position }} - {{ lastR.score|number_format(0, ',', '') }}pts
+</div>
+{# 	<div>
+	<label>Name short</label>
+	{{ player.nameshort }}
+</div> #}
+
+{# 	<div>
+	<label>Birthdate</label>
+	{{ player.birthdate|format("YYYY-mm-dd") }}
+</div> #}
+
+<div>
+	<label>Level</label>
+	{{ player.level }}
+</div>    
+
+<ul class="tab_menu">
+  <li><a href="{{ path('player_view', {'id':player.id}) }}">Opponents</a></li>
+  <li><a href="{{ path('player_view_matches', {'id':player.id, 'page': 1}) }}">Matches</a></li>
+  <li><a href="{{ path('player_view_evolution', {'id':player.id}) }}">Rankings Evolution</a></li>
+</ul>
