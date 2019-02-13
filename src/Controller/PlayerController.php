@@ -120,6 +120,62 @@ class PlayerController extends Controller
   }
 
   /**
+   * @Route("/players/matches/{id}", 
+   * name="player_view_matches", 
+   * requirements={
+   *   "id"="\d+", 
+   * })
+   */
+  public function viewMatches($id, Request $request)
+  {
+    $em = $this->getDoctrine()->getManager();
+
+    $player = $em->getRepository('App:Player')->findOneBy(array('id'=>$id));
+    $lastR = $em->getRepository('App:Player')->getLastRanking($id);
+
+    $arrStatsMatchs=array();
+    
+    return $this->render('site/player_view_matches.html.twig', [
+      'controller_name' => 'PlayerController',
+      'player' => $player,
+      'lastR' => $lastR,
+      'arrStatsMatchs' => $arrStatsMatchs,
+    ]);
+  }
+
+  /**
+   * @Route("/players/evolution/{id}", 
+   * name="player_view_evolution", 
+   * requirements={
+   *   "id"="\d+", 
+   * })
+   */
+  public function viewEvolution($id, Request $request)
+  {
+    $em = $this->getDoctrine()->getManager();
+
+    $player = $em->getRepository('App:Player')->findOneBy(array('id'=>$id));
+    $lastR = $em->getRepository('App:Player')->getLastRanking($id);
+
+    $rankingScores = $em->getRepository('App:Rankingpos')->findBy(array('idplayer'=>$id), array('idranking' => 'ASC'));
+    $arrRS=array();
+
+    foreach ($rankingScores as $rs) {
+      $arrRS[$rs->getIdRanking()->getDate()->format("Y-m-d")]=$rs->getScore();
+    }
+    // sorting per index
+    ksort($arrRS);
+
+
+    return $this->render('site/player_view_evolution.html.twig', [
+      'controller_name' => 'PlayerController',
+      'player' => $player,
+      'lastR' => $lastR,
+      'arrRS' => $arrRS,
+    ]);
+  }
+
+  /**
    * @Route(
    * "/players/list/{maxpage}/{page}", 
    * name="players_list", 

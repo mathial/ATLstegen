@@ -29,9 +29,15 @@
   	{{ player.level }}
   </div>    
 
+  <ul class="tab_menu">
+    <li class="tab_selected"><a href="{{ path('player_view', {'id':player.id}) }}">Opponents</a></li>
+    <li><a href="{{ path('player_view_matches', {'id':player.id}) }}">Matches</a></li>
+    <li><a href="{{ path('player_view_evolution', {'id':player.id}) }}">Rankings Evolution</a></li>
+  </ul>
+
   {% if arrStatsOpponents|length >0 %}
 
-  	<h3>Stats opponents - {{ nbMTot }} match(s)</h3>
+  	<h3>Stats {{ arrStatsOpponents|length }} opponent(s) - {{ nbMTot }} match(s)</h3>
       <table class="table">
       <tr>
         <th>Player</th>
