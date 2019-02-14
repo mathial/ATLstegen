@@ -120,27 +120,63 @@ class PlayerController extends Controller
   }
 
   /**
-   * @Route("/players/matches/{id}", 
+   * @Route("/players/matches/{id}/{page}", 
    * name="player_view_matches", 
    * requirements={
    *   "id"="\d+", 
+   *   "page"="\d+", 
    * })
    */
-  public function viewMatches($id, Request $request)
+  public function viewMatches($id, $page, Request $request)
   {
     $em = $this->getDoctrine()->getManager();
 
     $player = $em->getRepository('App:Player')->findOneBy(array('id'=>$id));
     $lastR = $em->getRepository('App:Player')->getLastRanking($id);
 
-    $arrStatsMatchs=array();
-    
-    return $this->render('site/player_view_matches.html.twig', [
-      'controller_name' => 'PlayerController',
+    $where="WHERE m.idplayer1= ".$id." OR m.idplayer2= ".$id;
+    $maxpage=50;
+    $listTotMatchs = $em->getRepository('App:Matchs')->getMatchsPerPageByPlayer($page, $maxpage, $id);
+
+    $dql   = "SELECT m FROM App:Matchs m ".$where." ORDER BY m.date DESC";
+    $query = $em->createQuery($dql);
+
+    $paginator  = $this->get('knp_paginator');
+
+    if (is_numeric($maxpage)) {
+      $limitpage=$maxpage;
+      $nbPages = ceil(count($listTotMatchs)/$maxpage);
+    }
+    else {
+      $limitpage=count($listTotMatchs);
+      $nbPages=1;
+    }
+
+    if ($page < 1 || $page > $nbPages) {
+      $page = 1;
+      // throw $this->createNotFoundException("Page ".$page." doesn't exist.");
+    }
+
+    $listMatchs = $paginator->paginate(
+      $query, 
+      $request->query->getInt('page', $page),
+      $limitpage
+    );
+
+    return $this->render('site/player_view_matches.html.twig', array("listMatchs" => $listMatchs,
       'player' => $player,
       'lastR' => $lastR,
-      'arrStatsMatchs' => $arrStatsMatchs,
-    ]);
+      'maxpage' => $maxpage,
+      'nbPages' => $nbPages,
+      'page' => $page,
+    ));
+    
+    // return $this->render('site/player_view_matches.html.twig', [
+    //   'controller_name' => 'PlayerController',
+    //   'player' => $player,
+    //   'lastR' => $lastR,
+    //   'arrStatsMatchs' => $arrStatsMatchs,
+    // ]);
   }
 
   /**

@@ -23,6 +23,7 @@
         <th>W</th>
         <th>D</th>
         <th>T</th>
+        <th>Total</th>
       </tr>
 
       {% for det in detailsRankings %}
@@ -33,12 +34,13 @@
         <tr class="inactive-player">
         {% endif %}
           <td>{{ det.position }}</td>
-          <td>{{ det.idplayer.nameshort }}</td>
-          <td>{{ det.score|number_format(0, '.', ' ') }}</td>
+          <td><a href="{{ path('player_view', {'id':det.idplayer.id}) }}">{{ det.idplayer.nameshort }}</a></td>
+          <td><b>{{ det.score|number_format(0, '.', ' ') }}</b></td>
           <td>{{ detailsPlayer[det.idplayer.id]["evol"] }}</td>
           <td>{{ detailsPlayer[det.idplayer.id]["wins"] }}</td>
           <td>{{ detailsPlayer[det.idplayer.id]["defeats"] }}</td>
           <td>{{ detailsPlayer[det.idplayer.id]["ties"] }}</td>
+          <td>{{ detailsPlayer[det.idplayer.id]["wins"] + detailsPlayer[det.idplayer.id]["ties"] + detailsPlayer[det.idplayer.id]["defeats"] }}</td>
         </tr>
       {% endfor %}
 
@@ -51,6 +53,7 @@
           <th>{{ arrTotal["wins"] }}</th>
           <th>{{ arrTotal["defeats"] }}</th>
           <th>{{ arrTotal["ties"] }}</th>
+          <th>{{ arrTotal["total"] }}</th>
         </tr>
       {% endif %}
 

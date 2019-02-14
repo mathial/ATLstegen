@@ -300,6 +300,7 @@ class RankingsController extends AbstractController
   	$arrTotal["wins"]=0;
   	$arrTotal["defeats"]=0;
   	$arrTotal["ties"]=0;
+  	$arrTotal["total"]=0;
 
   	if ($ranking && $detailsRankings) {
 
@@ -419,6 +420,8 @@ class RankingsController extends AbstractController
 				$arrTotal["defeats"]+=$defeat["tot"];
 
 			}
+
+			$arrTotal["total"]=$arrTotal["wins"]+$arrTotal["ties"]+$arrTotal["defeats"];
 
 	  }
 	  else {

@@ -8,19 +8,18 @@
 
   <table class="table">
     <tr>
-      <th>{{ knp_pagination_sortable(listMatchs, '#', 'm.id') }}</th>
+      {# <th>{{ knp_pagination_sortable(listMatchs, '#', 'm.id') }}</th> #}
       <th>{{ knp_pagination_sortable(listMatchs, 'Date', 'm.date') }}</th>
       <th>Player1</th>
       <th>Player2</th>
       <th>Score</th>
       <th>{{ knp_pagination_sortable(listMatchs, 'Context', 'm.context') }}</th>
       <th>{{ knp_pagination_sortable(listMatchs, 'Conditions', 'm.conditions') }}</th>
-      <th>Ranking</th>
     </tr>
     {% for match in listMatchs %}
 
       <tr>
-        <td>{{ match.id }}</td>
+        {# <td>{{ match.id }}</td> #}
         <td>{{ match.date|date("Y-m-d") }}</td>
         {% if match.tie!=1 %}
           <td class="winner-player">
@@ -32,7 +31,6 @@
         <td>{{ match.score }}</td>
         <td>{{ match.context }}</td>
         <td>{{ match.conditions }}</td>
-        {# <td>{{ match.ranking }}</td> #}
         <td></td>
       </tr>
     {% endfor %}

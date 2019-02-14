@@ -12,11 +12,31 @@ class MatchsRepository extends EntityRepository {
 
     if ($filter!="") {
       $query
-      ->where(' m.idplayer1 = :filter')
-      ->orWhere('m.idplayer2 = :filter')
+      ->where(' m.conditions = :filter')
+      ->orWhere('m.context = :filter')
       ->setParameter('filter', $filter);
     }
     $query
+    ->orderBy('m.id', 'DESC')
+    ->getQuery()
+    ;
+
+    if (is_numeric($nbPerPage)) {
+      $query
+      ->setFirstResult(($page-1) * $nbPerPage)
+      ->setMaxResults($nbPerPage);
+    }
+
+    return new Paginator($query, true);
+  }
+
+  public function getMatchsPerPageByPlayer($page, $nbPerPage, $idplayer) { 
+    $query = $this->createQueryBuilder('m');
+
+    $query
+    ->where(' m.idplayer1 = :idplayer')
+    ->orWhere('m.idplayer2 = :idplayer')
+    ->setParameter('idplayer', $idplayer)
     ->orderBy('m.id', 'DESC')
     ->getQuery()
     ;
