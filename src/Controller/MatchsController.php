@@ -136,7 +136,7 @@ class MatchsController extends Controller
     ))
     ->add('context', ChoiceType::class, array(
       'label'    => 'Conditions',
-      'choices' => array("Stege (söndag 21-22)" => "Stege (söndag 21-22)", "Stege" => "Stege", "A-serien" => "A-serien"),
+      'choices' => array("Stege (söndag 21-22)" => "Stege (söndag 21-22)", "Stege" => "Stege", "A-serien" => "A-serien", "Sprinttennis tournament" => "Sprinttennis tournament"),
       'required'   => true,
     ))
     ->add('tie', ChoiceType::class, array(

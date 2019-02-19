@@ -194,9 +194,17 @@ class PlayerController extends Controller
     $lastR = $em->getRepository('App:Player')->getLastRanking($id);
 
     $rankingScores = $em->getRepository('App:Rankingpos')->findBy(array('idplayer'=>$id), array('idranking' => 'ASC'));
+
     $arrRS=array();
 
-    foreach ($rankingScores as $rs) {
+
+    foreach ($rankingScores as $key=>$rs) {
+      // add the initial rankings on the first loop
+      if ($key==0) {
+        $date_1week = new \DateTime($rs->getIdRanking()->getDate()->format("Y-m-d"));
+        // initial rankings
+        $arrRS[$date_1week->modify('-7 day')->format("Y-m-d")] = $player->getInitialRating();
+      }
       $arrRS[$rs->getIdRanking()->getDate()->format("Y-m-d")]=$rs->getScore();
     }
     // sorting per index
