@@ -248,6 +248,7 @@ class RankingsController extends AbstractController
 
   	$em = $this->getDoctrine()->getManager();
 
+  	$activeOnly=true;
 		$arrRank=array();
 		$rankings = $em->getRepository('App:Ranking')->findBy(array(), array('date' => 'DESC'));
 		foreach ($rankings as $rank) {
@@ -263,10 +264,10 @@ class RankingsController extends AbstractController
 		  'required' => true,
 		  'data' => $defaultId,
 		))
-		->add('active_only', CheckboxType::class, array(
-			'label' => "Only active players.",
-		  'required' => false,
-		))
+		// ->add('active_only', CheckboxType::class, array(
+		// 	'label' => "Only active players.",
+		//   'required' => false,
+		// ))
 		->add("Select", SubmitType::class);
 
 		$form = $formBuilder->getForm();
@@ -306,6 +307,7 @@ class RankingsController extends AbstractController
 
   		// SCORE EVOL
   		foreach ($detailsRankings as $det) {
+
   			$detailsRankings_1=$em->getRepository('App:Rankingpos')->findOneBy(array('idranking' => $ranking_1, "idplayer" => $det->getIdplayer()));
   			if ($detailsRankings_1) {
   				$evol = $det->getScore() - $detailsRankings_1->getScore();
@@ -319,6 +321,7 @@ class RankingsController extends AbstractController
 
 				$arrTotal["evolscore"]+=$evol;
 				$arrTotal["score"]+=$det->getScore();
+
   		}
 
 

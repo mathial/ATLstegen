@@ -15,6 +15,13 @@ php composer.phar require symfony/apache-pack
 /Applications/MAMP/bin/startMysql.sh
 ```
 
+#migrer user
+```
+INSERT INTO `User` (`id`, `username`, `roles`, `password`)
+VALUES
+	(6, 'mathieu', CONVERT(X'blablabla' using utf8mb4), 'passwordcryptonite');
+```
+
 #Database
 ```
 php bin/console doctrine:mapping:import 'App\Entity' annotation --path=src/Entity --filter=Rankingpos
