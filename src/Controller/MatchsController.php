@@ -166,4 +166,47 @@ class MatchsController extends Controller
     ));
     
   }
+
+  /**
+   * @Route(
+   * "/matchs/sunday-contest/", 
+   * name="sunday_contest")
+   */
+  public function sundayContest(Request $request)
+  {
+    $em = $this->getDoctrine()->getManager();
+
+
+    $sql   = 'SELECT DISTINCT idPlayer1 AS idP FROM Matchs m WHERE context="Stege (söndag 21-22)" 
+    UNION SELECT DISTINCT idPlayer2 AS idP FROM Matchs m WHERE context="Stege (söndag 21-22)" 
+    ORDER BY idP';
+    $stmt = $em->getConnection()->prepare($sql);
+    $stmt->execute();
+    $players = $stmt->fetchAll();
+
+    $arrContest=array();
+    $arrContestData=array();
+
+    foreach ($players as $player) {
+      $dataPlayer = $em->getRepository('App:Player')->findOneBy(array('id'=>$player["idP"]));
+
+      $sql_nb   = 'SELECT COUNT(DISTINCT date) AS tot FROM Matchs m WHERE context="Stege (söndag 21-22)" AND (idPlayer1 = '.$player["idP"].' OR idPlayer2 = '.$player["idP"].') ';
+      $stmt = $em->getConnection()->prepare($sql_nb);
+      $stmt->execute();
+      $nbM = $stmt->fetchAll();
+
+      $arrContest[$player["idP"]]=$nbM[0]["tot"];
+
+      $arrContestData[$player["idP"]]["name"]=$dataPlayer->getNameShort();
+
+
+    }
+
+    arsort($arrContest);
+
+
+    return $this->render('site/sunday_contest.html.twig', array("arrContest" => $arrContest, "arrContestData" => $arrContestData
+    ));
+    
+  }
 }

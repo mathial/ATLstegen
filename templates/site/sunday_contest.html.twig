@@ -1,0 +1,26 @@
+{% extends "common/layout.html.twig" %}
+
+{% block body %}
+
+  <h3>Sunday 21-22 contest</h3>
+
+  <p><i>number of appearances in the sunday 21-22 sessions</i></p>
+
+
+  <table class="table">
+    <tr>
+      <th>Player</th>
+      <th>Nb</th>
+    </tr>
+    {% for id,data in arrContest %}
+
+      <tr>
+        <td><a href="{{ path('player_view', {'id': id}) }}">{{ arrContestData[id]["name"] }}</a></td>
+        <td>{{ data }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+
+
+{% endblock %}
+
