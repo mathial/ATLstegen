@@ -222,7 +222,7 @@ class MatchsController extends Controller
 
     $sql   = 'SELECT SUM(nbM) AS totNbM, idP FROM
 (
-SELECT COUNT(*) AS nbM, idPlayer1 AS idP FROM Matchs GROUP BY idPlayer1 UNION SELECT COUNT(*) AS nbM, idPlayer2 AS idP FROM Matchs GROUP BY idPlayer2
+SELECT COUNT(*) AS nbM, idPlayer1 AS idP FROM Matchs GROUP BY idPlayer1 UNION ALL SELECT COUNT(*) AS nbM, idPlayer2 AS idP FROM Matchs GROUP BY idPlayer2
 ) AS totTab
 GROUP BY idP
 ORDER By totNbM DESC';
@@ -238,7 +238,7 @@ ORDER By totNbM DESC';
       $arrRaceData[$rt["idP"]]["name"]=$dataPlayer->getNameShort();
 
     }
-    
+
     return $this->render('site/race_slutspel.html.twig', array("arrRace" => $arrRace, "arrRaceData" => $arrRaceData
     ));
     
