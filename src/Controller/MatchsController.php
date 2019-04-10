@@ -209,4 +209,38 @@ class MatchsController extends Controller
     ));
     
   }
+
+  /**
+   * @Route(
+   * "/matchs/race-slutspel/", 
+   * name="race_slutspel")
+   */
+  public function raceTournament(Request $request)
+  {
+    $em = $this->getDoctrine()->getManager();
+
+
+    $sql   = 'SELECT SUM(nbM) AS totNbM, idP FROM
+(
+SELECT COUNT(*) AS nbM, idPlayer1 AS idP FROM Matchs GROUP BY idPlayer1 UNION SELECT COUNT(*) AS nbM, idPlayer2 AS idP FROM Matchs GROUP BY idPlayer2
+) AS totTab
+GROUP BY idP
+ORDER By totNbM DESC';
+    $stmt = $em->getConnection()->prepare($sql);
+    $stmt->execute();
+    $arrRace = $stmt->fetchAll();
+
+    $arrRaceData=array();
+
+    foreach ($arrRace as $rt) {
+      $dataPlayer = $em->getRepository('App:Player')->findOneBy(array('id'=>$rt["idP"]));
+
+      $arrRaceData[$rt["idP"]]["name"]=$dataPlayer->getNameShort();
+
+    }
+    
+    return $this->render('site/race_slutspel.html.twig', array("arrRace" => $arrRace, "arrRaceData" => $arrRaceData
+    ));
+    
+  }
 }
