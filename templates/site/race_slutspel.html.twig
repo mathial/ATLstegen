@@ -2,22 +2,24 @@
 
 {% block body %}
 
-  <h3>Race to Lund 2019-04-27 Slutspel !</h3>
+  <h3>Race to Lund 2020 Slutspel ! </h3>
 
-  <p><i>Information about the tournament can be found <a href="http://atllund.se/aktuellt/slutspel-i-stegen/" target="_blank">here</a></i></p>
+  <p><i>Started on 2019-04-27. Information about the tournament can be found <a href="http://atllund.se/aktuellt/slutspel-i-stegen/" target="_blank">here</a></i></p>
 
 
   <table class="table">
     <tr>
       <th>#</th>
       <th>Player</th>
-      <th>Nb</th>
+      <th>2020</th>
+      <th>Tot</th>
     </tr>
-    {% for i,data in arrRace %}
+    {% for i,data in arrRaceTot %}
       <tr>
          <td>{{ i+1 }}</td>
-        <td><a href="{{ path('player_view', {'id': data["idP"]}) }}">{{ arrRaceData[data["idP"]]["name"] }}</a></td>
-        <td>{{ data["totNbM"] }}</td>
+        <td><a href="{{ path('player_view', {'id': data["idP"]}) }}">{{ data["name"] }}</a></td>
+        <td>{{ data["lastyear"] }}</td>
+        <td>{{ data["tot"] }}</td>
       </tr>
     {% endfor %}
   </table>

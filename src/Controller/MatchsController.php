@@ -108,6 +108,7 @@ class MatchsController extends Controller
       'widget' => 'single_text',
     ))
     ->add('idplayer1', EntityType::class, array(
+      'label'   => 'Winner',
       'class' => Player::class,
       'query_builder' => function (EntityRepository $er) {
         return $er->createQueryBuilder('p')
@@ -117,6 +118,7 @@ class MatchsController extends Controller
       'choice_label' => 'nameshort',
     ))
     ->add('idplayer2', EntityType::class, array(
+      'label'   => '2nd player',
       'class' => Player::class,
       'query_builder' => function (EntityRepository $er) {
         return $er->createQueryBuilder('p')
@@ -136,7 +138,7 @@ class MatchsController extends Controller
     ))
     ->add('context', ChoiceType::class, array(
       'label'    => 'Conditions',
-      'choices' => array("Stege (söndag 21-22)" => "Stege (söndag 21-22)", "Stege" => "Stege", "A-serien" => "A-serien", "Sprinttennis tournament" => "Sprinttennis tournament"),
+      'choices' => array("Stege (söndag 21-22)" => "Stege (söndag 21-22)", "Stege" => "Stege", "A-serien" => "A-serien", "Sprinttennis tournament" => "Sprinttennis tournament", "ATL Klubbmästerskap" => "ATL Klubbmästerskap"),
       'required'   => true,
     ))
     ->add('tie', ChoiceType::class, array(
@@ -219,27 +221,46 @@ class MatchsController extends Controller
   {
     $em = $this->getDoctrine()->getManager();
 
+    $arrRace=array();
 
+    $spe_date="2019-04-27";
+    // total of matches played since the date
     $sql   = 'SELECT SUM(nbM) AS totNbM, idP FROM
-(
-SELECT COUNT(*) AS nbM, idPlayer1 AS idP FROM Matchs GROUP BY idPlayer1 UNION ALL SELECT COUNT(*) AS nbM, idPlayer2 AS idP FROM Matchs GROUP BY idPlayer2
-) AS totTab
-GROUP BY idP
-ORDER By totNbM DESC';
+              (
+              SELECT COUNT(*) AS nbM, idPlayer1 AS idP FROM Matchs WHERE date>"'.$spe_date.'" GROUP BY idPlayer1 UNION ALL SELECT COUNT(*) AS nbM, idPlayer2 AS idP FROM Matchs WHERE date>"'.$spe_date.'" GROUP BY idPlayer2
+              ) AS totTab
+              GROUP BY idP
+              ORDER By totNbM DESC';
     $stmt = $em->getConnection()->prepare($sql);
     $stmt->execute();
     $arrRace = $stmt->fetchAll();
 
-    $arrRaceData=array();
+
+    $arrRaceTot=array();
 
     foreach ($arrRace as $rt) {
       $dataPlayer = $em->getRepository('App:Player')->findOneBy(array('id'=>$rt["idP"]));
 
-      $arrRaceData[$rt["idP"]]["name"]=$dataPlayer->getNameShort();
+      $recap=array();
+      $recap["idP"]=$rt["idP"];
+      $recap["name"]=$dataPlayer->getNameShort();
+      $recap["lastyear"]=$rt["totNbM"];
 
+      // total of matches played since the biginning
+      $qYear='SELECT SUM(nbM) AS totNbM FROM 
+              ( SELECT COUNT(*) AS nbM, idPlayer1 AS idP FROM Matchs WHERE  idPlayer1='.$rt["idP"].' 
+              UNION ALL SELECT COUNT(*) AS nbM, idPlayer2 AS idP FROM Matchs WHERE idPlayer2='.$rt["idP"].' ) AS totTab';
+      $stmt = $em->getConnection()->prepare($qYear);
+      $stmt->execute();
+      $rtTot = $stmt->fetchAll();
+      $recap["tot"]=$rtTot[0]["totNbM"];
+
+
+      $arrRaceTot[]=$recap;
     }
 
-    return $this->render('site/race_slutspel.html.twig', array("arrRace" => $arrRace, "arrRaceData" => $arrRaceData
+//    return $this->render('site/race_slutspel.html.twig', array("arrRace" => $arrRace, "arrRaceData" => $arrRaceData
+    return $this->render('site/race_slutspel.html.twig', array("arrRaceTot" => $arrRaceTot
     ));
     
   }
