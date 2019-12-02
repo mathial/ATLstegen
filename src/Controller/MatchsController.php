@@ -79,6 +79,7 @@ class MatchsController extends Controller
       $limitpage
     );
 
+
     return $this->render('site/matchs_list.html.twig', array("listMatchs" => $listMatchs,
       'maxpage' => $maxpage,
       'nbPages' => $nbPages,
