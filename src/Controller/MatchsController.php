@@ -170,7 +170,7 @@ class MatchsController extends Controller
             else $arrRt[1]=number_format($evol, 1);
           }
           
-          $arrMEvol[$mat["id"]]=abs($arrRt[1]);
+          $arrMEvol[$mat["id"]]=$arrRt[1];
         }
       
       }
