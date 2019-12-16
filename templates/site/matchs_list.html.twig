@@ -15,6 +15,7 @@
       <th>Score</th>
       <th>{{ knp_pagination_sortable(listMatchs, 'Context', 'm.context') }}</th>
       <th>{{ knp_pagination_sortable(listMatchs, 'Conditions', 'm.conditions') }}</th>
+      <th>Evol</th>
     </tr>
     {% for match in listMatchs %}
 
@@ -31,6 +32,7 @@
         <td>{{ match.score }}</td>
         <td>{{ match.context }}</td>
         <td>{{ match.conditions }}</td>
+        <td>{{ arrMEvol[match.id] }}</td>
         <td></td>
       </tr>
     {% endfor %}

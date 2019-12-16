@@ -165,6 +165,9 @@ class PlayerController extends Controller
       $limitpage
     );
 
+
+    /* POINTS EVOL PER MATCH */
+
     // for each match, we calculate the points evolution
     $sql_m   = 'SELECT m.id, m.date, m.tie, p1.id AS p1id, p2.id AS p2id, p1.initialRating AS p1IR, p2.initialRating AS p2IR 
                   FROM Matchs m, Player p1, Player p2
@@ -231,11 +234,11 @@ class PlayerController extends Controller
           $match = "Player 1 defeats Player 2";
           $result="player1";
         }
-        elseif ($result==2) {
+        /*elseif ($result==2) {
           $elo->addResult(2,1);
           $match = "Player 2 defeats Player 1";
           $result="player2";
-        }
+        }*/
         else {
           $elo->addResult(1,2, true);
           $match = "TIE Player 1 - Player 2";
@@ -269,6 +272,8 @@ class PlayerController extends Controller
       }
 
     }
+    /* END POINTS EVOL PER MATCH */
+
 
     return $this->render('site/player_view_matches.html.twig', array("listMatchs" => $listMatchs,
       'player' => $player,

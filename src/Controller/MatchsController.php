@@ -18,6 +18,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 use App\Entity\Matchs;
 use App\Entity\Player;
+use App\Entity\EloRatingSystem;
+use App\Entity\EloCompetitor;
 
 class MatchsController extends Controller
 {
@@ -48,7 +50,7 @@ class MatchsController extends Controller
     if ($request->isMethod('GET')) {
       if ($request->query->get('filter')) {
         $filter=$request->query->get('filter');
-        $where = " WHERE m.idplayer1 = ".$filter." OR m.idplayer2 = ".$filter;
+        $where = " WHERE (m.idplayer1 = ".$filter." OR m.idplayer2 = ".$filter.")";
       }
     }
 
@@ -80,11 +82,110 @@ class MatchsController extends Controller
     );
 
 
+
+    /* POINTS EVOL PER MATCH */
+
+    // for each match, we calculate the points evolution
+    $sql_m   = 'SELECT m.id, m.date, m.tie, p1.id AS p1id, p2.id AS p2id, p1.initialRating AS p1IR, p2.initialRating AS p2IR 
+                  FROM Matchs m, Player p1, Player p2
+                  '.($where!="" ? $where : " WHERE 1 ")." 
+                  AND p1.id=m.idplayer1
+                  AND p2.id=m.idplayer2
+                  ORDER BY m.date DESC";
+    $stmt = $em->getConnection()->prepare($sql_m);
+    $stmt->execute();
+    $matches = $stmt->fetchAll();
+
+    $arrMEvol=array();
+
+    foreach ($matches as $mat) {
+
+      $rankId="";
+
+      // get the closest ranking
+      $sql_rank = 'SELECT id FROM Ranking WHERE date<"'.$mat["date"].'" ORDER BY date DESC LIMIT 0,1';
+      $stmt = $em->getConnection()->prepare($sql_rank);
+      $stmt->execute();
+      $rank = $stmt->fetchAll();
+      if (isset($rank[0])) $rankId=$rank[0]["id"];
+      
+      $rating_player1=$mat["p1IR"];
+      $rating_player2=$mat["p2IR"];
+      $arrMEvol[$mat["id"]]=0;
+
+      if ($rankId!="") {
+        $sql_rank = 'SELECT score FROM RankingPos WHERE idRanking="'.$rankId.'" AND idPlayer='.$mat["p1id"];
+        $stmt = $em->getConnection()->prepare($sql_rank);
+        $stmt->execute();
+        $rank = $stmt->fetchAll();
+        if (isset($rank[0])) $rating_player1=$rank[0]["score"];
+
+        $sql_rank = 'SELECT score FROM RankingPos WHERE idRanking="'.$rankId.'" AND idPlayer='.$mat["p2id"];
+        $stmt = $em->getConnection()->prepare($sql_rank);
+        $stmt->execute();
+        $rank = $stmt->fetchAll();
+        if (isset($rank[0])) $rating_player2=$rank[0]["score"];
+
+      }
+
+      if ($mat["tie"]==0) $result=1;
+      else $result=0;
+
+     /* if ($id==$mat["p1id"]) $idPFin=1;
+      else $idPFin=2;*/
+
+      if (isset($rating_player1) && is_numeric($rating_player1) && isset($rating_player2) && is_numeric($rating_player2)) {
+
+        $competitors = array(
+          array('id' => 1, 'name' => "Player 1", 'skill' => 100, 'rating' => $rating_player1, 'active' => 1),
+          array('id' => 2, 'name' => "Player 2", 'skill' => 100, 'rating' => $rating_player2, 'active' => 1),
+        );
+        //  initialize the ranking system and add the competitors
+        $elo = new EloRatingSystem(100, 50);
+        foreach ($competitors as $competitor) {
+          $elo->addCompetitor(new EloCompetitor($competitor['id'], $competitor['name'], $competitor['rating']));
+        }
+
+        if ($result==1) {
+          $elo->addResult(1,2);
+          $match = "Player 1 defeats Player 2";
+          $result="player1";
+        }
+        else {
+          $elo->addResult(1,2, true);
+          $match = "TIE Player 1 - Player 2";
+          $result="draw";
+        }
+
+        $elo->updateRatings();
+
+        $tabRank = $elo->getRankings();
+
+        foreach ($tabRank as $idP => $val) {
+
+          $exp=explode("#", $idP);
+          if ($exp[0]==1) {
+            $evol=$val-$rating_player1;
+            if ($evol>0) $arrRt[1]="+".number_format($evol, 1);
+            else $arrRt[1]=number_format($evol, 1);
+          }
+          
+          $arrMEvol[$mat["id"]]=abs($arrRt[1]);
+        }
+      
+      }
+
+    }
+
+    /* END POINTS EVOL PER MATCH */
+
+
     return $this->render('site/matchs_list.html.twig', array("listMatchs" => $listMatchs,
       'maxpage' => $maxpage,
       'nbPages' => $nbPages,
       'page' => $page,
-      'filter' => $filter
+      'filter' => $filter,
+      'arrMEvol' => $arrMEvol
     ));
     
   }
