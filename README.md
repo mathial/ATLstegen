@@ -12,7 +12,9 @@ php composer.phar require symfony/apache-pack
 
 #Local version Mathieu
 ```
-/Applications/MAMP/bin/startMysql.sh
+#/Applications/MAMP/bin/startMysql.sh
+
+symfony server:start
 ```
 
 #migrer user
