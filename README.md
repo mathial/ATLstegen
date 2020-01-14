@@ -8,6 +8,8 @@ bin/console doctrine:schema:update --force
 #Prod
 ```
 php composer.phar require symfony/apache-pack
+
+php bin/console cache:clear
 ```
 
 #Local version Mathieu
