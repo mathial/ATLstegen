@@ -82,7 +82,6 @@ class MatchsController extends Controller
     );
 
 
-
     /* POINTS EVOL PER MATCH */
 
     // for each match, we calculate the points evolution
@@ -366,4 +365,53 @@ class MatchsController extends Controller
     ));
     
   }
+
+
+
+
+
+  /**
+   * @Route(
+   * "/matchs/listMatchsSlutSpel/{year}/{maxpage}/{page}", 
+   * name="matchs_list_slutspel", 
+   * requirements={
+   *   "year"="\d+", 
+   *   "maxpage"="\d+", 
+   *   "page"="\d+" 
+   * })
+   */
+  public function listMatchsSlutSpel($year, $maxpage, $page, Request $request)
+  {
+    $em = $this->getDoctrine()->getManager();
+
+    /*
+    $filter="";
+    $where="";
+    if ($request->isMethod('GET')) {
+      if ($request->query->get('filter')) {
+        $filter=$request->query->get('filter');
+        $where = " WHERE (m.idplayer1 = ".$filter." OR m.idplayer2 = ".$filter.")";
+      }
+    }
+    */
+
+
+    $dql   = 'SELECT m FROM App:Matchs m WHERE m.context = :context ORDER BY m.date DESC';
+    $query = $em->createQuery($dql)
+            ->setParameter('context', "Stegen Slutspel ".$year);;
+
+    $paginator  = $this->get('knp_paginator');
+
+    $listMatchs = $paginator->paginate(
+      $query, 
+      $request->query->getInt('page', 1),
+      50
+    );
+
+    return $this->render('site/matchs_list_slutspel.html.twig', array("listMatchs" => $listMatchs,
+      'year' => $year
+    ));
+    
+  }
+
 }

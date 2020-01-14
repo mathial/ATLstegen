@@ -4,14 +4,18 @@
 
   <h3>Race to Lund 2020 Slutspel ! </h3>
 
-  <p><i>Started on 2019-04-27. Information about the tournament can be found <a href="http://atllund.se/aktuellt/slutspel-i-stegen/" target="_blank">here</a></i></p>
+  <p>SlutSpel 2020 will take place the 25th of April of 2020. 16 spots available for Stegen players. Priority is given to those who have played the most Stegen matches ;-)</p> 
+
+  <p><i>Information about the tournament can be found <a href="http://atllund.se/aktuellt/slutspel-i-stegen/" target="_blank">here</a></i></p>
+
+  <p><i><a href="{{ path('matchs_list_slutspel', {'year':2019, 'maxpage':50, 'page':1}) }}">2019 matches</a> and <a href="http://atllund.se/nyhet/mathieu-mastare-i-stegen/" target="_blank">ATL's recap</a></i></p>
 
 
   <table class="table">
     <tr>
       <th>#</th>
       <th>Player</th>
-      <th>2020</th>
+      <th>Since SlutSpel 2019</th>
       <th>Tot</th>
     </tr>
     {% for i,data in arrRaceTot %}
