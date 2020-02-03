@@ -36,7 +36,7 @@
           <td>{{ det.position }}</td>
           <td><a href="{{ path('player_view', {'id':det.idplayer.id}) }}">{{ det.idplayer.nameshort }}</a></td>
           <td><b>
-            {% if detailsPlayer[det.idplayer.id]["best"]|number_format(0, '.', ' ') == det.score|number_format(0, '.', ' ') %}<span style="color:red">{% endif %}
+            {% if detailsPlayer[det.idplayer.id]["best"]|number_format(0, '.', ' ') == det.score|number_format(0, '.', ' ') %}<span style="color:#FF1493">{% endif %}
             {{ det.score|number_format(0, '.', ' ') }}
           </b></td>
           <td>{{ detailsPlayer[det.idplayer.id]["evol"] }}</td>
@@ -62,7 +62,7 @@
 
       </table>
       <p class="inactive-player"><i>Inactive player</i></p>
-      <p><span style="color:red">best rating ever for the player</span></p> 
+      <p><span style="color:#FF1493">best rating ever for the player</span></p> 
       <p><i>W: wins - D: defeats - T: ties</i></p>
     {% endif %}
   {% endblock %}
