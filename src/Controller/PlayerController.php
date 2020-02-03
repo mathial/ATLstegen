@@ -555,4 +555,22 @@ class PlayerController extends Controller
       'form' => $form->createView(),
     ));
   }
+
+
+  /*public function getBestRating ($id, $date) {
+
+    $em = $this->getDoctrine()->getManager();
+    $player = $em->getRepository('App:Player')->findOneBy(['id' => $id]);
+
+     // get the closest ranking
+    $sql_best = 'SELECT MAX(score) FROM RankingPos WHERE date<="'.$date.'" AND idPlayer='.$id;
+    $stmt = $em->getConnection()->prepare($sql_best);
+    $stmt->execute();
+    $best = $stmt->fetchAll();
+    if (isset($best[0])) $best=$best[0]["score"];
+    else $best=0;
+
+    return $best;
+
+  }*/
 }

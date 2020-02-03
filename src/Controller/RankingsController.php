@@ -249,48 +249,48 @@ class RankingsController extends AbstractController
   	$em = $this->getDoctrine()->getManager();
 
   	$activeOnly=true;
-		$arrRank=array();
-		$rankings = $em->getRepository('App:Ranking')->findBy(array(), array('date' => 'DESC'));
-		foreach ($rankings as $rank) {
-			$arrRank[$rank->getDate()->format("Y-m-d")] = $rank->getId();
-		}
+	$arrRank=array();
+	$rankings = $em->getRepository('App:Ranking')->findBy(array(), array('date' => 'DESC'));
+	foreach ($rankings as $rank) {
+		$arrRank[$rank->getDate()->format("Y-m-d")] = $rank->getId();
+	}
 
-		$defaultData = array('message' => 'Type your message here');
-		$formBuilder = $this->createFormBuilder($defaultData);
+	$defaultData = array('message' => 'Type your message here');
+	$formBuilder = $this->createFormBuilder($defaultData);
 
-		$formBuilder
-		->add('id_ranking', ChoiceType::class, array(
-			'choices' => $arrRank,
-		  'required' => true,
-		  'data' => $defaultId,
-		))
-		// ->add('active_only', CheckboxType::class, array(
-		// 	'label' => "Only active players.",
-		//   'required' => false,
-		// ))
-		->add("Select", SubmitType::class);
+	$formBuilder
+	->add('id_ranking', ChoiceType::class, array(
+		'choices' => $arrRank,
+	  'required' => true,
+	  'data' => $defaultId,
+	))
+	// ->add('active_only', CheckboxType::class, array(
+	// 	'label' => "Only active players.",
+	//   'required' => false,
+	// ))
+	->add("Select", SubmitType::class);
 
-		$form = $formBuilder->getForm();
+	$form = $formBuilder->getForm();
 
-		$form->handleRequest($request);
+	$form->handleRequest($request);
 
-		if ($form->isSubmitted() && $form->isValid()) {
-			$data = $form->getData();
+	if ($form->isSubmitted() && $form->isValid()) {
+	  $data = $form->getData();
 
       $idRanking=$data['id_ranking'];
-      $activeOnly=$data['active_only'];
+      $activeOnly=(isset($data['active_only']) ? $data['active_only'] : 1);
 
       $url = $this->generateUrl('rankings_view_id', array('id' => $idRanking, 'AO' => $activeOnly));
       return $this->redirect($url);
-	  }	
-		elseif ($id<>null) {
-			$ranking = $em->getRepository('App:Ranking')->findOneBy(array('id' => $id));
-  	}
+	}	
+	elseif ($id<>null) {
+		$ranking = $em->getRepository('App:Ranking')->findOneBy(array('id' => $id));
+		}
   	else {
   		$ranking = $em->getRepository('App:Ranking')->getLastRanking();
   	}
 
-		$ranking_1 =  $em->getRepository('App:Ranking')->getRankingBefore($ranking->getDate()->format("Y-m-d"));
+	$ranking_1 =  $em->getRepository('App:Ranking')->getRankingBefore($ranking->getDate()->format("Y-m-d"));
 
   	$detailsRankings=$em->getRepository('App:Rankingpos')->findBy(array('idranking' => $ranking));
   	$detailsPlayer=array();
@@ -305,6 +305,7 @@ class RankingsController extends AbstractController
 
   	if ($ranking && $detailsRankings) {
 
+
   		// SCORE EVOL
   		foreach ($detailsRankings as $det) {
 
@@ -316,115 +317,129 @@ class RankingsController extends AbstractController
   				$evol=$det->getScore() - $det->getIdplayer()->getInitialrating();
   			}
 
-				if ($evol>0) $detailsPlayer[$det->getIdplayer()->getId()]["evol"]="+".number_format($evol, 0);
-				else $detailsPlayer[$det->getIdplayer()->getId()]["evol"]=number_format($evol, 0);
+			if ($evol>0) $detailsPlayer[$det->getIdplayer()->getId()]["evol"]="+".number_format($evol, 0);
+			else $detailsPlayer[$det->getIdplayer()->getId()]["evol"]=number_format($evol, 0);
 
-				$arrTotal["evolscore"]+=$evol;
-				$arrTotal["score"]+=$det->getScore();
+			$arrTotal["evolscore"]+=$evol;
+			$arrTotal["score"]+=$det->getScore();
 
-  		}
+
+			$sql_best = 'SELECT MAX(score) AS score FROM RankingPos RP, Ranking R WHERE 
+						R.id=RP.idRanking
+						AND date<="'.$ranking->getDate()->format("Y-m-d").'" 
+						AND idPlayer='.$det->getIdplayer()->getId();
+		    $stmt = $em->getConnection()->prepare($sql_best);
+		    $stmt->execute();
+		    $best = $stmt->fetchAll();
+		    if (isset($best[0])) $best=$best[0]["score"];
+		    else $best=0;
+
+			// best rankings
+			$detailsPlayer[$det->getIdplayer()->getId()]["best"]=$best;
+			//getBestRating($det->getIdplayer()->getId(), $ranking->getDate()->format("Y-m-d"));
+  		}	
 
 
   		// WINS
-			$sql = '
-	    	SELECT COUNT(*) AS tot, idPlayer1 
-	    	FROM Matchs 
-	    	WHERE tie=0 AND date<:date
-	    	GROUP BY idPlayer1 
+		$sql = '
+    	SELECT COUNT(*) AS tot, idPlayer1 
+    	FROM Matchs 
+    	WHERE tie=0 AND date<:date
+    	GROUP BY idPlayer1 
 	    ';
-			$stmt = $em->getConnection()->prepare($sql);
-			$stmt->execute(['date' => $ranking->getDate()->format("Y-m-d")]);
-			$wins = $stmt->fetchAll();
+		$stmt = $em->getConnection()->prepare($sql);
+		$stmt->execute(['date' => $ranking->getDate()->format("Y-m-d")]);
+		$wins = $stmt->fetchAll();
 
-			foreach ($wins as $win) {
-				$detailsPlayer[$win["idPlayer1"]]["wins"]=$win["tot"];
-				$detailsPlayer[$win["idPlayer1"]]["ties"]=0;
-				$detailsPlayer[$win["idPlayer1"]]["defeats"]=0;
+		foreach ($wins as $win) {
+			$detailsPlayer[$win["idPlayer1"]]["wins"]=$win["tot"];
+			$detailsPlayer[$win["idPlayer1"]]["ties"]=0;
+			$detailsPlayer[$win["idPlayer1"]]["defeats"]=0;
 
-				$arrTotal["wins"]+=$win["tot"];
+			$arrTotal["wins"]+=$win["tot"];
 
+		}
+
+		// TIES P1
+		$sql = '
+    	SELECT COUNT(*) AS tot, idPlayer1 
+    	FROM Matchs 
+    	WHERE tie=1 AND date<:date
+    	GROUP BY idPlayer1 
+	    ';
+		$stmt = $em->getConnection()->prepare($sql);
+		$stmt->execute(['date' => $ranking->getDate()->format("Y-m-d")]);
+		$ties1 = $stmt->fetchAll();
+
+		foreach ($ties1 as $tie) {
+			
+			$detailsPlayer[$tie["idPlayer1"]]["ties"]=$tie["tot"];			
+
+			if (!isset($detailsPlayer[$tie["idPlayer1"]]["wins"])) {
+				$detailsPlayer[$tie["idPlayer1"]]["wins"]=0;
+			}
+			if (!isset($detailsPlayer[$tie["idPlayer1"]]["defeats"])) {
+				$detailsPlayer[$tie["idPlayer1"]]["defeats"]=0;
 			}
 
-			// TIES P1
-			$sql = '
-	    	SELECT COUNT(*) AS tot, idPlayer1 
-	    	FROM Matchs 
-	    	WHERE tie=1 AND date<:date
-	    	GROUP BY idPlayer1 
+			$arrTotal["ties"]+=$tie["tot"];
+
+		}
+
+		// TIES P2
+		$sql = '
+    	SELECT COUNT(*) AS tot, idPlayer2
+    	FROM Matchs 
+    	WHERE tie=1 AND date<:date
+    	GROUP BY idPlayer2 
 	    ';
-			$stmt = $em->getConnection()->prepare($sql);
-			$stmt->execute(['date' => $ranking->getDate()->format("Y-m-d")]);
-			$ties1 = $stmt->fetchAll();
+		$stmt = $em->getConnection()->prepare($sql);
+		$stmt->execute(['date' => $ranking->getDate()->format("Y-m-d")]);
+		$ties1 = $stmt->fetchAll();
 
-			foreach ($ties1 as $tie) {
-				
-				$detailsPlayer[$tie["idPlayer1"]]["ties"]=$tie["tot"];			
+		foreach ($ties1 as $tie) {
+			
+			if (!isset($detailsPlayer[$tie["idPlayer2"]]["ties"])) {
+				$detailsPlayer[$tie["idPlayer2"]]["ties"]=$tie["tot"];			
+			}
+			else $detailsPlayer[$tie["idPlayer2"]]["ties"]+=$tie["tot"];
 
-				if (!isset($detailsPlayer[$tie["idPlayer1"]]["wins"])) {
-					$detailsPlayer[$tie["idPlayer1"]]["wins"]=0;
-				}
-				if (!isset($detailsPlayer[$tie["idPlayer1"]]["defeats"])) {
-					$detailsPlayer[$tie["idPlayer1"]]["defeats"]=0;
-				}
-
-				$arrTotal["ties"]+=$tie["tot"];
-
+			if (!isset($detailsPlayer[$tie["idPlayer2"]]["wins"])) {
+				$detailsPlayer[$tie["idPlayer2"]]["wins"]=0;
+			}
+			if (!isset($detailsPlayer[$tie["idPlayer2"]]["defeats"])) {
+				$detailsPlayer[$tie["idPlayer2"]]["defeats"]=0;
 			}
 
-			// TIES P2
-			$sql = '
-	    	SELECT COUNT(*) AS tot, idPlayer2
-	    	FROM Matchs 
-	    	WHERE tie=1 AND date<:date
-	    	GROUP BY idPlayer2 
+			$arrTotal["ties"]+=$tie["tot"];
+
+		}
+
+		// DEFEATS
+		$sql = '
+    	SELECT COUNT(*) AS tot, idPlayer2 
+    	FROM Matchs 
+    	WHERE tie=0 AND date<:date
+    	GROUP BY idPlayer2
 	    ';
-			$stmt = $em->getConnection()->prepare($sql);
-			$stmt->execute(['date' => $ranking->getDate()->format("Y-m-d")]);
-			$ties1 = $stmt->fetchAll();
+		$stmt = $em->getConnection()->prepare($sql);
+		$stmt->execute(['date' => $ranking->getDate()->format("Y-m-d")]);
+		$defeats = $stmt->fetchAll();
 
-			foreach ($ties1 as $tie) {
-				
-				if (!isset($detailsPlayer[$tie["idPlayer2"]]["ties"])) {
-					$detailsPlayer[$tie["idPlayer2"]]["ties"]=$tie["tot"];			
-				}
-				else $detailsPlayer[$tie["idPlayer2"]]["ties"]+=$tie["tot"];
-
-				if (!isset($detailsPlayer[$tie["idPlayer2"]]["wins"])) {
-					$detailsPlayer[$tie["idPlayer2"]]["wins"]=0;
-				}
-				if (!isset($detailsPlayer[$tie["idPlayer2"]]["defeats"])) {
-					$detailsPlayer[$tie["idPlayer2"]]["defeats"]=0;
-				}
-
-				$arrTotal["ties"]+=$tie["tot"];
-
+		foreach ($defeats as $defeat) {
+			$detailsPlayer[$defeat["idPlayer2"]]["defeats"]=$defeat["tot"];
+			if (!isset($detailsPlayer[$defeat["idPlayer2"]]["wins"])) {
+				$detailsPlayer[$defeat["idPlayer2"]]["wins"]=0;
+			}
+			if (!isset($detailsPlayer[$defeat["idPlayer2"]]["ties"])) {
+				$detailsPlayer[$defeat["idPlayer2"]]["ties"]=0;
 			}
 
-			// DEFEATS
-			$sql = '
-	    	SELECT COUNT(*) AS tot, idPlayer2 
-	    	FROM Matchs 
-	    	WHERE tie=0 AND date<:date
-	    	GROUP BY idPlayer2
-	    ';
-			$stmt = $em->getConnection()->prepare($sql);
-			$stmt->execute(['date' => $ranking->getDate()->format("Y-m-d")]);
-			$defeats = $stmt->fetchAll();
+			$arrTotal["defeats"]+=$defeat["tot"];
 
-			foreach ($defeats as $defeat) {
-				$detailsPlayer[$defeat["idPlayer2"]]["defeats"]=$defeat["tot"];
-				if (!isset($detailsPlayer[$defeat["idPlayer2"]]["wins"])) {
-					$detailsPlayer[$defeat["idPlayer2"]]["wins"]=0;
-				}
-				if (!isset($detailsPlayer[$defeat["idPlayer2"]]["ties"])) {
-					$detailsPlayer[$defeat["idPlayer2"]]["ties"]=0;
-				}
+		}
 
-				$arrTotal["defeats"]+=$defeat["tot"];
-
-			}
-
-			$arrTotal["total"]=$arrTotal["wins"]+$arrTotal["ties"]+$arrTotal["defeats"];
+		$arrTotal["total"]=$arrTotal["wins"]+$arrTotal["ties"]+$arrTotal["defeats"];
 
 	  }
 	  else {
