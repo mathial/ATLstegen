@@ -26,25 +26,32 @@
         <th>Total</th>
       </tr>
 
+      {% set rank = 1 %}
       {% for det in detailsRankings %}
 
-        {% if det.idplayer.active == 1 %}
-        <tr>
+        {% if activeOnly==1 and det.idplayer.active == 0 %}
         {% else %}
-        <tr class="inactive-player">
+
+          {% if det.idplayer.active == 1 %}
+          <tr>
+          {% else %}
+          <tr class="inactive-player">
+          {% endif %}
+            <td>{{ rank }}</td>
+            <td><a href="{{ path('player_view', {'id':det.idplayer.id}) }}">{{ det.idplayer.nameshort }}</a></td>
+            <td><b>
+              {% if detailsPlayer[det.idplayer.id]["best"]|number_format(0, '.', ' ') == det.score|number_format(0, '.', ' ') %}<span style="color:#FF1493">{% endif %}
+              {{ det.score|number_format(0, '.', ' ') }}
+            </b></td>
+            <td>{{ detailsPlayer[det.idplayer.id]["evol"] }}</td>
+            <td>{{ detailsPlayer[det.idplayer.id]["wins"] }}</td>
+            <td>{{ detailsPlayer[det.idplayer.id]["defeats"] }}</td>
+            <td>{{ detailsPlayer[det.idplayer.id]["ties"] }}</td>
+            <td>{{ detailsPlayer[det.idplayer.id]["wins"] + detailsPlayer[det.idplayer.id]["ties"] + detailsPlayer[det.idplayer.id]["defeats"] }}</td>
+          </tr>
+
+          {% set rank = rank + 1 %}
         {% endif %}
-          <td>{{ det.position }}</td>
-          <td><a href="{{ path('player_view', {'id':det.idplayer.id}) }}">{{ det.idplayer.nameshort }}</a></td>
-          <td><b>
-            {% if detailsPlayer[det.idplayer.id]["best"]|number_format(0, '.', ' ') == det.score|number_format(0, '.', ' ') %}<span style="color:#FF1493">{% endif %}
-            {{ det.score|number_format(0, '.', ' ') }}
-          </b></td>
-          <td>{{ detailsPlayer[det.idplayer.id]["evol"] }}</td>
-          <td>{{ detailsPlayer[det.idplayer.id]["wins"] }}</td>
-          <td>{{ detailsPlayer[det.idplayer.id]["defeats"] }}</td>
-          <td>{{ detailsPlayer[det.idplayer.id]["ties"] }}</td>
-          <td>{{ detailsPlayer[det.idplayer.id]["wins"] + detailsPlayer[det.idplayer.id]["ties"] + detailsPlayer[det.idplayer.id]["defeats"] }}</td>
-        </tr>
       {% endfor %}
 
       {% if arrTotal|length >0 %}

@@ -240,15 +240,16 @@ class RankingsController extends AbstractController
 	/**
    * @Route("/rankings/view", name="rankings_view")
    * @Route("/rankings/view/{id}", name="rankings_view_id")
+   * @Route("/rankings/view/{id}/{AO}", name="rankings_view_id_ao")
    */
-  public function viewRanking($id=null, Request $request)
+  public function viewRanking($id=null, $AO=1, Request $request)
   {
   	if ($id<>null) $defaultId=$id;
   	else $defaultId=57;
 
   	$em = $this->getDoctrine()->getManager();
 
-  	$activeOnly=true;
+  	$activeOnly=$AO;
 	$arrRank=array();
 	$rankings = $em->getRepository('App:Ranking')->findBy(array(), array('date' => 'DESC'));
 	foreach ($rankings as $rank) {
@@ -264,10 +265,11 @@ class RankingsController extends AbstractController
 	  'required' => true,
 	  'data' => $defaultId,
 	))
-	// ->add('active_only', CheckboxType::class, array(
-	// 	'label' => "Only active players.",
-	//   'required' => false,
-	// ))
+	->add('active_only', CheckboxType::class, array(
+		'label' => "Only active players.",
+	   'required' => false,
+	   'data' => ($activeOnly==1 ? true : false)
+	))
 	->add("Select", SubmitType::class);
 
 	$form = $formBuilder->getForm();
@@ -278,14 +280,14 @@ class RankingsController extends AbstractController
 	  $data = $form->getData();
 
       $idRanking=$data['id_ranking'];
-      $activeOnly=(isset($data['active_only']) ? $data['active_only'] : 1);
+      $activeOnly=(isset($data['active_only']) && $data['active_only']!="" ? $data['active_only'] : 0);
 
-      $url = $this->generateUrl('rankings_view_id', array('id' => $idRanking, 'AO' => $activeOnly));
+      $url = $this->generateUrl('rankings_view_id_ao', array('id' => $idRanking, 'AO' => $activeOnly));
       return $this->redirect($url);
 	}	
 	elseif ($id<>null) {
 		$ranking = $em->getRepository('App:Ranking')->findOneBy(array('id' => $id));
-		}
+	}
   	else {
   		$ranking = $em->getRepository('App:Ranking')->getLastRanking();
   	}
@@ -294,7 +296,7 @@ class RankingsController extends AbstractController
 
   	$detailsRankings=$em->getRepository('App:Rankingpos')->findBy(array('idranking' => $ranking));
   	$detailsPlayer=array();
-		$arrTotal=array();
+	$arrTotal=array();
   	$arrTotal["score"]=0;
   	$arrTotal["evolscore"]=0;
   	$arrTotal["evolpos"]=0;
@@ -304,7 +306,6 @@ class RankingsController extends AbstractController
   	$arrTotal["total"]=0;
 
   	if ($ranking && $detailsRankings) {
-
 
   		// SCORE EVOL
   		foreach ($detailsRankings as $det) {
@@ -337,6 +338,7 @@ class RankingsController extends AbstractController
 			// best rankings
 			$detailsPlayer[$det->getIdplayer()->getId()]["best"]=$best;
 			//getBestRating($det->getIdplayer()->getId(), $ranking->getDate()->format("Y-m-d"));
+  			
   		}	
 
 
@@ -352,6 +354,7 @@ class RankingsController extends AbstractController
 		$wins = $stmt->fetchAll();
 
 		foreach ($wins as $win) {
+
 			$detailsPlayer[$win["idPlayer1"]]["wins"]=$win["tot"];
 			$detailsPlayer[$win["idPlayer1"]]["ties"]=0;
 			$detailsPlayer[$win["idPlayer1"]]["defeats"]=0;
@@ -453,6 +456,7 @@ class RankingsController extends AbstractController
 	    'arrRankings' => $arrRank,
 	    'detailsRankings' => $detailsRankings,
 	    'detailsPlayer' => $detailsPlayer,
+	    'activeOnly' => $activeOnly,
 	    'arrTotal' => $arrTotal,
 	  ]);
 	}
