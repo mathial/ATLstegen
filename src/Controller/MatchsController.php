@@ -56,7 +56,7 @@ class MatchsController extends Controller
 
     $listTotMatchs = $em->getRepository('App:Matchs')->getMatchsPerPage($page, $maxpage, $filter);
 
-    $dql   = "SELECT m FROM App:Matchs m ".$where." ORDER BY m.date DESC";
+    $dql   = "SELECT m FROM App:Matchs m ".$where." ORDER BY m.date DESC, m.id DESC";
     $query = $em->createQuery($dql);
 
     $paginator  = $this->get('knp_paginator');
@@ -90,7 +90,7 @@ class MatchsController extends Controller
                   '.($where!="" ? $where : " WHERE 1 ")." 
                   AND p1.id=m.idplayer1
                   AND p2.id=m.idplayer2
-                  ORDER BY m.date DESC";
+                  ORDER BY m.date DESC, m.id DESC";
     $stmt = $em->getConnection()->prepare($sql_m);
     $stmt->execute();
     $matches = $stmt->fetchAll();
