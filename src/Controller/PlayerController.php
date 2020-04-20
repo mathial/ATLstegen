@@ -137,7 +137,7 @@ class PlayerController extends Controller
     $lastR = $em->getRepository('App:Player')->getLastRanking($id);
 
     $where="WHERE (m.idplayer1= ".$id." OR m.idplayer2= ".$id.")";
-    $maxpage=50;
+    $maxpage=5000;
     $listTotMatchs = $em->getRepository('App:Matchs')->getMatchsPerPageByPlayer($page, $maxpage, $id);
 
     $dql   = "SELECT m FROM App:Matchs m ".$where." ORDER BY m.date DESC";

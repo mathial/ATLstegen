@@ -10,6 +10,7 @@
     %}
   {% endif %}
 
+
   <p>
     Number of elements per page 
     <a href="{{ path(page_list, {'maxpage': 10, 'page': 1}) }}{{ paramsUrl }}" class="{% if maxpage == 10 %}pager-active{% endif %}">10</a> - 
@@ -103,5 +104,6 @@
     {% endif %}
 
   {% endif %}
+
 
 </ul>
