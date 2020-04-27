@@ -324,7 +324,7 @@ class MatchsController extends Controller
 
     $arrRace=array();
 
-    $spe_date="2019-04-27";
+    $spe_date="2020-04-25";
     // total of matches played since the date
     $sql   = 'SELECT SUM(nbM) AS totNbM, idP FROM
               (

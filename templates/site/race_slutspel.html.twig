@@ -2,20 +2,21 @@
 
 {% block body %}
 
-  <h3>Race to Lund 2020 Slutspel ! </h3>
+  <h3>Race to Lund 2021 Slutspel ! </h3>
 
-  <p>SlutSpel 2020 will take place the 25th of April of 2020. 16 spots available for Stegen players. Priority is given to those who have played the most Stegen matches ;-)</p> 
+  <p><a href="http://atllund.se/nyhet/martin-andersson-mastare-i-stegen-inomhus/" target="_blank">SlutSpel 2020</a> took place the 25th of April, congrats <a href="{{ path('player_view', {'id': 25}) }}">Martin A.</a> ! The Race to Lund 2021 slutspel is on, as usual priority will be given to the players who have played the most.</p> 
 
-  <p><i>Information about the tournament can be found <a href="http://atllund.se/aktuellt/slutspel-i-stegen/" target="_blank">here</a></i></p>
-
-  <p><i><a href="{{ path('matchs_list_slutspel', {'year':2019, 'maxpage':50, 'page':1}) }}">2019 matches</a> and <a href="http://atllund.se/nyhet/mathieu-mastare-i-stegen/" target="_blank">ATL's recap</a></i></p>
+  <p><b>Archives</b></p>
+  <ul><li><i><a href="{{ path('matchs_list_slutspel', {'year':2020, 'maxpage':50, 'page':1}) }}">2020 matches</a> and <a href="http://atllund.se/nyhet/martin-andersson-mastare-i-stegen-inomhus/" target="_blank">ATL's recap</a> + <a href="http://atllund.se/wp-content/uploads/2020/04/slutspel-stegen-2020.pdf" target="_blank">draw</a></i></li>
+  <li><i><a href="{{ path('matchs_list_slutspel', {'year':2019, 'maxpage':50, 'page':1}) }}">2019 matches</a> and <a href="http://atllund.se/nyhet/mathieu-mastare-i-stegen/" target="_blank">ATL's recap</a></i></li>
+  </ul>
 
 
   <table class="table">
     <tr>
       <th>#</th>
       <th>Player</th>
-      <th>Since SlutSpel 2019</th>
+      <th>Since SlutSpel 2020</th>
       <th>Tot</th>
     </tr>
     {% for i,data in arrRaceTot %}
