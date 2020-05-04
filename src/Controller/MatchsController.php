@@ -102,7 +102,7 @@ class MatchsController extends Controller
       $rankId="";
 
       // get the closest ranking
-      $sql_rank = 'SELECT id FROM Ranking WHERE date<"'.$mat["date"].'" ORDER BY date DESC LIMIT 0,1';
+      $sql_rank = 'SELECT id FROM Ranking WHERE date<="'.$mat["date"].'" ORDER BY date DESC LIMIT 0,1';
       $stmt = $em->getConnection()->prepare($sql_rank);
       $stmt->execute();
       $rank = $stmt->fetchAll();

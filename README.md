@@ -26,6 +26,11 @@ VALUES
 	(6, 'mathieu', CONVERT(X'blablabla' using utf8mb4), 'passwordcryptonite');
 ```
 
+#request to deactivate inactive user
+```
+SELECT * FROM Player WHERE id NOT IN ( SELECT DISTINCT idPlayer1 AS idPlayer FROM Matchs WHERE date>"2019-04-19" UNION SELECT DISTINCT idPlayer2 AS idPlayer FROM Matchs WHERE date>"2019-04-19" ) 
+```
+
 #Database
 ```
 php bin/console doctrine:mapping:import 'App\Entity' annotation --path=src/Entity --filter=Rankingpos
