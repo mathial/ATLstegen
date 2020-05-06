@@ -357,7 +357,7 @@ class MatchsController extends Controller
       $rtTot = $stmt->fetchAll();
       $recap["tot"]=$rtTot[0]["totNbM"];
 
-      $bigTot+=$recap["tot"];
+      $bigTot+=$recap["lastyear"];
 
       $arrRaceTot[]=$recap;
     }
