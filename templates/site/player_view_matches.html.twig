@@ -9,7 +9,7 @@
 
   <table class="table">
     <tr>
-      {# <th>{{ knp_pagination_sortable(listMatchs, '#', 'm.id') }}</th> #}
+      <th>#</th>
       <th>{{ knp_pagination_sortable(listMatchs, 'Date', 'm.date') }}</th>
       <th>Player1</th>
       <th>Player2</th>
@@ -18,10 +18,12 @@
       <th>{{ knp_pagination_sortable(listMatchs, 'Conditions', 'm.conditions') }}</th>
       <th>Evol</th>
     </tr>
+    {% set ind = (page * listMatchs|length) - (listMatchs|length - 1) %}
+
     {% for match in listMatchs %}
 
       <tr>
-        {# <td>{{ match.id }}</td> #}
+        <td>{{ ind }}</td>
         <td>{{ match.date|date("Y-m-d") }}</td>
         {% if match.tie!=1 %}
           <td class="winner-player">
@@ -36,7 +38,10 @@
         <td>{{ arrMEvol[match.id] }}</td>
         <td></td>
       </tr>
+
+      {% set ind = ind +1 %}
     {% endfor %}
+
   </table>
 
 

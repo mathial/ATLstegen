@@ -338,6 +338,7 @@ class MatchsController extends Controller
 
 
     $arrRaceTot=array();
+    $bigTot=0;
 
     foreach ($arrRace as $rt) {
       $dataPlayer = $em->getRepository('App:Player')->findOneBy(array('id'=>$rt["idP"]));
@@ -356,13 +357,15 @@ class MatchsController extends Controller
       $rtTot = $stmt->fetchAll();
       $recap["tot"]=$rtTot[0]["totNbM"];
 
+      $bigTot+=$recap["tot"];
 
       $arrRaceTot[]=$recap;
     }
 
 //    return $this->render('site/race_slutspel.html.twig', array("arrRace" => $arrRace, "arrRaceData" => $arrRaceData
-    return $this->render('site/race_slutspel.html.twig', array("arrRaceTot" => $arrRaceTot
-    ));
+    return $this->render('site/race_slutspel.html.twig', 
+      array("arrRaceTot" => $arrRaceTot, "bigTot" => $bigTot)
+    );
     
   }
 
