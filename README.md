@@ -32,8 +32,11 @@ SELECT * FROM Player WHERE id NOT IN ( SELECT DISTINCT idPlayer1 AS idPlayer FRO
 ```
 
 #Database
+// FIRST SAVE the src/Entity file to check the differences after generation (git diff). 
 ```
-php bin/console doctrine:mapping:import 'App\Entity' annotation --path=src/Entity --filter=Rankingpos
+// generate the Entity file based on the database
+php bin/console doctrine:mapping:import 'App\Entity' annotation --path=src/Entity --filter=Player
 // generates getter/setter methods
 php bin/console make:entity --regenerate App
 ```
+warning: 

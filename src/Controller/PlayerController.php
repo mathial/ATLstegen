@@ -169,7 +169,7 @@ class PlayerController extends Controller
     /* POINTS EVOL PER MATCH */
 
     // for each match, we calculate the points evolution
-    $sql_m   = 'SELECT m.id, m.date, m.tie, p1.id AS p1id, p2.id AS p2id, p1.initialRating AS p1IR, p2.initialRating AS p2IR 
+    $sql_m   = 'SELECT m.id, m.date, m.tie, p1.id AS p1id, p2.id AS p2id, p1.initialRatingTennis AS p1IR, p2.initialRatingTennis AS p2IR 
                   FROM Matchs m, Player p1, Player p2
                   '.$where." 
                   AND p1.id=m.idplayer1
@@ -316,7 +316,7 @@ class PlayerController extends Controller
       if ($key==0) {
         $date_1week = new \DateTime($rs->getIdRanking()->getDate()->format("Y-m-d"));
         // initial rankings
-        $arrRS[$date_1week->modify('-7 day')->format("Y-m-d")] = $player->getInitialRating();
+        $arrRS[$date_1week->modify('-7 day')->format("Y-m-d")] = $player->getinitialRatingTennis();
       }
       $arrRS[$rs->getIdRanking()->getDate()->format("Y-m-d")]=$rs->getScore();
     }
@@ -423,7 +423,10 @@ class PlayerController extends Controller
       },
       'choice_label' => 'name',
     ))
-    ->add('initialRating', TextType::class, array(
+    ->add('initialRatingTennis', TextType::class, array(
+      'required'   => true,
+    ))
+    ->add('initialRatingPaddle', TextType::class, array(
       'required'   => true,
     ))
     // ->add('username', TextType::class, array(

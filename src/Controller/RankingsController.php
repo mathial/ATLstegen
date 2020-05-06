@@ -134,7 +134,7 @@ class RankingsController extends AbstractController
 
 				// get the ranking expected
 				if ($based_ranking=="init") {
-					$basedRate=$player->getInitialRating();
+					$basedRate=$player->getInitialRatingTennis();
 				}
 				else {
 					$rankPos = $em->getRepository('App:Rankingpos')->findOneBy(array("idranking" => $based_ranking, "idplayer" => $player->getId()));
@@ -143,7 +143,7 @@ class RankingsController extends AbstractController
 					}
 					else {
 						// echo "RIEN".$based_ranking."/".$player->getId()."/".count($rankPos)."<br>";
-						$basedRate = $player->getInitialRating();
+						$basedRate = $player->getInitialRatingTennis();
 					}
 				}
 
@@ -315,7 +315,7 @@ class RankingsController extends AbstractController
   				$evol = $det->getScore() - $detailsRankings_1->getScore();
   			}
   			else {
-  				$evol=$det->getScore() - $det->getIdplayer()->getInitialrating();
+  				$evol=$det->getScore() - $det->getIdplayer()->getInitialRatingTennis();
   			}
 
 			if ($evol>0) $detailsPlayer[$det->getIdplayer()->getId()]["evol"]="+".number_format($evol, 0);

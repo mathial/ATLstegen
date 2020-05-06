@@ -85,7 +85,7 @@ class MatchsController extends Controller
     /* POINTS EVOL PER MATCH */
 
     // for each match, we calculate the points evolution
-    $sql_m   = 'SELECT m.id, m.date, m.tie, p1.id AS p1id, p2.id AS p2id, p1.initialRating AS p1IR, p2.initialRating AS p2IR 
+    $sql_m   = 'SELECT m.id, m.date, m.tie, p1.id AS p1id, p2.id AS p2id, p1.initialRatingTennis AS p1IR, p2.initialRatingTennis AS p2IR 
                   FROM Matchs m, Player p1, Player p2
                   '.($where!="" ? $where : " WHERE 1 ")." 
                   AND p1.id=m.idplayer1

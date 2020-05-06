@@ -77,13 +77,26 @@ class Player
      */
     private $details;
 
-
     /**
      * @var bool
      *
      * @ORM\Column(name="active", type="boolean", nullable=false, options={"default"="1"})
      */
     private $active = '1';
+
+    /**
+     * @var int|null
+     *
+     * @ORM\Column(name="initialRatingTennis", type="integer", nullable=true)
+     */
+    private $initialratingtennis = '0';
+
+    /**
+     * @var int|null
+     *
+     * @ORM\Column(name="initialRatingPaddle", type="integer", nullable=true)
+     */
+    private $initialratingpaddle = '0';
 
     /**
      * @var \Country
@@ -94,14 +107,6 @@ class Player
      * })
      */
     private $idcountry;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="initialRating", type="integer", nullable=false)
-     */
-    private $initialrating;
-
 
     public function getId(): ?int
     {
@@ -216,6 +221,30 @@ class Player
         return $this;
     }
 
+    public function getInitialratingtennis(): ?int
+    {
+        return $this->initialratingtennis;
+    }
+
+    public function setInitialratingtennis(?int $initialratingtennis): self
+    {
+        $this->initialratingtennis = $initialratingtennis;
+
+        return $this;
+    }
+
+    public function getInitialratingpaddle(): ?int
+    {
+        return $this->initialratingpaddle;
+    }
+
+    public function setInitialratingpaddle(?int $initialratingpaddle): self
+    {
+        $this->initialratingpaddle = $initialratingpaddle;
+
+        return $this;
+    }
+
     public function getCountry(): ?Country
     {
         return $this->idcountry;
@@ -227,7 +256,7 @@ class Player
 
         return $this;
     }
-
+    
     public function getIdcountry(): ?Country
     {
         return $this->idcountry;
@@ -240,16 +269,5 @@ class Player
         return $this;
     }
 
-    public function getInitialrating(): ?int
-    {
-        return $this->initialrating;
-    }
-
-    public function setInitialrating(int $initialrating): self
-    {
-        $this->initialrating = $initialrating;
-
-        return $this;
-    }
 
 }
