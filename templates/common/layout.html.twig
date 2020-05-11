@@ -47,6 +47,7 @@
 
         {% if is_granted('ROLE_USER') %} 
           <ul class="nav nav-pills nav-stacked"><i>USER</i>
+            <li><a href="{{ path('change_password') }}">Change my password</a></li>
             <li><a href="{{ path('matchs_new') }}">MATCHS - new</a></li>
           </ul>
         {% endif %}

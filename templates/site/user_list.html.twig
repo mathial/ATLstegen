@@ -8,12 +8,14 @@
     <tr>
       <th>username</th>
       <th>roles</th>
+      <th>action</th>
     </tr>
     {% for user in listUsers %}
 
       <tr>
         <td>{{ user.username }}</td>
         <td>{{ user.roles|join(', ') }}</td>
+        <td><a href="{{ path('user_update', {'id':user.id}) }}">update</a></td>
       </tr>
     {% endfor %}
   </table>
