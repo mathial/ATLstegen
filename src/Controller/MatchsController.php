@@ -189,16 +189,9 @@ class MatchsController extends Controller
     
   }
 
-  /**
-   * @Route(
-   * "/matchs/new", 
-   * name="matchs_new")
-   */
-  public function new(Request $request)
-  {
-    $em = $this->getDoctrine()->getManager();
-    
-    $match = new Matchs();
+
+  function getFormMatch($match, $mode) {
+
     $formBuilder = $this->createFormBuilder($match);
 
     $formBuilder
@@ -247,9 +240,39 @@ class MatchsController extends Controller
       'choices' => array("no" => 0, "yes" => 1),
       'required'   => true,
     ))
-    ->add("Create", SubmitType::class);
+    ;
+
+    if ($mode=="edit") {
+      $formBuilder
+      ->add('update', SubmitType::class, array('label' => 'Update'))
+      ;
+    }
+    else {
+      $formBuilder
+      ->add("Create", SubmitType::class);
+    }
+
+    
+    
 
     $form = $formBuilder->getForm();
+
+    return $form;
+  }
+
+
+  /**
+   * @Route(
+   * "/matchs/new", 
+   * name="matchs_new")
+   */
+  public function new(Request $request)
+  {
+    $em = $this->getDoctrine()->getManager();
+    
+    $match = new Matchs();
+    
+    $form = $this->getFormMatch($match, "add");
 
     if ($request->isMethod('POST')) {
 
@@ -264,11 +287,49 @@ class MatchsController extends Controller
       }
     }
 
-    return $this->render('site/matchs_new.html.twig', array(
-      'form' => $form->createView()
+    return $this->render('site/matchs_form.html.twig', array(
+      'form' => $form->createView(),
+      'form_title' => "New match"
     ));
     
   }
+
+
+  /**
+   * @Route(
+   * "/matchs/update/{id}", 
+   * name="match_update", 
+   * requirements={
+   *   "id"="\d+" 
+   * })
+   */
+  public function edit($id, Request $request) {
+
+    $em = $this->getDoctrine()->getManager();
+    $match = $em->getRepository('App:Matchs')->findOneBy(['id' => $id]);
+
+    $form=$this->getFormMatch($match, "edit");
+
+    if ($request->isMethod('POST')) {
+
+      $form->handleRequest($request);
+
+      if ($form->isValid()) {
+
+        $em->persist($match);
+        $em->flush();
+        $request->getSession()->getFlashBag()->add('success', 'Match updated.');
+
+      }
+    }
+
+    return $this->render('site/matchs_form.html.twig', array(
+      'form' => $form->createView(),
+      'form_title' => "Update match"
+    ));
+    
+  }
+
 
   /**
    * @Route(

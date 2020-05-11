@@ -16,6 +16,9 @@
       <th>{{ knp_pagination_sortable(listMatchs, 'Context', 'm.context') }}</th>
       <th>{{ knp_pagination_sortable(listMatchs, 'Conditions', 'm.conditions') }}</th>
       <th>PtsEvol</th>
+      {% if is_granted('ROLE_ADMIN') %} 
+        <th>action</th>
+      {% endif %}
     </tr>
 
     {% set ind = (page * listMatchs|length) - (listMatchs|length - 1) %}
@@ -37,7 +40,9 @@
         <td>{{ match.context }}</td>
         <td>{{ match.conditions }}</td>
         <td>{{ arrMEvol[match.id] }}</td>
-        <td></td>
+        {% if is_granted('ROLE_ADMIN') %} 
+          <th><a href="{{ path('match_update', {'id':match.id}) }}">update</a></th>
+        {% endif %}
       </tr>
       {% set ind = ind +1 %}
     {% endfor %}

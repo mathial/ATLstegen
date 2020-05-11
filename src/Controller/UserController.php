@@ -96,29 +96,6 @@ class UserController extends Controller
     $em = $this->getDoctrine()->getManager();
     $user = new User();
 
-    /*$formBuilder = $this->createFormBuilder($user);
-
-    $formBuilder
-      ->add('username', TextType::class, array(
-        'required'   => true,
-      ))
-      ->add('password', TextType::class, array(
-        'required'   => true,
-      ))
-      ->add('roles', ChoiceType::class, array(
-        'multiple' => true,
-        'choices' => array(
-          'ROLE_USER' => 'ROLE_USER',
-          'ROLE_ADMIN' => 'ROLE_ADMIN',
-        ),
-        'required'   => true,
-      ))
-      ->add("Create", SubmitType::class);
-    ;
-
-    $form = $formBuilder->getForm();
-    */
-
     $form=$this->getFormUser($user, "add");
 
     if ($request->isMethod('POST')) {
