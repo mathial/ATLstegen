@@ -1,0 +1,27 @@
+{% form_theme form 'bootstrap/bootstrap_4_layout.html.twig' %}
+
+  {% extends "common/layout.html.twig" %}
+
+  {% block body %}
+
+    <h3>Simulator for Double.</h3>
+
+    <p><B>Team A</b> (player 1 and player 2) VS <b>Team B</b> (player 3 and player 4)</p>
+
+    <div class="form">
+      {{ form(form) }}
+    </div>
+
+    {% if avg_teamA  %}
+      <p>Team A's rating before the match: <b>{{ avg_teamA }}</b></p>
+      <p>Team B's rating before the match: <b>{{ avg_teamB }}</b></p>
+    {% endif %}
+
+    {% if arrRt|length > 0 %}
+    	<p>Player 1's evolution: <b>{{ arrRt[1] }}</b></p>
+      <p>Player 2's evolution: <b>{{ arrRt[2] }}</b></p>
+      <p>Player 3's evolution: <b>{{ arrRt[3] }}</b></p>
+      <p>Player 4's evolution: <b>{{ arrRt[4] }}</b></p>
+    {% endif %}
+
+  {% endblock %}
