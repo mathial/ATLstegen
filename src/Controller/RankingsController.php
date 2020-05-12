@@ -549,6 +549,12 @@ class RankingsController extends AbstractController
 
     }
 
+    return $this->render('site/simulator.html.twig', [
+	    'controller_name' => 'RankingsController',
+	    'form' => $form->createView(),
+	    'arrRt' => $arrRt,
+	  ]);
+
   }
 
 	/**
