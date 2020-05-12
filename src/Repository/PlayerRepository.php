@@ -45,8 +45,15 @@ class PlayerRepository extends EntityRepository {
     $lastR = $stmt->fetchAll();
 
     $rt=array();
-    $rt["score"]=$lastR[0]["score"];
-    $rt["position"]=$lastR[0]["position"];
+
+    if (isset($lastR[0]["score"])) {
+      $rt["score"]=$lastR[0]["score"];
+      $rt["position"]=$lastR[0]["position"];
+    }
+    else {
+      $rt["score"]="-";
+      $rt["position"]="-";
+    }
 
     return $rt;
   }

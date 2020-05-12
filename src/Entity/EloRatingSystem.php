@@ -62,6 +62,30 @@ class EloRatingSystem
 	}
 
 	/**
+	*	record a result by supplying the ids of the teams in the proper order
+	*/
+	public function addResultDouble ($winningId, $losingId, $winningScore, $losingScore, $tie = false)
+	{
+		if ($tie)
+		{
+			$this->results[$winningId] += 0.5;
+			$this->results[$losingId] += 0.5;
+		}
+		else
+		{
+			$this->results[$winningId] += 1;
+		}
+		//$denom = ($this->qScores[$winningId] + $this->qScores[$losingId]);
+		//$this->expectations[$winningId] += ($this->qScores[$winningId] / $denom);
+		//$this->expectations[$losingId] += ($this->qScores[$losingId] / $denom);
+		$denom = ($winningScore + $losingScore);
+		$this->expectations[$winningId] += ($winningScore / $denom);
+		$this->expectations[$losingId] += ($losingScore / $denom);
+	}
+
+
+
+	/**
 	*	return the collection of competitors
 	*/
 	public function getCompetitors ()
