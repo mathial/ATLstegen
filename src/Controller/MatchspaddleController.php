@@ -51,7 +51,6 @@ class MatchspaddleController extends Controller
       'class' => Player::class,
       'query_builder' => function (EntityRepository $er) {
         return $er->createQueryBuilder('p')
-            ->where('p.active=1')
             ->orderBy('p.nameshort', 'ASC');
       },
       'choice_label' => 'nameshort',
@@ -61,7 +60,6 @@ class MatchspaddleController extends Controller
       'class' => Player::class,
       'query_builder' => function (EntityRepository $er) {
         return $er->createQueryBuilder('p')
-            ->where('p.active=1')
             ->orderBy('p.nameshort', 'ASC');
       },
       'choice_label' => 'nameshort',
@@ -71,7 +69,6 @@ class MatchspaddleController extends Controller
       'class' => Player::class,
       'query_builder' => function (EntityRepository $er) {
         return $er->createQueryBuilder('p')
-            ->where('p.active=1')
             ->orderBy('p.nameshort', 'ASC');
       },
       'choice_label' => 'nameshort',
@@ -81,7 +78,6 @@ class MatchspaddleController extends Controller
       'class' => Player::class,
       'query_builder' => function (EntityRepository $er) {
         return $er->createQueryBuilder('p')
-            ->where('p.active=1')
             ->orderBy('p.nameshort', 'ASC');
       },
       'choice_label' => 'nameshort',
