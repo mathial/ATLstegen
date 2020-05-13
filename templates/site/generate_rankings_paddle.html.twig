@@ -1,0 +1,59 @@
+{% form_theme form 'bootstrap/bootstrap_4_layout.html.twig' %}
+
+  {% extends "common/layout.html.twig" %}
+
+  {% block body %}
+
+    <h3>Generate Rankings</h3>
+
+    <div class="form">
+      {{ form(form) }}
+    </div>
+
+    {% if arrMatchs|length >0 %}
+
+      <h3>{{ arrMatchs|length }} match(s)</h3>
+      <table class="table">
+      <tr>
+        <th>#</th>
+        <th>Team A (winner)</th>
+        <th>Team B (loser)</th>
+        <th>tie</th>
+      </tr>
+
+      {% for match in arrMatchs %}
+        <tr>
+          <td>{{ match.id }}</td>
+          <td>[{{ match.idPlayer1 }}] {{ arrPlayersDisplay[match.idPlayer1] }} - 
+          [{{ match.idPlayer2 }}] {{ arrPlayersDisplay[match.idPlayer2] }}</td>
+          <td>[{{ match.idPlayer3 }}] {{ arrPlayersDisplay[match.idPlayer3] }} - 
+          [{{ match.idPlayer4 }}] {{ arrPlayersDisplay[match.idPlayer4] }}</td>
+          <td>{{ match.tie }}</td>
+        </tr>
+      {% endfor %}
+
+      </table>
+    {% endif %}
+
+    {% if arrRankFinal|length >0 %}
+
+      <h3>Rankings {{ dateFrom|date("Y-m-d") }}</h3>
+      <table class="table">
+      <tr>
+        <th>#</th>
+        <th>Player</th>
+        <th>Rating</th>
+      </tr>
+
+      {% for rank in arrRankFinal %}
+        <tr>
+          <td>{{ rank.rank }}</td>
+          <td>{{ rank.name }} ({{ rank.id }})</td>
+          <td>{{ rank.rating }}</td>
+        </tr>
+      {% endfor %}
+
+      </table>
+    {% endif %}
+  {% endblock %}
+

@@ -52,27 +52,28 @@
           </ul>
         {% endif %}
 
-        {% if is_granted('ROLE_ADMIN') %} 
-          <ul class="nav nav-pills nav-stacked"><i>ADMIN</i>
-            <li><a href="{{ path('rankings_generate_test') }}">RANKINGS - generate</a></li>
-            <li><a href="{{ path('player_new') }}">PLAYERS - new</a></li>
-            <li><a href="{{ path('players_list', {'maxpage':50, 'page':1}) }}">PLAYERS - list</a></li>
-            <li><a href="{{ path('user_new') }}">USERS - new</a></li>
-            <li><a href="{{ path('user_list') }}">USERS - list</a></li>
-          </ul>
-        {% endif %}
-        </ul>
-
         <h3>PADDLE</h3>
 
         <ul class="nav nav-pills nav-stacked">
-          <li><a href="{{ path('simulator_double') }}">Points simulator (double)</a></li>
+          <li><a href="{{ path('simulator_paddle') }}">Points simulator (double)</a></li>
+          <li><a href="{{ path('rankings_paddle_view') }}">RANKINGS - view</a></li>
           <li><a href="{{ path('matchspaddle_list', {'maxpage':50, 'page':1}) }}">MATCHS - list</a></li>
         </ul>
 
         {% if is_granted('ROLE_USER') %} 
           <ul class="nav nav-pills nav-stacked"><i>USER</i>
             <li><a href="{{ path('matchspaddle_new') }}">MATCHS - new</a></li>
+          </ul>
+        {% endif %}
+
+        {% if is_granted('ROLE_ADMIN') %} 
+          <ul class="nav nav-pills nav-stacked"><i>ADMIN</i>
+            <li><a href="{{ path('rankings_generate_test') }}">[TENNIS] Generate rankings</a></li>
+            <li><a href="{{ path('rankings_generate_paddle') }}">[PADDLE] Generate rankings</a></li>
+            <li><a href="{{ path('player_new') }}">PLAYERS - new</a></li>
+            <li><a href="{{ path('players_list', {'maxpage':50, 'page':1}) }}">PLAYERS - list</a></li>
+            <li><a href="{{ path('user_new') }}">USERS - new</a></li>
+            <li><a href="{{ path('user_list') }}">USERS - list</a></li>
           </ul>
         {% endif %}
 

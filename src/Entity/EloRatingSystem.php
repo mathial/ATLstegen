@@ -64,23 +64,34 @@ class EloRatingSystem
 	/**
 	*	record a result by supplying the ids of the teams in the proper order
 	*/
-	public function addResultDouble ($winningId, $losingId, $winningScore, $losingScore, $tie = false)
+	public function addResultDouble ($winningId1, $winningId2, $losingId1, $losingId2, $tie = false)
 	{
 		if ($tie)
 		{
-			$this->results[$winningId] += 0.5;
-			$this->results[$losingId] += 0.5;
+			$this->results[$winningId1] += 0.5;
+			$this->results[$losingId1] += 0.5;
+			$this->results[$winningId2] += 0.5;
+			$this->results[$losingId2] += 0.5;
 		}
 		else
 		{
-			$this->results[$winningId] += 1;
+			$this->results[$winningId1] += 1;
+			$this->results[$winningId2] += 1;
 		}
 		//$denom = ($this->qScores[$winningId] + $this->qScores[$losingId]);
 		//$this->expectations[$winningId] += ($this->qScores[$winningId] / $denom);
 		//$this->expectations[$losingId] += ($this->qScores[$losingId] / $denom);
+
+		$winningScore = ($this->qScores[$winningId1] + $this->qScores[$winningId2]) / 2;
+		$losingScore = ($this->qScores[$losingId1] + $this->qScores[$losingId2]) / 2;
+
 		$denom = ($winningScore + $losingScore);
-		$this->expectations[$winningId] += ($winningScore / $denom);
-		$this->expectations[$losingId] += ($losingScore / $denom);
+
+		$this->expectations[$winningId1] += ($winningScore / $denom);
+		$this->expectations[$losingId1] += ($losingScore / $denom);
+
+		$this->expectations[$winningId2] += ($winningScore / $denom);
+		$this->expectations[$losingId2] += ($losingScore / $denom);
 	}
 
 

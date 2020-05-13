@@ -560,6 +560,7 @@ class RankingsController extends AbstractController
 	/**
    * @Route("/simulatordouble", name="simulator_double")
    */
+	/*
   public function simulatordouble(Request $request)
   {
   	$arrRt=array();
@@ -672,5 +673,5 @@ class RankingsController extends AbstractController
 	    'avg_teamB' => $avg_teamB,
 	    'arrRt' => $arrRt,
 	  ]);
-  }
+  }*/
 }
