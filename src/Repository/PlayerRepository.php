@@ -31,12 +31,15 @@ class PlayerRepository extends EntityRepository {
     return new Paginator($query, true);
   }
 
-  public function getLastRanking($id){
+  public function getLastRanking($id, $sport="Tennis"){
+
+    if ($sport=="Paddle") $cplmt="Paddle";
+    else $cplmt="";
     $em = $this->getEntityManager();
     $sql = '
         SELECT position, score, date 
-        FROM RankingPos RP, Ranking R 
-        WHERE R.id=RP.idRanking AND RP.idPlayer=:idPlayer 
+        FROM RankingPos'.$cplmt.' RP, Ranking'.$cplmt.' R 
+        WHERE R.id=RP.idRanking'.$cplmt.' AND RP.idPlayer=:idPlayer 
         ORDER BY date DESC 
         LIMIT 0,1
         ';

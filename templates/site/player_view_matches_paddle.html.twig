@@ -4,15 +4,15 @@
 
   {% include "site/player_header.html.twig" %}
 
-  <h3>List Matchs Tennis ({{ listMatchs|length }}) - Page {{ page }} / {{ nbPages }}</h3>
+  <h3>List Matchs Paddle ({{ listMatchs|length }}) - Page {{ page }} / {{ nbPages }}</h3>
 
 
   <table class="table">
     <tr>
       <th>#</th>
       <th>{{ knp_pagination_sortable(listMatchs, 'Date', 'm.date') }}</th>
-      <th>Player1</th>
-      <th>Player2</th>
+      <th>Team A</th>
+      <th>Team B</th>
       <th>Score</th>
       <th>{{ knp_pagination_sortable(listMatchs, 'Context', 'm.context') }}</th>
       <th>{{ knp_pagination_sortable(listMatchs, 'Conditions', 'm.conditions') }}</th>
@@ -30,8 +30,8 @@
         {% else %}
           <td>
         {% endif %}
-        <a href="{{ path('player_view', {'id':match.idplayer1.id}) }}">{{ match.idplayer1.nameshort }}</a></td>
-        <td><a href="{{ path('player_view', {'id':match.idplayer2.id}) }}">{{ match.idplayer2.nameshort }}</a></td>
+        <a href="{{ path('player_view', {'id':match.idplayer1.id}) }}">{{ match.idplayer1.nameshort }}</a> - <a href="{{ path('player_view', {'id':match.idplayer2.id}) }}">{{ match.idplayer2.nameshort }}</a></td>
+        <td><a href="{{ path('player_view', {'id':match.idplayer3.id}) }}">{{ match.idplayer3.nameshort }}</a> - <a href="{{ path('player_view', {'id':match.idplayer4.id}) }}">{{ match.idplayer4.nameshort }}</a></td>
         <td>{{ match.score }}</td>
         <td>{{ match.context }}</td>
         <td>{{ match.conditions }}</td>

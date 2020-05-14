@@ -43,6 +43,11 @@ class PlayerController extends Controller
     $arrStatsMatchs=array();
     $arrStatsOpponentsDetails=array();
 
+
+    $arrStatsOpponentsPaddle=array();
+    $arrStatsMatchsPaddle=array();
+    $arrStatsOpponentsDetailsPaddle=array();
+
     if ($player) {
       $sql = '
         SELECT idplayer1, idplayer2, tie FROM Matchs, Player P1, Player P2
@@ -105,7 +110,67 @@ class PlayerController extends Controller
 
       }
 
-      
+      /*
+      // PADDLE
+      $sql = '
+        SELECT idplayer1, idplayer2, tie FROM MatchsPaddle, Player P1, Player P2, Player P3, Player P4
+        WHERE idplayer1=P1.id
+        AND idplayer2=P2.id
+        AND idplayer3=P3.id
+        AND idplayer4=P4.id
+        AND (idplayer1 = :idPlayer OR idplayer2 = :idPlayer OR idplayer3 = :idPlayer OR idplayer4 = :idPlayer)
+        ORDER BY idplayer1, idplayer2, idPlayer3, idPlayer4
+        ';
+      $stmt = $em->getConnection()->prepare($sql);
+      $stmt->execute(['idPlayer' => $id]);
+      $opponents = $stmt->fetchAll();
+
+      $nbMTotPaddle=count($opponents);
+
+      foreach ($opponents as $opp) {
+        if ($opp["idplayer1"]==$id) {
+          $oppId=$opp["idplayer2"];
+        }
+        else $oppId=$opp["idplayer1"];
+
+        if (!isset($arrStatsMatchsPaddle[$oppId])) {
+          $arrStatsMatchsPaddle[$oppId]["nbM"]=0;
+          $arrStatsMatchsPaddle[$oppId]["nbW"]=0;
+          $arrStatsMatchsPaddle[$oppId]["nbD"]=0;
+          $arrStatsMatchsPaddle[$oppId]["nbT"]=0;
+          $arrStatsMatchsPaddle[$oppId]["sold"]=0;
+        }
+
+        $arrStatsMatchsPaddle[$oppId]["nbM"]++;
+
+        if ($opp["tie"]==1) $arrStatsMatchsPaddle[$oppId]["nbT"]++;
+        else {
+          if ($opp["idplayer1"]==$id) {
+            $arrStatsMatchsPaddle[$oppId]["nbW"]++;
+            $arrStatsMatchsPaddle[$oppId]["sold"]++;
+          }
+          else {
+            $arrStatsMatchsPaddle[$oppId]["nbD"]++;
+            $arrStatsMatchsPaddle[$oppId]["sold"]--;
+          }
+        }
+
+      }
+
+      foreach ($arrStatsMatchs as $idP => $data) {
+        $dataPlayer = $em->getRepository('App:Player')->findOneBy(array('id'=>$idP));
+
+        $arrStatsOpponentsDetailsPaddle[$idP]["name"]=$dataPlayer->getNameLong();
+        $arrStatsOpponentsDetailsPaddle[$idP]["id"]=$idP;
+        $arrStatsOpponentsDetailsPaddle[$idP]["nbM"]=$data["nbM"];
+        $arrStatsOpponentsDetailsPaddle[$idP]["nbW"]=$data["nbW"];
+        $arrStatsOpponentsDetailsPaddle[$idP]["nbD"]=$data["nbD"];
+        $arrStatsOpponentsDetailsPaddle[$idP]["nbT"]=$data["nbT"];
+        $arrStatsOpponentsDetailsPaddle[$idP]["sold"]=$data["sold"];
+
+      }
+
+      */
     }
     else {
 
@@ -118,6 +183,8 @@ class PlayerController extends Controller
       'lastR' => $lastR,
       'arrStatsOpponents' => $arrStatsOpponentsDetails,
       'nbMTot' => $nbMTot,
+      /*'arrStatsOpponentsPaddle' => $arrStatsOpponentsDetailsPaddle,
+      'nbMTotPaddle' => $nbMTotPaddle,*/
     ]);
   }
 
@@ -292,6 +359,196 @@ class PlayerController extends Controller
     // ]);
   }
 
+
+
+  /**
+   * @Route("/players/matchespaddle/{id}/{page}", 
+   * name="player_view_matches_paddle", 
+   * requirements={
+   *   "id"="\d+", 
+   *   "page"="\d+", 
+   * })
+   */
+  public function viewMatchesPaddle($id, $page, Request $request)
+  {
+    $em = $this->getDoctrine()->getManager();
+
+    $player = $em->getRepository('App:Player')->findOneBy(array('id'=>$id));
+    $lastR = $em->getRepository('App:Player')->getLastRanking($id, "Paddle");
+
+    $where="WHERE (m.idplayer1= ".$id." OR m.idplayer2= ".$id." OR m.idplayer3= ".$id." OR m.idplayer4= ".$id.")";
+    $maxpage=5000;
+    $listTotMatchs = $em->getRepository('App:Matchspaddle')->getMatchsPerPageByPlayer($page, $maxpage, $id);
+
+    $dql   = "SELECT m FROM App:Matchspaddle m ".$where." ORDER BY m.date DESC";
+    $query = $em->createQuery($dql);
+
+    $paginator  = $this->get('knp_paginator');
+
+    if (is_numeric($maxpage)) {
+      $limitpage=$maxpage;
+      $nbPages = ceil(count($listTotMatchs)/$maxpage);
+    }
+    else {
+      $limitpage=count($listTotMatchs);
+      $nbPages=1;
+    }
+
+    if ($page < 1 || $page > $nbPages) {
+      $page = 1;
+      // throw $this->createNotFoundException("Page ".$page." doesn't exist.");
+    }
+
+    $listMatchs = $paginator->paginate(
+      $query, 
+      $request->query->getInt('page', $page),
+      $limitpage
+    );
+
+
+    /* POINTS EVOL PER MATCH */
+
+    // for each match, we calculate the points evolution
+    $sql_m   = 'SELECT m.id, m.date, m.tie, p1.id AS p1id, p2.id AS p2id, p1.initialRatingPaddle AS p1IR, p2.initialRatingPaddle AS p2IR, p3.id AS p3id, p4.id AS p4id, p3.initialRatingPaddle AS p3IR, p4.initialRatingPaddle AS p4IR 
+                  FROM MatchsPaddle m, Player p1, Player p2, Player p3, Player p4
+                  '.$where." 
+                  AND p1.id=m.idplayer1
+                  AND p2.id=m.idplayer2
+                  AND p3.id=m.idplayer3
+                  AND p4.id=m.idplayer4
+                  ORDER BY m.date DESC";
+    $stmt = $em->getConnection()->prepare($sql_m);
+    $stmt->execute();
+    $matches = $stmt->fetchAll();
+
+    $arrMEvol=array();
+
+    foreach ($matches as $mat) {
+
+      $rankId="";
+
+      // get the closest ranking
+      $sql_rank = 'SELECT id FROM RankingPaddle WHERE date<"'.$mat["date"].'" ORDER BY date DESC LIMIT 0,1';
+      $stmt = $em->getConnection()->prepare($sql_rank);
+      $stmt->execute();
+      $rank = $stmt->fetchAll();
+      if (isset($rank[0])) $rankId=$rank[0]["id"];
+      
+      $rating_player1=$mat["p1IR"];
+      $rating_player2=$mat["p2IR"];
+      $rating_player3=$mat["p3IR"];
+      $rating_player4=$mat["p4IR"];
+
+      $arrMEvol[$mat["id"]]=0;
+
+      if ($rankId!="") {
+        $sql_rank = 'SELECT score FROM RankingPosPaddle WHERE idRankingPaddle="'.$rankId.'" AND idPlayer='.$mat["p1id"];
+        $stmt = $em->getConnection()->prepare($sql_rank);
+        $stmt->execute();
+        $rank = $stmt->fetchAll();
+        if (isset($rank[0])) $rating_player1=$rank[0]["score"];
+
+        $sql_rank = 'SELECT score FROM RankingPosPaddle WHERE idRankingPaddle="'.$rankId.'" AND idPlayer='.$mat["p2id"];
+        $stmt = $em->getConnection()->prepare($sql_rank);
+        $stmt->execute();
+        $rank = $stmt->fetchAll();
+        if (isset($rank[0])) $rating_player2=$rank[0]["score"];
+
+        $sql_rank = 'SELECT score FROM RankingPosPaddle WHERE idRankingPaddle="'.$rankId.'" AND idPlayer='.$mat["p3id"];
+        $stmt = $em->getConnection()->prepare($sql_rank);
+        $stmt->execute();
+        $rank = $stmt->fetchAll();
+        if (isset($rank[0])) $rating_player3=$rank[0]["score"];
+
+        $sql_rank = 'SELECT score FROM RankingPosPaddle WHERE idRankingPaddle="'.$rankId.'" AND idPlayer='.$mat["p4id"];
+        $stmt = $em->getConnection()->prepare($sql_rank);
+        $stmt->execute();
+        $rank = $stmt->fetchAll();
+        if (isset($rank[0])) $rating_player4=$rank[0]["score"];
+
+      }
+
+      if ($mat["tie"]==0) $result=1;
+      else $result=0;
+
+      if ($id==$mat["p1id"]) $idPFin=1; // team A
+      elseif ($id==$mat["p2id"]) $idPFin=1; // team A 
+      elseif ($id==$mat["p3id"]) $idPFin=2; // team B
+      elseif ($id==$mat["p4id"]) $idPFin=2; // team B
+
+      if (isset($rating_player1) && is_numeric($rating_player1) && isset($rating_player2) && is_numeric($rating_player2) && isset($rating_player3) && is_numeric($rating_player3) && isset($rating_player4) && is_numeric($rating_player4)) {
+
+        $avg_teamA = ($rating_player1 + $rating_player2) / 2;
+        $avg_teamB = ($rating_player3 + $rating_player4) / 2;
+
+        $competitors = array(
+          array('id' => 1, 'name' => "Team A", 'skill' => 100, 'rating' => $avg_teamA, 'active' => 1),
+          array('id' => 2, 'name' => "Team B", 'skill' => 100, 'rating' => $avg_teamB, 'active' => 1),
+        );
+        //  initialize the ranking system and add the competitors
+        $elo = new EloRatingSystem(100, 50);
+        foreach ($competitors as $competitor) {
+          $elo->addCompetitor(new EloCompetitor($competitor['id'], $competitor['name'], $competitor['rating']));
+        }
+
+        if ($result==1) {
+          $elo->addResult(1,2);
+          $match = "Team A defeats Team B";
+          //$result="player1";
+        }
+        else {
+          $elo->addResult(1,2, true);
+          $match = "TIE Team A - Team B";
+          //$result="draw";
+        }
+
+        $elo->updateRatings();
+
+        $tabRank = $elo->getRankings();
+
+        foreach ($tabRank as $idP => $val) {
+          $exp=explode("#", $idP);
+          if ($exp[0]==1) {
+            $evol=$val-$avg_teamA;
+            if ($evol>0) $arrRt[1]="+".number_format($evol, 1);
+            else $arrRt[1]=number_format($evol, 1);
+
+            $arrRt[2]=$arrRt[1];
+
+            if ($idP==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[1];
+
+          }
+          elseif ($exp[0]==2) {
+            $evol=$val-$avg_teamB;
+            if ($evol>0) $arrRt[3]="+".number_format($evol, 1);
+            else $arrRt[3]=number_format($evol, 1);
+
+            $arrRt[4]=$arrRt[3];
+
+            if ($idP==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[3];
+          }
+
+        }
+      
+      }
+
+    }
+    /* END POINTS EVOL PER MATCH */
+
+
+    return $this->render('site/player_view_matches_paddle.html.twig', array("listMatchs" => $listMatchs,
+      'player' => $player,
+      'lastR' => $lastR,
+      'maxpage' => $maxpage,
+      'nbPages' => $nbPages,
+      'page' => $page,
+      'arrMEvol' => $arrMEvol
+    ));
+    
+  }
+
+
+
   /**
    * @Route("/players/evolution/{id}", 
    * name="player_view_evolution", 
@@ -302,6 +559,8 @@ class PlayerController extends Controller
   public function viewEvolution($id, Request $request)
   {
     $em = $this->getDoctrine()->getManager();
+
+    $arrDate=array();
 
     $player = $em->getRepository('App:Player')->findOneBy(array('id'=>$id));
     $lastR = $em->getRepository('App:Player')->getLastRanking($id);
@@ -316,19 +575,70 @@ class PlayerController extends Controller
       if ($key==0) {
         $date_1week = new \DateTime($rs->getIdRanking()->getDate()->format("Y-m-d"));
         // initial rankings
-        $arrRS[$date_1week->modify('-7 day')->format("Y-m-d")] = $player->getinitialRatingTennis();
+        $date_1_week_format=$date_1week->modify('-7 day')->format("Y-m-d");
+
+        $arrRS[$date_1_week_format] = $player->getinitialRatingTennis();
+
+        $arrDate[]=$date_1_week_format;
+
       }
       $arrRS[$rs->getIdRanking()->getDate()->format("Y-m-d")]=$rs->getScore();
+      $arrDate[]=$rs->getIdRanking()->getDate()->format("Y-m-d");
+
     }
     // sorting per index
     ksort($arrRS);
 
+    $lastRPaddle = $em->getRepository('App:Player')->getLastRanking($id, "Paddle");
+
+    $rankingScoresPaddle = $em->getRepository('App:Rankingpospaddle')->findBy(array('idplayer'=>$id), array('idrankingpaddle' => 'ASC'));
+
+    $arrRSPaddle=array();
+
+
+    foreach ($rankingScoresPaddle as $key=>$rs) {
+      // add the initial rankings on the first loop
+      if ($key==0) {
+        $date_1week = new \DateTime($rs->getIdRankingpaddle()->getDate()->format("Y-m-d"));
+        // initial rankings
+        $date_1_week_format=$date_1week->modify('-7 day')->format("Y-m-d");
+        $arrRSPaddle[$date_1_week_format] = $player->getinitialRatingPaddle();
+
+        if (!in_array($date_1_week_format, $arrDate)) $arrDate[]=$date_1_week_format;
+
+      }
+      $df=$rs->getIdRankingpaddle()->getDate()->format("Y-m-d");
+      $arrRSPaddle[$df]=$rs->getScore();
+
+      if (!in_array($df, $arrDate)) $arrDate[]=$df;
+    }
+    // sorting per index
+    ksort($arrRSPaddle);
+
+    // sorting per index
+    asort($arrDate);
+
+    $arrRS_tennis_final=array();
+    $arrRS_paddle_final=array();
+
+    foreach ($arrDate as $date) {
+
+      if (isset($arrRSPaddle[$date])) $arrRS_paddle_final[$date]=$arrRSPaddle[$date];
+      else $arrRS_paddle_final[$date]="";
+
+      if (isset($arrRS[$date])) $arrRS_tennis_final[$date]=$arrRS[$date];
+      else $arrRS_tennis_final[$date]="";
+
+    }
 
     return $this->render('site/player_view_evolution.html.twig', [
       'controller_name' => 'PlayerController',
       'player' => $player,
+      'arrDate' => $arrDate,
       'lastR' => $lastR,
-      'arrRS' => $arrRS,
+      'arrRS' => $arrRS_tennis_final,
+      'lastRPaddle' => $lastRPaddle,
+      'arrRSPaddle' => $arrRS_paddle_final,
     ]);
   }
 

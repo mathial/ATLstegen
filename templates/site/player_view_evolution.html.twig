@@ -40,9 +40,16 @@
         tooltip: {
         },
         series: [{ 
-          name:"evol", 
+          name:"Tennis", 
           data: [
             {% for date, score in arrRS %}
+              {{ score|number_format(1, '.', '') }},
+            {% endfor %}
+          ]
+          },{ 
+          name:"Paddle", 
+          data: [
+            {% for date, score in arrRSPaddle %}
               {{ score|number_format(1, '.', '') }},
             {% endfor %}
           ]
