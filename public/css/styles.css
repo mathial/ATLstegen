@@ -25,3 +25,8 @@ th, td{
 .sold-negativ{
 	background-color:#DC143C;
 }
+
+footer {
+	padding:15px;
+	background-color: #eee;
+}

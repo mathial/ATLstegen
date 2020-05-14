@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>{% block title %}ATL Stegen{% endblock %}</title>
+  <title>{% block title %}ATL Stegen - Tennis / Paddle{% endblock %}</title>
 
   {% block stylesheets %}
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -20,7 +20,7 @@
 <body>
   <div class="container">
     <div id="header" class="jumbotron">
-      <a href="{{ path('homepage') }}"><h1>ATL Stegen</h1></a>
+      <a href="{{ path('homepage') }}"><h1>ATL Stegen - Tennis / Paddle</h1></a>
     </div>
 
     <div class="row">
@@ -114,7 +114,7 @@
     <hr>
 
     <footer>
-      <p>Bigfooter.</p>
+      {% include "common/footer.html.twig" %}
     </footer>
   </div>
 
