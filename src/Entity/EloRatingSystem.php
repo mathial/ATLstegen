@@ -64,34 +64,35 @@ class EloRatingSystem
 	/**
 	*	record a result by supplying the ids of the teams in the proper order
 	*/
-	public function addResultDouble ($winningId1, $winningId2, $losingId1, $losingId2, $tie = false)
+//	public function addResultDouble ($winningId1, $winningId2, $losingId1, $losingId2, $ratingWId1, $ratingWId2, $ratingLId1, $ratingLId2, $tie = false)
+	public function addResultDouble ($winning1, $winning2, $losing1, $losing2, $tie = false)
+
 	{
 		if ($tie)
 		{
-			$this->results[$winningId1] += 0.5;
-			$this->results[$losingId1] += 0.5;
-			$this->results[$winningId2] += 0.5;
-			$this->results[$losingId2] += 0.5;
+			$this->results[$winning1["id"]] += 0.5;
+			$this->results[$losing1["id"]] += 0.5;
+			$this->results[$winning2["id"]] += 0.5;
+			$this->results[$losing2["id"]] += 0.5;
 		}
 		else
 		{
-			$this->results[$winningId1] += 1;
-			$this->results[$winningId2] += 1;
+			$this->results[$winning1["id"]] += 1;
+			$this->results[$winning2["id"]] += 1;
 		}
-		//$denom = ($this->qScores[$winningId] + $this->qScores[$losingId]);
-		//$this->expectations[$winningId] += ($this->qScores[$winningId] / $denom);
-		//$this->expectations[$losingId] += ($this->qScores[$losingId] / $denom);
 
-		$winningScore = ($this->qScores[$winningId1] + $this->qScores[$winningId2]) / 2;
-		$losingScore = ($this->qScores[$losingId1] + $this->qScores[$losingId2]) / 2;
+		$winningScore = $this->calculateQScore( (($winning1["rating"] + $winning2["rating"]) / 2) );
+		$losingScore = $this->calculateQScore( (($losing1["rating"] + $losing2["rating"]) / 2) );
 
 		$denom = ($winningScore + $losingScore);
 
-		$this->expectations[$winningId1] += ($winningScore / $denom);
-		$this->expectations[$losingId1] += ($losingScore / $denom);
+		$this->expectations[$winning1["id"]] += ($winningScore / $denom);
+		$this->expectations[$losing1["id"]] += ($losingScore / $denom);
 
-		$this->expectations[$winningId2] += ($winningScore / $denom);
-		$this->expectations[$losingId2] += ($losingScore / $denom);
+		$this->expectations[$winning2["id"]] += ($winningScore / $denom);
+		$this->expectations[$losing2["id"]] += ($losingScore / $denom);
+
+
 	}
 
 
@@ -128,7 +129,13 @@ class EloRatingSystem
 	*/
 	private function getQScore (EloCompetitor $competitor)
 	{
-		return pow (10, $competitor->getRating () / $this->scoreFactor);
+		//return pow (10, $competitor->getRating () / $this->scoreFactor);
+		return $this->calculateQScore ($competitor->getRating ());
+	}
+
+
+	private function calculateQScore ($rating) {
+		return pow (10, $rating / $this->scoreFactor);
 	}
 
 	/**

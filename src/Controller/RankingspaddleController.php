@@ -154,27 +154,36 @@ class RankingspaddleController extends AbstractController
 
 				// get the ranking expected
 				if ($based_ranking=="init") {
-					$basedRate=$player->getInitialRatingPaddle();
+					$basedRate[$pId]=$player->getInitialRatingPaddle();
 				}
 				else {
 					$rankPos = $em->getRepository('App:Rankingpospaddle')->findOneBy(array("idrankingpaddle" => $based_ranking, "idplayer" => $player->getId()));
 					if ($rankPos) {
-						$basedRate = $rankPos->getScore();
+						$basedRate[$pId] = $rankPos->getScore();
 					}
 					else {
-						// echo "RIEN".$based_ranking."/".$player->getId()."/".count($rankPos)."<br>";
-						$basedRate = $player->getInitialRatingPaddle();
+						$basedRate[$pId] = $player->getInitialRatingPaddle();
+						//echo "RIEN".$based_ranking."/".$player->getId()." - ".$basedRate[$pId]."<br>";
 					}
 				}
 
-				$elo->addCompetitor(new EloCompetitor($player->getId(), $player->getNameshort(), $basedRate));
+				$elo->addCompetitor(new EloCompetitor($player->getId(), $player->getNameshort(), $basedRate[$pId]));
 			}
 			
 			foreach($matchs as $m) {
 				if ($m["tie"]==1) $tie=true;
 				else $tie=false;
 
-				$elo->addResultDouble($m["idPlayer1"], $m["idPlayer2"], $m["idPlayer3"], $m["idPlayer4"], $tie);
+				//$elo->addResultDouble($m["idPlayer1"], $m["idPlayer2"], $m["idPlayer3"], $m["idPlayer4"], $tie);
+
+				$elo->addResultDouble(
+			    		array("id" => $m["idPlayer1"], "rating" => $basedRate[$m["idPlayer1"]]), 
+			    		array("id" => $m["idPlayer2"], "rating" => $basedRate[$m["idPlayer2"]]), 
+			    		array("id" => $m["idPlayer3"], "rating" => $basedRate[$m["idPlayer3"]]), 
+			    		array("id" => $m["idPlayer4"], "rating" => $basedRate[$m["idPlayer4"]]), 
+			    		$tie, 
+			    	);
+
 			}
 
 			$elo->updateRatings();
@@ -363,8 +372,6 @@ class RankingspaddleController extends AbstractController
 	  			
   		}	
 
-
-
 	  	for ($iP=1;$iP<=2;$iP++) {
 	  		// WINS P1 + P2
 				$sql = '
@@ -495,10 +502,9 @@ class RankingspaddleController extends AbstractController
 	}
 
 
-
+	/*
   /**
-   * @Route("/simulatorpaddle", name="simulator_paddle")
-   */
+   * @Route("/simulatorpaddleOLD", name="simulator_paddle_old")
   public function simulatordouble(Request $request)
   {
   	$arrRt=array();
@@ -611,5 +617,149 @@ class RankingspaddleController extends AbstractController
 	    'avg_teamB' => $avg_teamB,
 	    'arrRt' => $arrRt,
 	  ]);
+  }*/
+
+
+  /**
+   * @Route("/simulatorpaddle", name="simulator_paddle")
+   */
+  public function simulatordouble2(Request $request)
+  {
+  	$arrRt=array();
+  	$avg_teamA=null;
+  	$avg_teamB=null;
+
+  	$defaultData = array('message' => 'Type your message here');
+		$formBuilder = $this->createFormBuilder($defaultData);
+
+	  $formBuilder
+	  ->add('rating_player1', TextType::class, array(
+	    'label'    => 'TEAM A: Rating player 1',
+	    'required'   => true,
+	  ))
+	  ->add('rating_player2', TextType::class, array(
+	    'label'    => 'TEAM A: Rating player 2',
+	    'required'   => true,
+	  ))
+	  ->add('rating_player3', TextType::class, array(
+	    'label'    => 'TEAM B: Rating player 3',
+	    'required'   => true,
+	  ))
+	  ->add('rating_player4', TextType::class, array(
+	    'label'    => 'TEAM B: Rating player 4',
+	    'required'   => true,
+	  ))
+	  ->add('result', ChoiceType::class, array(
+      'choices' => array("Team A wins" => 1, "Team B wins" => 2, "tie" => 0),
+      'required'   => true,
+    ))
+	  ->add("Calculate", SubmitType::class);
+
+	  $form = $formBuilder->getForm();
+
+		$form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+      // data is an array with "name", "email", and "message" keys
+      $data = $form->getData();
+
+      $rating_player1=$data['rating_player1'];
+      $rating_player2=$data['rating_player2'];
+      $rating_player3=$data['rating_player3'];
+      $rating_player4=$data['rating_player4'];
+      $result=$data['result'];
+
+      if (isset($rating_player1) && is_numeric($rating_player1) && isset($rating_player2) && is_numeric($rating_player2) && isset($rating_player3) && is_numeric($rating_player3) && isset($rating_player4) && is_numeric($rating_player4)) {
+
+
+			  $competitors = array(
+			    array('id' => 1, 'name' => "Player 1", 'skill' => 100, 'rating' => $rating_player1, 'active' => 1),
+			    array('id' => 2, 'name' => "Player 2", 'skill' => 100, 'rating' => $rating_player2, 'active' => 1),
+			    array('id' => 3, 'name' => "Player 3", 'skill' => 100, 'rating' => $rating_player3, 'active' => 1),
+			    array('id' => 4, 'name' => "Player 4", 'skill' => 100, 'rating' => $rating_player4, 'active' => 1),
+			  );
+			  //  initialize the ranking system and add the competitors
+			  $elo = new EloRatingSystem(100, 50);
+			  foreach ($competitors as $competitor) {
+			    $elo->addCompetitor(new EloCompetitor($competitor['id'], $competitor['name'], $competitor['rating']));
+			  }
+
+			  if ($result==1) {
+			    $elo->addResultDouble(
+			    		$competitors[0], 
+			    		$competitors[1], 
+			    		$competitors[2], 
+			    		$competitors[3], 
+			    	);
+			    $match = "Team A defeats Team B";
+			    //$result="player1";
+			  }
+			  elseif ($result==2) {
+			    $elo->addResultDouble(
+			    		$competitors[2], 
+			    		$competitors[3], 
+			    		$competitors[0], 
+			    		$competitors[1], 
+			    	);
+			    $match = "Team B defeats Team A";
+			    //$result="player2";
+			  }
+			  else {
+			    $elo->addResultDouble(
+			    		$competitors[0], 
+			    		$competitors[1], 
+			    		$competitors[2], 
+			    		$competitors[3],
+			    		true 
+			    	);
+			    $match = "TIE Team A - Team B";
+			    //$result="draw";
+			  }
+
+			  $avg_teamA=($rating_player1+$rating_player2) / 2;
+			  $avg_teamB=($rating_player3+$rating_player4) / 2;
+
+			  $elo->updateRatings();
+
+				$tabRank = $elo->getRankings();
+
+				foreach ($tabRank as $idP => $val) {
+					$exp=explode("#", $idP);
+					if ($exp[0]==1) {
+						$evol=$val-$rating_player1;
+						if ($evol>0) $arrRt[1]="+".number_format($evol, 1);
+						else $arrRt[1]=number_format($evol, 1);
+					}
+					elseif ($exp[0]==2) {
+						$evol=$val-$rating_player2;
+						if ($evol>0) $arrRt[2]="+".number_format($evol, 1);
+						else $arrRt[2]=number_format($evol, 1);
+
+					}
+					elseif ($exp[0]==3) {
+						$evol=$val-$rating_player3;
+						if ($evol>0) $arrRt[3]="+".number_format($evol, 1);
+						else $arrRt[3]=number_format($evol, 1);
+					}
+					elseif ($exp[0]==4) {
+						$evol=$val-$rating_player4;
+						if ($evol>0) $arrRt[4]="+".number_format($evol, 1);
+						else $arrRt[4]=number_format($evol, 1);
+					}
+
+				}
+
+			}
+
+    }
+
+	  return $this->render('site/simulator_double.html.twig', [
+	    'controller_name' => 'RankingsController',
+	    'form' => $form->createView(),
+	    'avg_teamA' => $avg_teamA,
+	    'avg_teamB' => $avg_teamB,
+	    'arrRt' => $arrRt,
+	  ]);
   }
+
 }

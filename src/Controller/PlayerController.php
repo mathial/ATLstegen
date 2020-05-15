@@ -472,9 +472,9 @@ class PlayerController extends Controller
       else $result=0;
 
       if ($id==$mat["p1id"]) $idPFin=1; // team A
-      elseif ($id==$mat["p2id"]) $idPFin=1; // team A 
-      elseif ($id==$mat["p3id"]) $idPFin=2; // team B
-      elseif ($id==$mat["p4id"]) $idPFin=2; // team B
+      elseif ($id==$mat["p2id"]) $idPFin=2; // team A 
+      elseif ($id==$mat["p3id"]) $idPFin=3; // team B
+      elseif ($id==$mat["p4id"]) $idPFin=4; // team B
 
       if (isset($rating_player1) && is_numeric($rating_player1) && isset($rating_player2) && is_numeric($rating_player2) && isset($rating_player3) && is_numeric($rating_player3) && isset($rating_player4) && is_numeric($rating_player4)) {
 
@@ -482,9 +482,12 @@ class PlayerController extends Controller
         $avg_teamB = ($rating_player3 + $rating_player4) / 2;
 
         $competitors = array(
-          array('id' => 1, 'name' => "Team A", 'skill' => 100, 'rating' => $avg_teamA, 'active' => 1),
-          array('id' => 2, 'name' => "Team B", 'skill' => 100, 'rating' => $avg_teamB, 'active' => 1),
+          array('id' => 1, 'name' => "Player 1", 'skill' => 100, 'rating' => $rating_player1, 'active' => 1),
+          array('id' => 2, 'name' => "Player 2", 'skill' => 100, 'rating' => $rating_player2, 'active' => 1),
+          array('id' => 3, 'name' => "Player 3", 'skill' => 100, 'rating' => $rating_player3, 'active' => 1),
+          array('id' => 4, 'name' => "Player 4", 'skill' => 100, 'rating' => $rating_player4, 'active' => 1),
         );
+
         //  initialize the ranking system and add the competitors
         $elo = new EloRatingSystem(100, 50);
         foreach ($competitors as $competitor) {
@@ -492,12 +495,23 @@ class PlayerController extends Controller
         }
 
         if ($result==1) {
-          $elo->addResult(1,2);
+          $elo->addResultDouble(
+              $competitors[0], 
+              $competitors[1], 
+              $competitors[2], 
+              $competitors[3], 
+            );
           $match = "Team A defeats Team B";
           //$result="player1";
         }
         else {
-          $elo->addResult(1,2, true);
+          $elo->addResultDouble(
+              $competitors[0], 
+              $competitors[1], 
+              $competitors[2], 
+              $competitors[3],
+              true 
+            );
           $match = "TIE Team A - Team B";
           //$result="draw";
         }
@@ -506,9 +520,36 @@ class PlayerController extends Controller
 
         $tabRank = $elo->getRankings();
 
+
         foreach ($tabRank as $idP => $val) {
           $exp=explode("#", $idP);
           if ($exp[0]==1) {
+            $evol=$val-$rating_player1;
+            if ($evol>0) $arrRt[1]="+".number_format($evol, 1);
+            else $arrRt[1]=number_format($evol, 1);
+            if ($idP==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[1];
+          }
+          elseif ($exp[0]==2) {
+            $evol=$val-$rating_player2;
+            if ($evol>0) $arrRt[2]="+".number_format($evol, 1);
+            else $arrRt[2]=number_format($evol, 1);
+            if ($idP==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[2];
+          }
+          elseif ($exp[0]==3) {
+            $evol=$val-$rating_player3;
+            if ($evol>0) $arrRt[3]="+".number_format($evol, 1);
+            else $arrRt[3]=number_format($evol, 1);
+            if ($idP==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[3];
+          }
+          elseif ($exp[0]==4) {
+            $evol=$val-$rating_player4;
+            if ($evol>0) $arrRt[4]="+".number_format($evol, 1);
+            else $arrRt[4]=number_format($evol, 1);
+            if ($idP==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[4];
+          }
+
+
+          /*if ($exp[0]==1) {
             $evol=$val-$avg_teamA;
             if ($evol>0) $arrRt[1]="+".number_format($evol, 1);
             else $arrRt[1]=number_format($evol, 1);
@@ -526,7 +567,7 @@ class PlayerController extends Controller
             $arrRt[4]=$arrRt[3];
 
             if ($idP==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[3];
-          }
+          }*/
 
         }
       
