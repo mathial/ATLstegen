@@ -181,7 +181,7 @@ class RankingspaddleController extends AbstractController
 			    		array("id" => $m["idPlayer2"], "rating" => $basedRate[$m["idPlayer2"]]), 
 			    		array("id" => $m["idPlayer3"], "rating" => $basedRate[$m["idPlayer3"]]), 
 			    		array("id" => $m["idPlayer4"], "rating" => $basedRate[$m["idPlayer4"]]), 
-			    		$tie, 
+			    		$tie
 			    	);
 
 			}
@@ -689,7 +689,7 @@ class RankingspaddleController extends AbstractController
 			    		$competitors[0], 
 			    		$competitors[1], 
 			    		$competitors[2], 
-			    		$competitors[3], 
+			    		$competitors[3]
 			    	);
 			    $match = "Team A defeats Team B";
 			    //$result="player1";
@@ -699,7 +699,7 @@ class RankingspaddleController extends AbstractController
 			    		$competitors[2], 
 			    		$competitors[3], 
 			    		$competitors[0], 
-			    		$competitors[1], 
+			    		$competitors[1] 
 			    	);
 			    $match = "Team B defeats Team A";
 			    //$result="player2";

@@ -499,7 +499,7 @@ class PlayerController extends Controller
               $competitors[0], 
               $competitors[1], 
               $competitors[2], 
-              $competitors[3], 
+              $competitors[3]
             );
           $match = "Team A defeats Team B";
           //$result="player1";
