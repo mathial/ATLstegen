@@ -80,9 +80,9 @@ class Player
     /**
      * @var bool
      *
-     * @ORM\Column(name="active", type="boolean", nullable=false, options={"default"="1"})
+     * @ORM\Column(name="activeTennis", type="boolean", nullable=false, options={"default"="1"})
      */
-    private $active = '1';
+    private $activetennis = '1';
 
     /**
      * @var int|null
@@ -97,6 +97,13 @@ class Player
      * @ORM\Column(name="initialRatingPaddle", type="integer", nullable=true)
      */
     private $initialratingpaddle = '0';
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="activePaddle", type="boolean", nullable=false)
+     */
+    private $activepaddle = '0';
 
     /**
      * @var \Country
@@ -209,14 +216,14 @@ class Player
         return $this;
     }
 
-    public function getActive(): ?bool
+    public function getActivetennis(): ?bool
     {
-        return $this->active;
+        return $this->activetennis;
     }
 
-    public function setActive(bool $active): self
+    public function setActivetennis(bool $activetennis): self
     {
-        $this->active = $active;
+        $this->activetennis = $activetennis;
 
         return $this;
     }
@@ -245,6 +252,18 @@ class Player
         return $this;
     }
 
+    public function getActivepaddle(): ?bool
+    {
+        return $this->activepaddle;
+    }
+
+    public function setActivepaddle(bool $activepaddle): self
+    {
+        $this->activepaddle = $activepaddle;
+
+        return $this;
+    }
+    
     public function getCountry(): ?Country
     {
         return $this->idcountry;
@@ -256,7 +275,7 @@ class Player
 
         return $this;
     }
-    
+
     public function getIdcountry(): ?Country
     {
         return $this->idcountry;

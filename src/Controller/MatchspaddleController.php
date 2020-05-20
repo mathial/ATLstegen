@@ -156,6 +156,41 @@ class MatchspaddleController extends Controller
   }
 
 
+  /**
+   * @Route(
+   * "/matchspaddle/update/{id}", 
+   * name="matchpaddle_update", 
+   * requirements={
+   *   "id"="\d+" 
+   * })
+   */
+  public function edit($id, Request $request) {
+
+    $em = $this->getDoctrine()->getManager();
+    $match = $em->getRepository('App:Matchspaddle')->findOneBy(['id' => $id]);
+
+    $form=$this->getFormMatch($match, "edit");
+
+    if ($request->isMethod('POST')) {
+
+      $form->handleRequest($request);
+
+      if ($form->isValid()) {
+
+        $em->persist($match);
+        $em->flush();
+        $request->getSession()->getFlashBag()->add('success', 'Match updated.');
+
+      }
+    }
+
+    return $this->render('site/matchs_form.html.twig', array(
+      'form' => $form->createView(),
+      'form_title' => "Update match"
+    ));
+    
+  }
+
     /**
    * @Route(
    * "/matchspaddle/list/{maxpage}/{page}", 

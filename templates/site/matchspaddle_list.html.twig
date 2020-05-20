@@ -42,7 +42,7 @@
         <td>{{ match.conditions }}</td>
         <td>{{ arrMEvol[match.id] }}</td>
         {% if is_granted('ROLE_ADMIN') %} 
-          <!--<th><a href="{{ path('match_update', {'id':match.id}) }}">update</a></th>-->
+          <th><a href="{{ path('matchpaddle_update', {'id':match.id}) }}">update</a></th>
         {% endif %}
       </tr>
       {% set ind = ind +1 %}

@@ -10,15 +10,22 @@
     <tr>
       <th>{{ knp_pagination_sortable(listPlayers, 'Name', 'p.namelong') }}</th>
       <th>{{ knp_pagination_sortable(listPlayers, 'Mail', 'p.email') }}</th>
-      <th>Status</th>
-      {# <th>Action</th> #}
+      <th>Tennis active</th>
+      <th>Paddle active</th>
+      <th>Action</th>
     </tr>
     {% for player in listPlayers %}
 
       <tr>
         <td><a href="{{ path('player_view', {'id': player.id}) }}">{{ player.namelong }}</a></td>
         <td>{{ player.email }}</td>
-        <td>{{ player.active }}</td>
+        <td>{{ player.activetennis }}</td>
+        <td>{{ player.activepaddle }}</td>
+        <td>
+        {% if is_granted('ROLE_ADMIN') %} 
+          <a href="{{ path('player_update', {'id':player.id}) }}">update</a>
+        {% endif %}
+        </td>
         {# <td>
           <a class="btn-default btn" href="{{ path('admin_access.view_player', {'id': player.id}) }}"><img class="icon-list" src="{{ asset('bundles/app/images/edit.png') }}"></a>
           {% if player.status == 1 %} 

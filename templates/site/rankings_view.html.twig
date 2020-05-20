@@ -29,10 +29,10 @@
       {% set rank = 1 %}
       {% for det in detailsRankings %}
 
-        {% if activeOnly==1 and det.idplayer.active == 0 %}
+        {% if activeOnly==1 and det.idplayer.activetennis == 0 %}
         {% else %}
 
-          {% if det.idplayer.active == 1 %}
+          {% if det.idplayer.activetennis == 1 %}
           <tr>
           {% else %}
           <tr class="inactive-player">

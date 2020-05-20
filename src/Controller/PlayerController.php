@@ -800,6 +800,16 @@ class PlayerController extends Controller
 
     if ($mode=="edit") {
       $formBuilder
+      ->add('activetennis', ChoiceType::class, array(
+        'label'    => 'Active Tennis',
+        'choices' => array("no" => 0, "yes" => 1),
+        'required'   => true,
+      ))
+      ->add('activepaddle', ChoiceType::class, array(
+        'label'    => 'Active Paddle',
+        'choices' => array("no" => 0, "yes" => 1),
+        'required'   => true,
+      ))
       ->add('update', SubmitType::class, array('label' => 'Update'))
       ;
     }
@@ -841,6 +851,17 @@ class PlayerController extends Controller
         // $player->setPassword(password_hash($form->get('password')->getData(), PASSWORD_DEFAULT));
 
         try {
+
+          if ($form->get('initialRatingTennis')->getData()!=0 && is_numeric($form->get('initialRatingTennis')->getData())) {
+            $player->setActivetennis(1);
+          }
+          else $player->setActivetennis(0);
+
+          if ($form->get('initialRatingPaddle')->getData()!=0 && is_numeric($form->get('initialRatingPaddle')->getData())) {
+            $player->setActivepaddle(1);
+          }
+          else $player->setActivepaddle(0);
+
           $em->persist($player);
           $em->flush();
           $request->getSession()->getFlashBag()->add('success', 'Player created.');

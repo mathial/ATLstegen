@@ -29,10 +29,10 @@
       {% set rank = 1 %}
       {% for det in detailsRankings %}
 
-        {% if activeOnly==1 and det.idplayer.active == 0 %}
+        {% if activeOnly==1 and det.idplayer.activepaddle == 0 %}
         {% else %}
 
-          {% if det.idplayer.active == 1 %}
+          {% if det.idplayer.activepaddle == 1 %}
           <tr>
           {% else %}
           <tr class="inactive-player">
@@ -44,6 +44,10 @@
               {{ det.score|number_format(0, '.', ' ') }}
             </b></td>
             <td>{{ detailsPlayer[det.idplayer.id]["evol"] }}</td>
+            <td>{{ detailsPlayer[det.idplayer.id]["wins"] }}</td>
+            <td>{{ detailsPlayer[det.idplayer.id]["defeats"] }}</td>
+            <td>{{ detailsPlayer[det.idplayer.id]["ties"] }}</td>
+            <td>{{ detailsPlayer[det.idplayer.id]["wins"] + detailsPlayer[det.idplayer.id]["ties"] + detailsPlayer[det.idplayer.id]["defeats"] }}</td>
           </tr>
 
           {% set rank = rank + 1 %}

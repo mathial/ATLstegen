@@ -489,7 +489,7 @@ class RankingspaddleController extends AbstractController
 	  	$request->getSession()->getFlashBag()->add('error', 'Error selecting rankings ('.$id.')');
 	  }
 
-		return $this->render('site/rankings_view.html.twig', [
+		return $this->render('site/rankings_paddle_view.html.twig', [
 	    'controller_name' => 'RankingspaddleController',
 	    'form' => $form->createView(),
 	    'ranking' => $ranking,
