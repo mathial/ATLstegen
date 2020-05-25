@@ -30,8 +30,26 @@
         {% else %}
           <td>
         {% endif %}
-        <a href="{{ path('player_view', {'id':match.idplayer1.id}) }}">{{ match.idplayer1.nameshort }}</a> - <a href="{{ path('player_view', {'id':match.idplayer2.id}) }}">{{ match.idplayer2.nameshort }}</a></td>
-        <td><a href="{{ path('player_view', {'id':match.idplayer3.id}) }}">{{ match.idplayer3.nameshort }}</a> - <a href="{{ path('player_view', {'id':match.idplayer4.id}) }}">{{ match.idplayer4.nameshort }}</a></td>
+
+          {% if match.idplayer1.id == player.id or match.idplayer2.id == player.id %}
+            <span class="selected-player">
+          {% else %}
+            <span>
+          {% endif %}
+
+          <a href="{{ path('player_view', {'id':match.idplayer1.id}) }}">{{ match.idplayer1.nameshort }}</a> - <a href="{{ path('player_view', {'id':match.idplayer2.id}) }}">{{ match.idplayer2.nameshort }}</a>
+          </span>
+        </td>
+        <td>
+          {% if match.idplayer3.id == player.id or match.idplayer4.id == player.id %}
+            <span class="selected-player">
+          {% else %}
+            <span>
+          {% endif %}
+
+          <a href="{{ path('player_view', {'id':match.idplayer3.id}) }}">{{ match.idplayer3.nameshort }}</a> - <a href="{{ path('player_view', {'id':match.idplayer4.id}) }}">{{ match.idplayer4.nameshort }}</a>
+          </span>
+        </td>
         <td>{{ match.score }}</td>
         <td>{{ match.context }}</td>
         <td>{{ match.conditions }}</td>

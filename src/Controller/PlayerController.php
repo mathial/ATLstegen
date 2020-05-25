@@ -351,12 +351,6 @@ class PlayerController extends Controller
       'arrMEvol' => $arrMEvol
     ));
     
-    // return $this->render('site/player_view_matches.html.twig', [
-    //   'controller_name' => 'PlayerController',
-    //   'player' => $player,
-    //   'lastR' => $lastR,
-    //   'arrStatsMatchs' => $arrStatsMatchs,
-    // ]);
   }
 
 

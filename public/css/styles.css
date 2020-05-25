@@ -15,6 +15,10 @@
 
 }
 
+.selected-player{
+	font-weight: bold;
+}
+
 th, td{
 	text-align:center;
 }
