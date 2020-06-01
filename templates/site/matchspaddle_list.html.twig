@@ -39,7 +39,7 @@
         <td><a href="{{ path('player_view', {'id':match.idplayer3.id}) }}">{{ match.idplayer3.nameshort }}</a> - <a href="{{ path('player_view', {'id':match.idplayer4.id}) }}">{{ match.idplayer4.nameshort }}</a></td>
         <td>{{ match.score }}</td>
         <td>{{ match.context }}</td>
-        <td>{{ match.conditions }}</td>
+        <td class="cond-{{ match.conditions|replace({' ': ''}) }}">{{ match.conditions }}</td>
         <td>{{ arrMEvol[match.id] }}</td>
         {% if is_granted('ROLE_ADMIN') %} 
           <th><a href="{{ path('matchpaddle_update', {'id':match.id}) }}">update</a></th>

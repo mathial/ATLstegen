@@ -52,7 +52,7 @@
         </td>
         <td>{{ match.score }}</td>
         <td>{{ match.context }}</td>
-        <td>{{ match.conditions }}</td>
+        <td class="cond-{{ match.conditions|replace({' ': ''}) }}">{{ match.conditions }}</td>
         <td>{{ arrMEvol[match.id] }}</td>
         <td></td>
       </tr>

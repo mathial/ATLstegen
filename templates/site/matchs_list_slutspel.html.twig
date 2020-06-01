@@ -28,7 +28,7 @@
         <td><a href="{{ path('player_view', {'id':match.idplayer2.id}) }}">{{ match.idplayer2.nameshort }}</a></td>
         <td>{{ match.score }}</td>
         <td>{{ match.context }}</td>
-        <td>{{ match.conditions }}</td>
+        <td class="cond-{{ match.conditions|replace({' ': ''}) }}">{{ match.conditions }}</td>
       </tr>
     {% endfor %}
   </table>
