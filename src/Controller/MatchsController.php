@@ -446,18 +446,6 @@ class MatchsController extends Controller
   {
     $em = $this->getDoctrine()->getManager();
 
-    /*
-    $filter="";
-    $where="";
-    if ($request->isMethod('GET')) {
-      if ($request->query->get('filter')) {
-        $filter=$request->query->get('filter');
-        $where = " WHERE (m.idplayer1 = ".$filter." OR m.idplayer2 = ".$filter.")";
-      }
-    }
-    */
-
-
     $dql   = 'SELECT m FROM App:Matchs m WHERE m.context = :context ORDER BY m.date DESC';
     $query = $em->createQuery($dql)
             ->setParameter('context', "Stegen Slutspel ".$year);;
@@ -472,6 +460,62 @@ class MatchsController extends Controller
 
     return $this->render('site/matchs_list_slutspel.html.twig', array("listMatchs" => $listMatchs,
       'year' => $year
+    ));
+    
+  }
+
+
+
+
+  /**
+   * @Route(
+   * "/matchs/h2h/{idplayer1}/{idplayer2}", 
+   * name="matchs_h2h", 
+   * requirements={
+   *   "idplayer1"="\d+", 
+   *   "idplayer2"="\d+" 
+   * })
+   */
+  public function h2h($idplayer1, $idplayer2, Request $request)
+  {
+    $em = $this->getDoctrine()->getManager();
+
+    $player1 = $em->getRepository('App:Player')->findOneBy(array('id'=>$idplayer1));
+    $player2 = $em->getRepository('App:Player')->findOneBy(array('id'=>$idplayer2));
+
+    $dql   = 'SELECT m FROM App:Matchs m 
+              WHERE (m.idplayer1 = :idplayer1 AND m.idplayer2 = :idplayer2)
+              OR (m.idplayer1 = :idplayer2 AND m.idplayer2 = :idplayer1)  
+              ORDER BY m.date, m.id DESC';
+    $query = $em->createQuery($dql)
+            ->setParameter('idplayer1', $idplayer1)
+            ->setParameter('idplayer2', $idplayer2)
+            ;
+
+    //$result = $query->execute();
+    $result = $query->getResult();
+    $recapRt=array();
+    $recapRt["W"]=0;
+    $recapRt["D"]=0;
+    $recapRt["T"]=0;
+    foreach ($result as $m) {
+      if ($m->getTie()) $recapRt["T"]++;
+      elseif ($m->getIdplayer1()->getId() == $idplayer1) $recapRt["W"]++;
+      else $recapRt["D"]++;
+    }
+
+    $paginator  = $this->get('knp_paginator');
+
+    $listMatchs = $paginator->paginate(
+      $query, 
+      $request->query->getInt('page', 1),
+      50
+    );
+
+    return $this->render('site/matchs_h2h.html.twig', array("listMatchs" => $listMatchs,
+      "player1" => $player1,
+      "player2" => $player2,
+      "recapRt" => $recapRt,
     ));
     
   }

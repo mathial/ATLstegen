@@ -49,4 +49,5 @@ class MatchsRepository extends EntityRepository {
 
     return new Paginator($query, true);
   }
+
 }

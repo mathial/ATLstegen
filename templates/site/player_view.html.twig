@@ -15,6 +15,7 @@
         <th>Def.</th>
         <th>Ties</th>
         <th>Tot</th>
+        <th>Details</th>
       </tr>
 
       {% for opp in arrStatsOpponents %}
@@ -31,6 +32,7 @@
             <td> 
           {% endif %} 
           <b>{{ opp.nbM }}</b></td>
+          <td><a href="{{ path('matchs_h2h', {'idplayer1':player.id, 'idplayer2':opp.id}) }}">H2H</a></td>
         </tr>
       {% endfor %}
     </table>
