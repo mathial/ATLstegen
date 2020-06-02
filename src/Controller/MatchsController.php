@@ -486,7 +486,7 @@ class MatchsController extends Controller
     $dql   = 'SELECT m FROM App:Matchs m 
               WHERE (m.idplayer1 = :idplayer1 AND m.idplayer2 = :idplayer2)
               OR (m.idplayer1 = :idplayer2 AND m.idplayer2 = :idplayer1)  
-              ORDER BY m.date, m.id DESC';
+              ORDER BY m.date DESC, m.id DESC';
     $query = $em->createQuery($dql)
             ->setParameter('idplayer1', $idplayer1)
             ->setParameter('idplayer2', $idplayer2)
