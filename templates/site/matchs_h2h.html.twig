@@ -15,6 +15,7 @@
       <th>Score</th>
       <th>{{ knp_pagination_sortable(listMatchs, 'Context', 'm.context') }}</th>
       <th>{{ knp_pagination_sortable(listMatchs, 'Conditions', 'm.conditions') }}</th>
+      <th>Evol</th>
     </tr>
 
     {% set ind = 1 %}
@@ -33,6 +34,7 @@
         <td>{{ match.score }}</td>
         <td>{{ match.context }}</td>
         <td class="cond-{{ match.conditions|replace({' ': ''}) }}">{{ match.conditions }}</td>
+        <td>{{ arrMEvol[match.id] }}</td>
       </tr>
       {% set ind = ind +1 %}
     {% endfor %}

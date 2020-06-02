@@ -498,7 +498,87 @@ class MatchsController extends Controller
     $recapRt["W"]=0;
     $recapRt["D"]=0;
     $recapRt["T"]=0;
+    $arrMEvol=array();
+    
     foreach ($result as $m) {
+
+      $rankId="";
+
+      // get the closest ranking
+      $sql_rank = 'SELECT id FROM Ranking WHERE date<="'.$m->getDate()->format('Y-m-d').'" ORDER BY date DESC LIMIT 0,1';
+      $stmt = $em->getConnection()->prepare($sql_rank);
+      $stmt->execute();
+      $rank = $stmt->fetchAll();
+      if (isset($rank[0])) $rankId=$rank[0]["id"];
+      
+      $rating_player1=$m->getIdplayer1()->getInitialratingtennis();
+      $rating_player2=$m->getIdplayer2()->getInitialratingtennis();
+      $arrMEvol[$m->getId()]=0;
+
+      if ($rankId!="") {
+        $sql_rank = 'SELECT score FROM RankingPos WHERE idRanking="'.$rankId.'" AND idPlayer='.$m->getIdplayer1()->getId();
+        $stmt = $em->getConnection()->prepare($sql_rank);
+        $stmt->execute();
+        $rank = $stmt->fetchAll();
+        if (isset($rank[0])) $rating_player1=$rank[0]["score"];
+
+        $sql_rank = 'SELECT score FROM RankingPos WHERE idRanking="'.$rankId.'" AND idPlayer='.$m->getIdplayer2()->getId();
+        $stmt = $em->getConnection()->prepare($sql_rank);
+        $stmt->execute();
+        $rank = $stmt->fetchAll();
+        if (isset($rank[0])) $rating_player2=$rank[0]["score"];
+
+      }
+
+      if ($m->getTie()==0) $result=1;
+      else $result=0;
+
+     /* if ($id==$mat["p1id"]) $idPFin=1;
+      else $idPFin=2;*/
+
+      if (isset($rating_player1) && is_numeric($rating_player1) && isset($rating_player2) && is_numeric($rating_player2)) {
+
+        $competitors = array(
+          array('id' => 1, 'name' => "Player 1", 'skill' => 100, 'rating' => $rating_player1, 'active' => 1),
+          array('id' => 2, 'name' => "Player 2", 'skill' => 100, 'rating' => $rating_player2, 'active' => 1),
+        );
+        //  initialize the ranking system and add the competitors
+        $elo = new EloRatingSystem(100, 50);
+        foreach ($competitors as $competitor) {
+          $elo->addCompetitor(new EloCompetitor($competitor['id'], $competitor['name'], $competitor['rating']));
+        }
+
+        if ($result==1) {
+          $elo->addResult(1,2);
+          $match = "Player 1 defeats Player 2";
+          $result="player1";
+        }
+        else {
+          $elo->addResult(1,2, true);
+          $match = "TIE Player 1 - Player 2";
+          $result="draw";
+        }
+
+        $elo->updateRatings();
+
+        $tabRank = $elo->getRankings();
+
+        foreach ($tabRank as $idP => $val) {
+
+          $exp=explode("#", $idP);
+          if ($exp[0]==1) {
+            $evol=$val-$rating_player1;
+            if ($evol>0) $arrRt[1]="+".number_format($evol, 1);
+            else $arrRt[1]=number_format($evol, 1);
+          }
+          
+          $arrMEvol[$m->getId()]=$arrRt[1];
+        }
+      
+      }
+
+
+
       if ($m->getTie()) $recapRt["T"]++;
       elseif ($m->getIdplayer1()->getId() == $idplayer1) $recapRt["W"]++;
       else $recapRt["D"]++;
@@ -516,6 +596,7 @@ class MatchsController extends Controller
       "player1" => $player1,
       "player2" => $player2,
       "recapRt" => $recapRt,
+      "arrMEvol" => $arrMEvol,
     ));
     
   }
