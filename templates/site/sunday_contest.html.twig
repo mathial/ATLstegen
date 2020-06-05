@@ -6,17 +6,34 @@
 
   <p><i>number of appearances in the sunday 21-22 sessions</i></p>
 
+    {% 
+    set yearNow = 'now' | date('Y')
+    %}
 
   <table class="table">
     <tr>
       <th>Player</th>
-      <th>Nb</th>
+      {%
+      for year in 2018..yearNow 
+      %}
+        <th>{{ year }}</th>
+      {% endfor %}
+      <th>Tot</th>
     </tr>
-    {% for id,data in arrContest %}
+    {% for id,tot in arrTot %}
 
       <tr>
         <td><a href="{{ path('player_view', {'id': id}) }}">{{ arrContestData[id]["name"] }}</a></td>
-        <td>{{ data }}</td>
+        {%
+        for year in 2018..yearNow 
+        %}
+          <td>
+          {% if arrContest[id][year]  is defined %}
+            {{ arrContest[id][year] }}
+          {% endif %}
+          </td>
+        {% endfor %}
+        <td>{{ arrTot[id] }}</td>
       </tr>
     {% endfor %}
   </table>

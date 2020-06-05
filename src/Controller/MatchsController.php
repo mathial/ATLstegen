@@ -346,28 +346,37 @@ class MatchsController extends Controller
     $stmt->execute();
     $players = $stmt->fetchAll();
 
+    $arrTot=array();
     $arrContest=array();
     $arrContestData=array();
 
     foreach ($players as $player) {
       $dataPlayer = $em->getRepository('App:Player')->findOneBy(array('id'=>$player["idP"]));
 
-      $sql_nb   = 'SELECT COUNT(DISTINCT date) AS tot FROM Matchs m WHERE context="Stege (söndag 21-22)" AND (idPlayer1 = '.$player["idP"].' OR idPlayer2 = '.$player["idP"].') ';
+      $sql_nb   = 'SELECT COUNT(DISTINCT date) AS tot, YEAR(date) AS yearDate FROM Matchs m WHERE context="Stege (söndag 21-22)" AND (idPlayer1 = '.$player["idP"].' OR idPlayer2 = '.$player["idP"].') 
+        GROUP BY yearDate';
       $stmt = $em->getConnection()->prepare($sql_nb);
       $stmt->execute();
       $nbM = $stmt->fetchAll();
 
-      $arrContest[$player["idP"]]=$nbM[0]["tot"];
+      foreach ($nbM as $year) {
+        $arrContest[$player["idP"]][$year["yearDate"]]=$year["tot"];
+        if (!isset($arrTot[$player["idP"]])) $arrTot[$player["idP"]]=0;
 
+        $arrTot[$player["idP"]]+=$year["tot"];
+      }
       $arrContestData[$player["idP"]]["name"]=$dataPlayer->getNameShort();
 
 
     }
 
-    arsort($arrContest);
+    arsort($arrTot);
 
 
-    return $this->render('site/sunday_contest.html.twig', array("arrContest" => $arrContest, "arrContestData" => $arrContestData
+    return $this->render('site/sunday_contest.html.twig', array(
+        "arrContest" => $arrContest, 
+        "arrTot" => $arrTot, 
+        "arrContestData" => $arrContestData
     ));
     
   }
