@@ -6,16 +6,24 @@
 
   <p><i>number of appearances in the sunday 21-22 sessions</i></p>
 
-    {% 
-    set yearNow = 'now' | date('Y')
-    %}
+  {% 
+  set yearNow = 'now' | date('Y')
+  %}
 
+  <div>
+    Sessions played per year
+    <ul>
+    {% for year in 2018..yearNow %}
+      {% if arrSessions[year] is defined %}
+        <li><b>{{ year }}</b> : {{ arrSessions[year] }}</th>
+      {% endif %}
+    {% endfor %}
+    </ul>
+  </div>
   <table class="table">
     <tr>
       <th>Player</th>
-      {%
-      for year in 2018..yearNow 
-      %}
+      {% for year in 2018..yearNow %}
         <th>{{ year }}</th>
       {% endfor %}
       <th>Tot</th>
@@ -29,7 +37,7 @@
         %}
           <td>
           {% if arrContest[id][year]  is defined %}
-            {{ arrContest[id][year] }}
+            {{ arrContest[id][year] }} ({{ arrContest[id][year ~ "%"] }}%)
           {% endif %}
           </td>
         {% endfor %}

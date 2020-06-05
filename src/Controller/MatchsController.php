@@ -339,6 +339,20 @@ class MatchsController extends Controller
     $em = $this->getDoctrine()->getManager();
 
 
+    // count distinct sessions
+    $sql_nb   = 'SELECT COUNT(DISTINCT date) AS tot, YEAR(date) AS yearDate FROM Matchs m WHERE context="Stege (söndag 21-22)" GROUP BY yearDate';
+    $stmt = $em->getConnection()->prepare($sql_nb);
+    $stmt->execute();
+    $nbM = $stmt->fetchAll();
+
+    $arrSessions=array();
+    $arrSessions["tot"]=0;
+    foreach ($nbM as $year) {
+      $arrSessions[$year["yearDate"]]=$year["tot"];
+      $arrSessions["tot"]+=$year["tot"];
+    }
+
+
     $sql   = 'SELECT DISTINCT idPlayer1 AS idP FROM Matchs m WHERE context="Stege (söndag 21-22)" 
     UNION SELECT DISTINCT idPlayer2 AS idP FROM Matchs m WHERE context="Stege (söndag 21-22)" 
     ORDER BY idP';
@@ -364,6 +378,8 @@ class MatchsController extends Controller
         if (!isset($arrTot[$player["idP"]])) $arrTot[$player["idP"]]=0;
 
         $arrTot[$player["idP"]]+=$year["tot"];
+
+        $arrContest[$player["idP"]][$year["yearDate"]."%"]=number_format($arrContest[$player["idP"]][$year["yearDate"]]*100/$arrSessions[$year["yearDate"]],0);
       }
       $arrContestData[$player["idP"]]["name"]=$dataPlayer->getNameShort();
 
@@ -374,6 +390,7 @@ class MatchsController extends Controller
 
 
     return $this->render('site/sunday_contest.html.twig', array(
+        "arrSessions" => $arrSessions, 
         "arrContest" => $arrContest, 
         "arrTot" => $arrTot, 
         "arrContestData" => $arrContestData
