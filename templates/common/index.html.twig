@@ -26,4 +26,28 @@
 			{% endfor %}
 		</table>
 	</div>
+
+	<h3>Bottom 3 players of the week</h3>
+
+  <div class="table-responsive">
+	  <table class="table">
+	    <tr>
+	      <th>#</th>
+	      <th>Player</th>
+	      <th>Evol</th>
+	    </tr>
+
+	    {% set rank = 1 %}
+			{% for p in last3TennisPerf %}
+				<tr>
+					<td>{{ rank }}</td>
+	        <td><a href="{{ path('player_view', {'id':p["player"].id}) }}">{{ p["player"].nameshort }}</a></td>
+	        <td><b>{{ p["evol"] }}</b></td>
+
+				</tr>
+
+				{% set rank = rank + 1 %}
+			{% endfor %}
+		</table>
+	</div>
 {% endblock %}

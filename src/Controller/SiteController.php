@@ -68,9 +68,31 @@ class SiteController extends AbstractController
 
         }
 
+        asort($tabEvol);
+
+        $last3TennisPerf=array();
+        $iT=0;
+        foreach ($tabEvol as $idP => $ev) {
+            $iT++;
+
+            $line=array();
+
+            if ($ev>0) $ev="+".number_format($ev, 0);
+            else $ev=number_format($ev, 0);
+
+            $line["evol"]=$ev;
+            $line["player"]=$tabEvolDetails[$idP];
+
+            $last3TennisPerf[$iT]=$line;
+
+            if ($iT==3) break;
+
+        }
+
         return $this->render('common/index.html.twig', [
             'controller_name' => 'SiteController',
-            'top3TennisPerf' => $top3TennisPerf
+            'top3TennisPerf' => $top3TennisPerf,
+            'last3TennisPerf' => $last3TennisPerf,
         ]);
     }
 
