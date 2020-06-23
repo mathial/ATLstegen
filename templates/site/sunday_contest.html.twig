@@ -20,31 +20,34 @@
     {% endfor %}
     </ul>
   </div>
-  <table class="table">
-    <tr>
-      <th>Player</th>
-      {% for year in 2018..yearNow %}
-        <th>{{ year }}</th>
-      {% endfor %}
-      <th>Tot</th>
-    </tr>
-    {% for id,tot in arrTot %}
 
+  <div class="table-responsive">
+    <table class="table">
       <tr>
-        <td><a href="{{ path('player_view', {'id': id}) }}">{{ arrContestData[id]["name"] }}</a></td>
-        {%
-        for year in 2018..yearNow 
-        %}
-          <td>
-          {% if arrContest[id][year]  is defined %}
-            {{ arrContest[id][year] }} ({{ arrContest[id][year ~ "%"] }}%)
-          {% endif %}
-          </td>
+        <th>Player</th>
+        {% for year in 2018..yearNow %}
+          <th>{{ year }}</th>
         {% endfor %}
-        <td>{{ arrTot[id] }}</td>
+        <th>Tot</th>
       </tr>
-    {% endfor %}
-  </table>
+      {% for id,tot in arrTot %}
+
+        <tr>
+          <td><a href="{{ path('player_view', {'id': id}) }}">{{ arrContestData[id]["name"] }}</a></td>
+          {%
+          for year in 2018..yearNow 
+          %}
+            <td>
+            {% if arrContest[id][year]  is defined %}
+              {{ arrContest[id][year] }} ({{ arrContest[id][year ~ "%"] }}%)
+            {% endif %}
+            </td>
+          {% endfor %}
+          <td>{{ arrTot[id] }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
 
 
 {% endblock %}

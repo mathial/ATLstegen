@@ -6,37 +6,39 @@
 
   {% include "common/filter.html.twig" %}
 
-  <table class="table">
-    <tr>
-      <th>{{ knp_pagination_sortable(listPlayers, 'Name', 'p.namelong') }}</th>
-      <th>{{ knp_pagination_sortable(listPlayers, 'Mail', 'p.email') }}</th>
-      <th>Tennis active</th>
-      <th>Paddle active</th>
-      <th>Action</th>
-    </tr>
-    {% for player in listPlayers %}
-
+  <div class="table-responsive">
+    <table class="table">
       <tr>
-        <td><a href="{{ path('player_view', {'id': player.id}) }}">{{ player.namelong }}</a></td>
-        <td>{{ player.email }}</td>
-        <td>{{ player.activetennis }}</td>
-        <td>{{ player.activepaddle }}</td>
-        <td>
-        {% if is_granted('ROLE_ADMIN') %} 
-          <a href="{{ path('player_update', {'id':player.id}) }}">update</a>
-        {% endif %}
-        </td>
-        {# <td>
-          <a class="btn-default btn" href="{{ path('admin_access.view_player', {'id': player.id}) }}"><img class="icon-list" src="{{ asset('bundles/app/images/edit.png') }}"></a>
-          {% if player.status == 1 %} 
-            <a class="btn-default btn" href="{{ path('admin_access.disable_player', {'id': player.id}) }}" onclick="return confirm('Please confirm the disabling of the player');"><img class="icon-list" src="{{ asset('bundles/app/images/delete.png') }}"></a>
-          {% else %}
-            <a class="btn-default btn" href="{{ path('admin_access.activate_player', {'id': player.id}) }}" onclick="return confirm('Please confirm the activation of the player');"><img class="icon-list" src="{{ asset('bundles/app/images/add.png') }}"></a>
-          {% endif %}
-        </td> #}
+        <th>{{ knp_pagination_sortable(listPlayers, 'Name', 'p.namelong') }}</th>
+        <th>{{ knp_pagination_sortable(listPlayers, 'Mail', 'p.email') }}</th>
+        <th>Tennis active</th>
+        <th>Paddle active</th>
+        <th>Action</th>
       </tr>
-    {% endfor %}
-  </table>
+      {% for player in listPlayers %}
+
+        <tr>
+          <td><a href="{{ path('player_view', {'id': player.id}) }}">{{ player.namelong }}</a></td>
+          <td>{{ player.email }}</td>
+          <td>{{ player.activetennis }}</td>
+          <td>{{ player.activepaddle }}</td>
+          <td>
+          {% if is_granted('ROLE_ADMIN') %} 
+            <a href="{{ path('player_update', {'id':player.id}) }}">update</a>
+          {% endif %}
+          </td>
+          {# <td>
+            <a class="btn-default btn" href="{{ path('admin_access.view_player', {'id': player.id}) }}"><img class="icon-list" src="{{ asset('bundles/app/images/edit.png') }}"></a>
+            {% if player.status == 1 %} 
+              <a class="btn-default btn" href="{{ path('admin_access.disable_player', {'id': player.id}) }}" onclick="return confirm('Please confirm the disabling of the player');"><img class="icon-list" src="{{ asset('bundles/app/images/delete.png') }}"></a>
+            {% else %}
+              <a class="btn-default btn" href="{{ path('admin_access.activate_player', {'id': player.id}) }}" onclick="return confirm('Please confirm the activation of the player');"><img class="icon-list" src="{{ asset('bundles/app/images/add.png') }}"></a>
+            {% endif %}
+          </td> #}
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
 
   {% set page_list = 'players_list' 
   %}

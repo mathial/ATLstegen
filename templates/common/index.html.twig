@@ -1,9 +1,29 @@
 {% extends "common/layout.html.twig" %}
 
 {% block body %}
+  <h1>TENNIS</h1>
 
-  <h3>ATL Stege page</h3>
+  <h3>Top 3 players of the week</h3>
 
-  <p>Welcome to the ATL Stege page</p>
+  <div class="table-responsive">
+	  <table class="table">
+	    <tr>
+	      <th>#</th>
+	      <th>Player</th>
+	      <th>Evol</th>
+	    </tr>
 
+	    {% set rank = 1 %}
+			{% for p in top3TennisPerf %}
+				<tr>
+					<td>{{ rank }}</td>
+	        <td><a href="{{ path('player_view', {'id':p["player"].id}) }}">{{ p["player"].nameshort }}</a></td>
+	        <td><b>{{ p["evol"] }}</b></td>
+
+				</tr>
+
+				{% set rank = rank + 1 %}
+			{% endfor %}
+		</table>
+	</div>
 {% endblock %}

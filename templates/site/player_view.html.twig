@@ -8,33 +8,36 @@
   {% if arrStatsOpponents|length >0 %}
 
   	<h3>Stats {{ arrStatsOpponents|length }} opponent(s) - {{ nbMTot }} match(s)</h3>
-      <table class="table">
-      <tr>
-        <th>Player</th>
-        <th>Wins</th>
-        <th>Def.</th>
-        <th>Ties</th>
-        <th>Tot</th>
-        <th>Details</th>
-      </tr>
 
-      {% for opp in arrStatsOpponents %}
+    <div class="table-responsive">
+      <table class="table">
         <tr>
-          <td><a href="{{ path('player_view', {'id':opp.id}) }}">{{ opp.name }}</a></td>
-          <td>{{ opp.nbW }}</td>
-          <td>{{ opp.nbD }}</td>
-          <td>{{ opp.nbT }}</td>
-          {% if opp.sold > 0 %}
-            <td class="sold-positiv">
-          {% elseif opp.sold < 0 %}
-            <td class="sold-negativ">
-          {% else %}
-            <td> 
-          {% endif %} 
-          <b>{{ opp.nbM }}</b></td>
-          <td><a href="{{ path('matchs_h2h', {'idplayer1':player.id, 'idplayer2':opp.id}) }}">H2H</a></td>
+          <th>Player</th>
+          <th>Wins</th>
+          <th>Def.</th>
+          <th>Ties</th>
+          <th>Tot</th>
+          <th>Details</th>
         </tr>
-      {% endfor %}
-    </table>
+
+        {% for opp in arrStatsOpponents %}
+          <tr>
+            <td><a href="{{ path('player_view', {'id':opp.id}) }}">{{ opp.name }}</a></td>
+            <td>{{ opp.nbW }}</td>
+            <td>{{ opp.nbD }}</td>
+            <td>{{ opp.nbT }}</td>
+            {% if opp.sold > 0 %}
+              <td class="sold-positiv">
+            {% elseif opp.sold < 0 %}
+              <td class="sold-negativ">
+            {% else %}
+              <td> 
+            {% endif %} 
+            <b>{{ opp.nbM }}</b></td>
+            <td><a href="{{ path('matchs_h2h', {'idplayer1':player.id, 'idplayer2':opp.id}) }}">H2H</a></td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
   {% endif %}
 {% endblock %}

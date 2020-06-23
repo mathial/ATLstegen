@@ -4,21 +4,22 @@
 
   <h3>List Users ({{ listUsers|length }})</h3>
 
-  <table class="table">
-    <tr>
-      <th>username</th>
-      <th>roles</th>
-      <th>action</th>
-    </tr>
-    {% for user in listUsers %}
-
+  <div class="table-responsive">
+    <table class="table">
       <tr>
-        <td>{{ user.username }}</td>
-        <td>{{ user.roles|join(', ') }}</td>
-        <td><a href="{{ path('user_update', {'id':user.id}) }}">update</a></td>
+        <th>username</th>
+        <th>roles</th>
+        <th>action</th>
       </tr>
-    {% endfor %}
-  </table>
+      {% for user in listUsers %}
 
+        <tr>
+          <td>{{ user.username }}</td>
+          <td>{{ user.roles|join(', ') }}</td>
+          <td><a href="{{ path('user_update', {'id':user.id}) }}">update</a></td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
 {% endblock %}
 

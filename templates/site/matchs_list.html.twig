@@ -6,48 +6,50 @@
 
   {% include "common/filter.html.twig" %}
 
-  <table class="table">
-    <tr>
-      <th>#</th>
-      <th>{{ knp_pagination_sortable(listMatchs, 'Date', 'm.date') }}</th>
-      <th>Player1</th>
-      <th>Player2</th>
-      <th>Score</th>
-      <th>{{ knp_pagination_sortable(listMatchs, 'Context', 'm.context') }}</th>
-      <th>{{ knp_pagination_sortable(listMatchs, 'Conditions', 'm.conditions') }}</th>
-      <th>PtsEvol</th>
-      {% if is_granted('ROLE_ADMIN') %} 
-        <th>action</th>
-      {% endif %}
-    </tr>
-
-    {% set ind = (page * listMatchs|length) - (listMatchs|length - 1) %}
-
-    {% for match in listMatchs %}
-
+  <div class="table-responsive">
+    <table class="table">
       <tr>
-        <td>{{ ind }}</td>
-        {# <td>{{ match.id }}</td> #}
-        <td>{{ match.date|date("Y-m-d") }}</td>
-        {% if match.tie!=1 %}
-          <td class="winner-player">
-        {% else %}
-          <td>
-        {% endif %}
-        <a href="{{ path('player_view', {'id':match.idplayer1.id}) }}">{{ match.idplayer1.nameshort }}</a></td>
-        <td><a href="{{ path('player_view', {'id':match.idplayer2.id}) }}">{{ match.idplayer2.nameshort }}</a></td>
-        <td>{{ match.score }}</td>
-        <td>{{ match.context }}</td>
-        <td class="cond-{{ match.conditions|replace({' ': ''}) }}">{{ match.conditions }}</td>
-        <td>{{ arrMEvol[match.id] }}</td>
+        <th>#</th>
+        <th>{{ knp_pagination_sortable(listMatchs, 'Date', 'm.date') }}</th>
+        <th>Player1</th>
+        <th>Player2</th>
+        <th>Score</th>
+        <th>{{ knp_pagination_sortable(listMatchs, 'Context', 'm.context') }}</th>
+        <th>{{ knp_pagination_sortable(listMatchs, 'Conditions', 'm.conditions') }}</th>
+        <th>PtsEvol</th>
         {% if is_granted('ROLE_ADMIN') %} 
-          <th><a href="{{ path('match_update', {'id':match.id}) }}">update</a></th>
+          <th>action</th>
         {% endif %}
       </tr>
-      {% set ind = ind +1 %}
-    {% endfor %}
-  </table>
 
+      {% set ind = (page * listMatchs|length) - (listMatchs|length - 1) %}
+
+      {% for match in listMatchs %}
+
+        <tr>
+          <td>{{ ind }}</td>
+          {# <td>{{ match.id }}</td> #}
+          <td>{{ match.date|date("Y-m-d") }}</td>
+          {% if match.tie!=1 %}
+            <td class="winner-player">
+          {% else %}
+            <td>
+          {% endif %}
+          <a href="{{ path('player_view', {'id':match.idplayer1.id}) }}">{{ match.idplayer1.nameshort }}</a></td>
+          <td><a href="{{ path('player_view', {'id':match.idplayer2.id}) }}">{{ match.idplayer2.nameshort }}</a></td>
+          <td>{{ match.score }}</td>
+          <td>{{ match.context }}</td>
+          <td class="cond-{{ match.conditions|replace({' ': ''}) }}">{{ match.conditions }}</td>
+          <td>{{ arrMEvol[match.id] }}</td>
+          {% if is_granted('ROLE_ADMIN') %} 
+            <th><a href="{{ path('match_update', {'id':match.id}) }}">update</a></th>
+          {% endif %}
+        </tr>
+        {% set ind = ind +1 %}
+      {% endfor %}
+    </table>
+  </div>
+  
   {% set page_list = 'matchs_list' 
   %}
   {% include "common/pager.html.twig" %}

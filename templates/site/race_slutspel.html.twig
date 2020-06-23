@@ -11,31 +11,32 @@
   <li><i><a href="{{ path('matchs_list_slutspel', {'year':2019, 'maxpage':50, 'page':1}) }}">2019 matches</a> and <a href="http://atllund.se/nyhet/mathieu-mastare-i-stegen/" target="_blank">ATL's recap</a></i></li>
   </ul>
 
-
-  <table class="table">
-    <tr>
-      <th>#</th>
-      <th>Player</th>
-      <th>Since SlutSpel 2020</th>
-      <th>Tot</th>
-    </tr>
-    {% for i,data in arrRaceTot %}
+  <div class="table-responsive">
+    <table class="table">
       <tr>
-         <td>{{ i+1 }}</td>
-        <td><a href="{{ path('player_view', {'id': data["idP"]}) }}">{{ data["name"] }}</a></td>
-        <td>{{ data["lastyear"] }}</td>
-        <td>{{ data["tot"] }}</td>
+        <th>#</th>
+        <th>Player</th>
+        <th>Since SlutSpel 2020</th>
+        <th>Tot</th>
       </tr>
-    {% endfor %}
+      {% for i,data in arrRaceTot %}
+        <tr>
+           <td>{{ i+1 }}</td>
+          <td><a href="{{ path('player_view', {'id': data["idP"]}) }}">{{ data["name"] }}</a></td>
+          <td>{{ data["lastyear"] }}</td>
+          <td>{{ data["tot"] }}</td>
+        </tr>
+      {% endfor %}
 
-    <tr>
-      <th></th>
-      <th></th>
-      <th>{{ bigTot }}</th>
-      <th></th>
-    </tr>
+      <tr>
+        <th></th>
+        <th></th>
+        <th>{{ bigTot }}</th>
+        <th></th>
+      </tr>
 
-  </table>
+    </table>
+  </div>
 
 
 {% endblock %}
