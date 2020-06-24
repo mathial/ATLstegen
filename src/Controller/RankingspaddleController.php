@@ -380,6 +380,7 @@ class RankingspaddleController extends AbstractController
 		    	WHERE tie=0 AND date<:date
 		    	GROUP BY idPlayer'.$iP.' 
 			    ';
+			    echo $sql.$ranking->getDate()->format("Y-m-d");
 				$stmt = $em->getConnection()->prepare($sql);
 				$stmt->execute(['date' => $ranking->getDate()->format("Y-m-d")]);
 				$wins = $stmt->fetchAll();
@@ -469,7 +470,12 @@ class RankingspaddleController extends AbstractController
 				$defeats = $stmt->fetchAll();
 
 				foreach ($defeats as $defeat) {
-					$detailsPlayer[$defeat["idPlayer".$iP]]["defeats"]=$defeat["tot"];
+
+					if (!isset($detailsPlayer[$defeat["idPlayer".$iP]]["defeats"]))
+						$detailsPlayer[$defeat["idPlayer".$iP]]["defeats"]=0;
+
+					$detailsPlayer[$defeat["idPlayer".$iP]]["defeats"]+=$defeat["tot"];
+					
 					if (!isset($detailsPlayer[$defeat["idPlayer".$iP]]["wins"])) {
 						$detailsPlayer[$defeat["idPlayer".$iP]]["wins"]=0;
 					}
