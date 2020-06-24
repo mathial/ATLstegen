@@ -380,7 +380,6 @@ class RankingspaddleController extends AbstractController
 		    	WHERE tie=0 AND date<:date
 		    	GROUP BY idPlayer'.$iP.' 
 			    ';
-			    echo $sql.$ranking->getDate()->format("Y-m-d");
 				$stmt = $em->getConnection()->prepare($sql);
 				$stmt->execute(['date' => $ranking->getDate()->format("Y-m-d")]);
 				$wins = $stmt->fetchAll();
