@@ -37,16 +37,16 @@
 	      <th>Evol</th>
 	    </tr>
 
-	    {% set rank = 1 %}
+	    {% set rank = nbEvol %}
 			{% for p in last3TennisPerf %}
 				<tr>
-					<td>{{ rank }}</td>
+					<td>{{ nbEvol }}</td>
 	        <td><a href="{{ path('player_view', {'id':p["player"].id}) }}">{{ p["player"].nameshort }}</a></td>
 	        <td><b>{{ p["evol"] }}</b></td>
 
 				</tr>
 
-				{% set rank = rank + 1 %}
+				{% set nbEvol = nbEvol - 1 %}
 			{% endfor %}
 		</table>
 	</div>

@@ -48,6 +48,7 @@ class SiteController extends AbstractController
         }
 
         arsort($tabEvol);
+        $nbEvol = count($tabEvol);
 
         $top3TennisPerf=array();
         $iT=0;
@@ -93,6 +94,7 @@ class SiteController extends AbstractController
             'controller_name' => 'SiteController',
             'top3TennisPerf' => $top3TennisPerf,
             'last3TennisPerf' => $last3TennisPerf,
+            'nbEvol' => $nbEvol,
         ]);
     }
 
