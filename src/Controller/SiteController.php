@@ -167,7 +167,7 @@ class SiteController extends AbstractController
     {   
         $rtTopLast=$this->getTopLastTennisPerf();
 
-        $rtSeries=$this->getBestSeries(2,6000);
+        $rtSeries=$this->getBestSeries();
 
 //print_r($rtSeries);
 
