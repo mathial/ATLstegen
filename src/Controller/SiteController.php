@@ -11,11 +11,8 @@ use App\Entity\Rankingpos;
 
 class SiteController extends AbstractController
 {
-    /**
-     * @Route("/", name="site")
-     */
-    public function index()
-    {   
+
+    private function getTopLastTennisPerf($nbMax=3) {
 
         $em = $this->getDoctrine()->getManager();
 
@@ -50,7 +47,7 @@ class SiteController extends AbstractController
         arsort($tabEvol);
         $nbEvol = count($tabEvol);
 
-        $top3TennisPerf=array();
+        $topTennisPerf=array();
         $iT=0;
         foreach ($tabEvol as $idP => $ev) {
             $iT++;
@@ -63,15 +60,15 @@ class SiteController extends AbstractController
             $line["evol"]=$ev;
             $line["player"]=$tabEvolDetails[$idP];
 
-            $top3TennisPerf[$iT]=$line;
+            $topTennisPerf[$iT]=$line;
 
-            if ($iT==3) break;
+            if ($iT==$nbMax) break;
 
         }
 
         asort($tabEvol);
 
-        $last3TennisPerf=array();
+        $lastTennisPerf=array();
         $iT=0;
         foreach ($tabEvol as $idP => $ev) {
             $iT++;
@@ -84,17 +81,102 @@ class SiteController extends AbstractController
             $line["evol"]=$ev;
             $line["player"]=$tabEvolDetails[$idP];
 
-            $last3TennisPerf[$iT]=$line;
+            $lastTennisPerf[$iT]=$line;
 
             if ($iT==3) break;
 
         }
 
+        $rt["top"]=$topTennisPerf;
+        $rt["last"]=$lastTennisPerf;
+        $rt["nbEvol"]=$nbEvol;
+
+        return $rt;
+
+    }
+
+    private function getBestSeries($minMatchsPlayed=5, $nbDays=60) {
+
+        $em = $this->getDoctrine()->getManager();
+
+
+        $sql='
+        SELECT SUM(tot) as bigTot, idPlayer FROM
+            (SELECT COUNT(*) AS tot, idPlayer1 AS idPlayer FROM Matchs M WHERE date >= DATE(NOW()) - INTERVAL :nbDays DAY GROUP BY idPlayer1
+            UNION
+            SELECT COUNT(*) AS tot, idPlayer2 AS idPlayer FROM Matchs M  WHERE date >= DATE(NOW()) - INTERVAL :nbDays DAY GROUP BY idPlayer2
+            ) AS unionplayersmatch
+        GROUP BY idPlayer  
+        HAVING bigTot >= :minMatchsPlayed
+        ORDER BY SUM(tot)  DESC'
+        ;
+
+        $stmt = $em->getConnection()->prepare($sql);
+        $stmt->execute(['minMatchsPlayed' => $minMatchsPlayed, 'nbDays' => $nbDays]);
+        $players = $stmt->fetchAll();
+
+        $arrRecapPlayers=array();
+
+        foreach ($players as $player) {
+            $arrRecapPlayers[$player["idPlayer"]]["tot"]=$player["bigTot"];
+            $arrRecapPlayers[$player["idPlayer"]]["W"]=0;
+            $arrRecapPlayers[$player["idPlayer"]]["D"]=0;
+            $arrRecapPlayers[$player["idPlayer"]]["T"]=0;
+
+            $sql='SELECT * FROM Matchs 
+                    WHERE (idPlayer1= :idPlayer OR idPlayer2= :idPlayer)
+                    AND date >= DATE(NOW()) - INTERVAL :nbDays DAY';
+
+            $stmt = $em->getConnection()->prepare($sql);
+            $stmt->execute(['idPlayer' => $player["idPlayer"], 'nbDays' => $nbDays]);
+            $matchs = $stmt->fetchAll();
+            
+            foreach ($matchs as $match) {
+                if ($match["tie"]==1) $arrRecapPlayers[$player["idPlayer"]]["T"]++;
+                elseif ($match["idPlayer1"]==$player["idPlayer"]) $arrRecapPlayers[$player["idPlayer"]]["W"]++;
+                else $arrRecapPlayers[$player["idPlayer"]]["D"]++;
+            } 
+        }
+
+        $arrRecapSorted=array();
+
+        foreach ($arrRecapPlayers as $idP=>$p) {
+            $arrRecapSorted[$idP]=$p["W"]*100+$p["T"]-$p["D"]*100;
+        }
+
+        arsort($arrRecapSorted);
+
+        $rt=array();
+        foreach ($arrRecapSorted as $idP=>$p) {
+            $rt[$idP]=$arrRecapPlayers[$idP];
+
+            $rt[$idP]["score"]=$p;
+
+            $player = $em->getRepository('App:Player')->findOneBy(array("id" => $idP));
+
+            $rt[$idP]["player"]=$player;
+
+        }
+        return $rt;
+    }
+
+    /**
+     * @Route("/", name="site")
+     */
+    public function index()
+    {   
+        $rtTopLast=$this->getTopLastTennisPerf();
+
+        $rtSeries=$this->getBestSeries(2,6000);
+
+//print_r($rtSeries);
+
         return $this->render('common/index.html.twig', [
             'controller_name' => 'SiteController',
-            'top3TennisPerf' => $top3TennisPerf,
-            'last3TennisPerf' => $last3TennisPerf,
-            'nbEvol' => $nbEvol,
+            'top3TennisPerf' => $rtTopLast["top"],
+            'last3TennisPerf' => $rtTopLast["last"],
+            'nbEvol' => $rtTopLast["nbEvol"],
+            'rtSeries' => $rtSeries,
         ]);
     }
 
