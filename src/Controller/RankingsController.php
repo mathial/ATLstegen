@@ -134,16 +134,18 @@ class RankingsController extends AbstractController
 				$player = $em->getRepository('App:Player')->findOneBy(array("id" => $pId));
 				$arrPlayersDisplay[$pId]=$player->getNameshort();
 
-				// get the last match played by the player
-				$lastMatchP = $em->getRepository('App:Matchs')->findLastMatchPerPlayer($pId);
-				//print_r($lastMatchP);
-				$now_1_Y = date('Y-m-d', strtotime('-1 year'));
+				if (!in_array($player->getNameshort(), $arrDeactivate)) {				
+					// get the last match played by the player
+					$lastMatchP = $em->getRepository('App:Matchs')->findLastMatchPerPlayer($pId);
+					//print_r($lastMatchP);
+					$now_1_Y = date('Y-m-d', strtotime('-1 year'));
 
-				if ($lastMatchP->getDate()->format("Y-m-d") <= $now_1_Y && $player->getActiveTennis()==1) {
-					$arrDeactivate[]=$player->getNameshort();
-					if ($generate_ranking==1) {
-						$player->setActivetennis(0);
-						$em->flush();
+					if ($lastMatchP->getDate()->format("Y-m-d") <= $now_1_Y && $player->getActiveTennis()==1) {
+						$arrDeactivate[]=$player->getNameshort();
+						if ($generate_ranking==1) {
+							$player->setActivetennis(0);
+							$em->flush();
+						}
 					}
 				}
 
