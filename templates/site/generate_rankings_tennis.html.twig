@@ -10,6 +10,16 @@
       {{ form(form) }}
     </div>
 
+    {% if arrDeactivate|length >0 %}
+      <p>Players deactivated</p>
+
+      {% for deactivate in arrDeactivate %}
+        {{ deactivate }}, 
+      {% endfor %}
+
+      </table>
+    {% endif %}
+
     {% if arrMatchs|length >0 %}
 
       <h3>{{ arrMatchs|length }} match(s)</h3>

@@ -50,4 +50,16 @@ class MatchsRepository extends EntityRepository {
     return new Paginator($query, true);
   }
 
+  public function findLastMatchPerPlayer($idplayer) { 
+    $query = $this->createQueryBuilder('m')
+    ->where(' m.idplayer1 = :idplayer')
+    ->orWhere('m.idplayer2 = :idplayer')
+    ->setParameter('idplayer', $idplayer)
+    ->orderBy('m.date', 'DESC')
+    ->getQuery()
+    ->setMaxResults(1)->getOneOrNullResult()
+    ;
+
+    return $query;
+  }
 }

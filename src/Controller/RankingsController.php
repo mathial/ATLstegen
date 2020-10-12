@@ -16,6 +16,7 @@ use \Symfony\Component\Form\Extension\Core\Type\DateType;
 use App\Entity\EloRatingSystem;
 use App\Entity\EloCompetitor;
 use App\Entity\Player;
+use App\Entity\Matchs;
 use App\Entity\Ranking;
 use App\Entity\Rankingpos;
 
@@ -32,9 +33,9 @@ class RankingsController extends AbstractController
   }
 
   /**
-   * @Route("/rankings/generate", name="rankings_generate_test")
+   * @Route("/rankings/generate", name="rankings_generate_tennis")
    */
-  public function generateTest(Request $request)
+  public function generateRankings(Request $request)
   {
   	
 	  $arrRankFinal = array();
@@ -54,7 +55,8 @@ class RankingsController extends AbstractController
 		$formBuilder = $this->createFormBuilder($defaultData);
 
 		$arrPlayersDisplay=array();
-	  
+	  $arrDesactivate=array();
+
 	  $formBuilder
 	  ->add('date_ranking', DateType::class, array(
 	    'required'   => true,
@@ -67,7 +69,7 @@ class RankingsController extends AbstractController
       'required'   => true,
     ))
 	  ->add('generate_ranking', CheckboxType::class, array(
-	    'label'    => 'Generate rankings',
+	    'label'    => 'Generate rankings and deactivate players (no match during the last year)',
 	    'required' => false,
 		))
 	  ->add("Create", SubmitType::class);
@@ -131,6 +133,20 @@ class RankingsController extends AbstractController
 			foreach($arrPlayers as $pId) {
 				$player = $em->getRepository('App:Player')->findOneBy(array("id" => $pId));
 				$arrPlayersDisplay[$pId]=$player->getNameshort();
+
+				// get the last match played by the player
+				$lastMatchP = $em->getRepository('App:Matchs')->findLastMatchPerPlayer($pId);
+				//print_r($lastMatchP);
+				$now_1_Y = date('Y-m-d', strtotime('-1 year'));
+
+				if ($lastMatchP->getDate()->format("Y-m-d") <= $now_1_Y && $player->getActiveTennis()==1) {
+					$arrDeactivate[]=$player->getNameshort();
+					if ($generate_ranking==1) {
+						$player->setActivetennis(0);
+						$em->flush();
+					}
+				}
+
 
 				// get the ranking expected
 				if ($based_ranking=="init") {
@@ -226,13 +242,14 @@ class RankingsController extends AbstractController
 
     }
 
-	  return $this->render('site/generate_rankings_test.html.twig', [
+	  return $this->render('site/generate_rankings_tennis.html.twig', [
 	    'controller_name' => 'RankingsController',
 	    'form' => $form->createView(),
 	    'arrRankFinal' => $arrRankFinal,
 	    'dateFrom' => $date_from,
 	    'arrMatchs' => $matchs,
 	    'arrPlayersDisplay' => $arrPlayersDisplay,
+	    'arrDeactivate' => $arrDeactivate
 	  ]);
 	}
 

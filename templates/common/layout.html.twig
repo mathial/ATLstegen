@@ -68,7 +68,7 @@
 
         {% if is_granted('ROLE_ADMIN') %} 
           <ul class="nav nav-pills nav-stacked"><i>ADMIN</i>
-            <li><a href="{{ path('rankings_generate_test') }}">[TENNIS] Generate rankings</a></li>
+            <li><a href="{{ path('rankings_generate_tennis') }}">[TENNIS] Generate rankings</a></li>
             <li><a href="{{ path('rankings_generate_paddle') }}">[PADDLE] Generate rankings</a></li>
             <li><a href="{{ path('player_new') }}">PLAYERS - new</a></li>
             <li><a href="{{ path('players_list', {'maxpage':50, 'page':1}) }}">PLAYERS - list</a></li>
