@@ -45,13 +45,6 @@ class Player
     /**
      * @var string|null
      *
-     * @ORM\Column(name="level", type="string", length=100, nullable=true)
-     */
-    private $level;
-
-    /**
-     * @var string|null
-     *
      * @ORM\Column(name="phone", type="string", length=20, nullable=true)
      */
     private $phone;
@@ -152,18 +145,6 @@ class Player
     public function setBirthdate(?\DateTimeInterface $birthdate): self
     {
         $this->birthdate = $birthdate;
-
-        return $this;
-    }
-
-    public function getLevel(): ?string
-    {
-        return $this->level;
-    }
-
-    public function setLevel(?string $level): self
-    {
-        $this->level = $level;
 
         return $this;
     }

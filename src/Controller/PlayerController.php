@@ -753,9 +753,6 @@ class PlayerController extends Controller
     ->add('phone', TextType::class, array(
       'required'   => false,
     ))
-    ->add('level', TextType::class, array(
-      'required'   => false,
-    ))
     ->add('birthdate', DateType::class, array(
       'required'   => false,
       'years'      => range(date('Y'), date('Y') - 60, -1)

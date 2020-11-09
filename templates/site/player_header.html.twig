@@ -19,11 +19,6 @@
 	{{ player.birthdate|format("YYYY-mm-dd") }}
 </div> #}
 
-<div>
-	<label>Level</label>
-	{{ player.level }}
-</div>    
-
 <ul class="tab_menu">
   <li><a href="{{ path('player_view', {'id':player.id}) }}">Tennis opponents</a></li>
   <li><a href="{{ path('player_view_matches', {'id':player.id, 'page': 1}) }}">Tennis Matches</a></li>
