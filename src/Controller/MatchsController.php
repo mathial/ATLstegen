@@ -229,7 +229,7 @@ class MatchsController extends Controller
       'required'   => true,
     ))
     ->add('context', ChoiceType::class, array(
-      'label'    => 'Conditions',
+      'label'    => 'Context',
       'choices' => array("Stege (söndag 21-22)" => "Stege (söndag 21-22)", "Stege" => "Stege", "A-serien" => "A-serien", "Sprinttennis tournament" => "Sprinttennis tournament", "ATL Klubbmästerskap" => "ATL Klubbmästerskap"),
       'required'   => true,
     ))
