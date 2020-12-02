@@ -145,6 +145,27 @@ class MatchspaddleController extends Controller
         $em->flush();
         $request->getSession()->getFlashBag()->add('success', 'Match created.');
 
+
+
+        $headers ='From: contact@luckylosertennis.com'."\r\n";
+        $headers .= 'MIME-Version: 1.0' . "\r\n";
+        $headers .= 'Content-type: text/html; charset=UTF-8' . "\r\n";
+        // $headers .='Content-Type: text/html; charset="iso-8859-1"'."\r\n";
+        $headers .='Content-Transfer-Encoding: 8bit'."\r\n";
+
+        // $email_contenu = utf8_decode("et là tu les vois les accéééééénts ?");
+
+        $contenu=''.$match->getIdplayer1()->getNameShort().'-'.$match->getIdplayer2()->getNameShort().' VS '. $match->getIdplayer3()->getNameShort().'-'.$match->getIdplayer4()->getNameShort() .' : '.$match->getScore();
+        $contenu.=($match->getTie()==1 ? ' (TIE)' : "");
+        $contenu.='<br>'.$match->getConditions().' - '.$match->getContext();
+
+        if (mail($_SERVER['EMAIL_ADMIN'], "ATL-Stegen => padel match created (".$match->getDate()->format('Y-m-d').")", "Match ajouté", $headers)) {}
+        else {
+          $request->getSession()->getFlashBag()->add('error', 'Error sending email to '.$_SERVER['EMAIL_ADMIN']);
+
+        }
+
+
       }
     }
 
