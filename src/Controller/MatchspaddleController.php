@@ -159,7 +159,7 @@ class MatchspaddleController extends Controller
         $contenu.=($match->getTie()==1 ? ' (TIE)' : "");
         $contenu.='<br>'.$match->getConditions().' - '.$match->getContext();
 
-        if (mail($_SERVER['EMAIL_ADMIN'], "ATL-Stegen => padel match created (".$match->getDate()->format('Y-m-d').")", "Match ajouté", $headers)) {}
+        if (mail($_SERVER['EMAIL_ADMIN'], "ATL-Stegen => padel match created (".$match->getDate()->format('Y-m-d').")", $contenu, $headers)) {}
         else {
           $request->getSession()->getFlashBag()->add('error', 'Error sending email to '.$_SERVER['EMAIL_ADMIN']);
 
