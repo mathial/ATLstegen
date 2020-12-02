@@ -290,7 +290,12 @@ class MatchsController extends Controller
 
         // $email_contenu = utf8_decode("et là tu les vois les accéééééénts ?");
 
-        if (mail($_SERVER['EMAIL_ADMIN'], "ATL-Stegen => tennis match created", "Match ajouté", $headers)) {}
+        $contenu=''.$match->getIdplayer1()->getNameShort().' - '.$match->getIdplayer2()->getNameShort().' : '.$match->getScore();
+        $contenu.=($match->getTie()==1 ? ' (TIE)' : "");
+        $contenu.='<br>'.$match->getConditions().' - '.$match->getContext();
+
+        echo $contenu."<br>";
+        if (mail($_SERVER['EMAIL_ADMIN'], "ATL-Stegen => tennis match created (".$match->getDate()->format('Y-m-d').")", "Match ajouté", $headers)) {}
         else {
           $request->getSession()->getFlashBag()->add('error', 'Error sending email to '.$_SERVER['EMAIL_ADMIN']);
 
