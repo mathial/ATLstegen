@@ -64,6 +64,16 @@ class Matchspaddle
     private $idrankingpaddle;
 
     /**
+     * @var \User
+     *
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="idUserAdd", referencedColumnName="id")
+     * })
+     */
+    private $iduseradd = '4';
+
+    /**
      * @var \Player
      *
      * @ORM\ManyToOne(targetEntity="Player")
@@ -176,6 +186,18 @@ class Matchspaddle
     public function setIdrankingpaddle(?int $idrankingpaddle): self
     {
         $this->idrankingpaddle = $idrankingpaddle;
+
+        return $this;
+    }
+
+    public function getIdUseradd(): ?User
+    {
+        return $this->iduserddd;
+    }
+
+    public function setIduseradd(?User $iduseradd): self
+    {
+        $this->iduseradd = $iduseradd;
 
         return $this;
     }

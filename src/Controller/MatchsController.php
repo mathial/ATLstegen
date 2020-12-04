@@ -278,6 +278,9 @@ class MatchsController extends Controller
 
       if ($form->isValid()) {
 
+        $user = $this->get('security.token_storage')->getToken()->getUser();
+        $match->setIduseradd($user);
+
         $em->persist($match);
         $em->flush();
         $request->getSession()->getFlashBag()->add('success', 'Match created.');
@@ -294,7 +297,7 @@ class MatchsController extends Controller
         $contenu.=($match->getTie()==1 ? ' (TIE)' : "");
         $contenu.='<br>'.$match->getConditions().' - '.$match->getContext();
 
-        if (mail($_SERVER['EMAIL_ADMIN'], "ATL-Stegen => tennis match created (".$match->getDate()->format('Y-m-d').")", $contenu, $headers)) {}
+        if (mail($_SERVER['EMAIL_ADMIN'], "ATL-Stegen => tennis match created by ".$user->getUsername()." (".$match->getDate()->format('Y-m-d').")", $contenu, $headers)) {}
         else {
           $request->getSession()->getFlashBag()->add('error', 'Error sending email to '.$_SERVER['EMAIL_ADMIN']);
 
