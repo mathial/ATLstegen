@@ -192,7 +192,7 @@ class Matchspaddle
 
     public function getIdUseradd(): ?User
     {
-        return $this->iduserddd;
+        return $this->iduseradd;
     }
 
     public function setIduseradd(?User $iduseradd): self

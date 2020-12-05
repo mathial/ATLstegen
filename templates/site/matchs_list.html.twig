@@ -18,6 +18,7 @@
         <th>{{ knp_pagination_sortable(listMatchs, 'Conditions', 'm.conditions') }}</th>
         <th>PtsEvol</th>
         {% if is_granted('ROLE_ADMIN') %} 
+          <th>User-add</th>
           <th>action</th>
         {% endif %}
       </tr>
@@ -42,7 +43,8 @@
           <td class="cond-{{ match.conditions|replace({' ': ''}) }}">{{ match.conditions }}</td>
           <td>{{ arrMEvol[match.id] }}</td>
           {% if is_granted('ROLE_ADMIN') %} 
-            <th><a href="{{ path('match_update', {'id':match.id}) }}">update</a></th>
+            <td>{{ match.iduseradd.username }}</td>
+            <td><a href="{{ path('match_update', {'id':match.id}) }}">update</a></td>
           {% endif %}
         </tr>
         {% set ind = ind +1 %}
