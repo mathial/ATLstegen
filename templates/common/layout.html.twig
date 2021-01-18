@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>{% block title %}ATL Stegen - Tennis / Paddle{% endblock %}</title>
+  <title>{% block title %}ATL Stegen - Tennis / Padel{% endblock %}</title>
 
   {% block stylesheets %}
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -20,7 +20,7 @@
 <body>
   <div class="container">
     <div id="header" class="jumbotron">
-      <a href="{{ path('homepage') }}"><h1>ATL Stegen - Tennis / Paddle</h1></a>
+      <a href="{{ path('homepage') }}"><h1>ATL Stegen - Tennis / Padel</h1></a>
     </div>
 
     <div class="row">
@@ -52,7 +52,7 @@
           </ul>
         {% endif %}
 
-        <h3>PADDLE</h3>
+        <h3>PADEL</h3>
 
         <ul class="nav nav-pills nav-stacked">
           <li><a href="{{ path('simulator_paddle') }}">Points simulator (double)</a></li>
@@ -69,7 +69,7 @@
         {% if is_granted('ROLE_ADMIN') %} 
           <ul class="nav nav-pills nav-stacked"><i>ADMIN</i>
             <li><a href="{{ path('rankings_generate_tennis') }}">[TENNIS] Generate rankings</a></li>
-            <li><a href="{{ path('rankings_generate_paddle') }}">[PADDLE] Generate rankings</a></li>
+            <li><a href="{{ path('rankings_generate_paddle') }}">[PADEL] Generate rankings</a></li>
             <li><a href="{{ path('player_new') }}">PLAYERS - new</a></li>
             <li><a href="{{ path('players_list', {'maxpage':50, 'page':1}) }}">PLAYERS - list</a></li>
             <li><a href="{{ path('user_new') }}">USERS - new</a></li>
