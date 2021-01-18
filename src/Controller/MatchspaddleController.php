@@ -24,11 +24,11 @@ use App\Entity\EloCompetitor;
 class MatchspaddleController extends Controller
 {
     /**
-     * @Route("/matchspaddle", name="matchspaddle")
+     * @Route("/matchspadel", name="matchspadel")
      */
     public function index()
     {
-        return $this->render('matchspaddle/index.html.twig', [
+        return $this->render('matchspadel/index.html.twig', [
             'controller_name' => 'MatchspaddleController',
         ]);
     }
@@ -124,8 +124,8 @@ class MatchspaddleController extends Controller
 
   /**
    * @Route(
-   * "/matchspaddle/new", 
-   * name="matchspaddle_new")
+   * "/matchspadel/new", 
+   * name="matchspadel_new")
    */
   public function new(Request $request)
   {
@@ -182,8 +182,8 @@ class MatchspaddleController extends Controller
 
   /**
    * @Route(
-   * "/matchspaddle/update/{id}", 
-   * name="matchpaddle_update", 
+   * "/matchspadel/update/{id}", 
+   * name="matchpadel_update", 
    * requirements={
    *   "id"="\d+" 
    * })
@@ -217,8 +217,8 @@ class MatchspaddleController extends Controller
 
     /**
    * @Route(
-   * "/matchspaddle/list/{maxpage}/{page}", 
-   * name="matchspaddle_list", 
+   * "/matchspadel/list/{maxpage}/{page}", 
+   * name="matchspadel_list", 
    * requirements={
    *   "page"="\d+" 
    * })

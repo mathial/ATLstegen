@@ -22,7 +22,7 @@ use App\Entity\Rankingpospaddle;
 class RankingspaddleController extends AbstractController
 {
   /**
-   * @Route("/rankingspaddle", name="rankings_paddle")
+   * @Route("/rankingspadel", name="rankings_padel")
    */
   public function index()
   {
@@ -32,7 +32,7 @@ class RankingspaddleController extends AbstractController
   }
 
   /**
-   * @Route("/rankingspaddle/generate", name="rankings_generate_paddle")
+   * @Route("/rankingspadel/generate", name="rankings_generate_padel")
    */
   public function generate(Request $request)
   {
@@ -268,9 +268,9 @@ class RankingspaddleController extends AbstractController
 
 
 	/**
-   * @Route("/rankingspaddle/view", name="rankings_paddle_view")
-   * @Route("/rankingspaddle/view/{id}", name="rankings_paddle_view_id")
-   * @Route("/rankingspaddle/view/{id}/{AO}", name="rankings_paddle_view_id_ao")
+   * @Route("/rankingspadel/view", name="rankings_padel_view")
+   * @Route("/rankingspadel/view/{id}", name="rankings_padel_view_id")
+   * @Route("/rankingspadel/view/{id}/{AO}", name="rankings_padel_view_id_ao")
    */
   public function viewRanking($id=null, $AO=1, Request $request)
   {
@@ -312,7 +312,7 @@ class RankingspaddleController extends AbstractController
       $idRanking=$data['id_ranking'];
       $activeOnly=(isset($data['active_only']) && $data['active_only']!="" ? $data['active_only'] : 0);
 
-      $url = $this->generateUrl('rankings_paddle_view_id_ao', array('id' => $idRanking, 'AO' => $activeOnly));
+      $url = $this->generateUrl('rankings_padel_view_id_ao', array('id' => $idRanking, 'AO' => $activeOnly));
       return $this->redirect($url);
 		}	
 		elseif ($id<>null) {
@@ -507,126 +507,10 @@ class RankingspaddleController extends AbstractController
 	}
 
 
-	/*
-  /**
-   * @Route("/simulatorpaddleOLD", name="simulator_paddle_old")
-  public function simulatordouble(Request $request)
-  {
-  	$arrRt=array();
-  	$avg_teamA=null;
-  	$avg_teamB=null;
-
-  	$defaultData = array('message' => 'Type your message here');
-		$formBuilder = $this->createFormBuilder($defaultData);
-
-	  $formBuilder
-	  ->add('rating_player1', TextType::class, array(
-	    'label'    => 'TEAM A: Rating player 1',
-	    'required'   => true,
-	  ))
-	  ->add('rating_player2', TextType::class, array(
-	    'label'    => 'TEAM A: Rating player 2',
-	    'required'   => true,
-	  ))
-	  ->add('rating_player3', TextType::class, array(
-	    'label'    => 'TEAM B: Rating player 3',
-	    'required'   => true,
-	  ))
-	  ->add('rating_player4', TextType::class, array(
-	    'label'    => 'TEAM B: Rating player 4',
-	    'required'   => true,
-	  ))
-	  ->add('result', ChoiceType::class, array(
-      'choices' => array("Team A wins" => 1, "Team B wins" => 2, "tie" => 0),
-      'required'   => true,
-    ))
-	  ->add("Calculate", SubmitType::class);
-
-	  $form = $formBuilder->getForm();
-
-		$form->handleRequest($request);
-
-    if ($form->isSubmitted() && $form->isValid()) {
-      // data is an array with "name", "email", and "message" keys
-      $data = $form->getData();
-
-      $rating_player1=$data['rating_player1'];
-      $rating_player2=$data['rating_player2'];
-      $rating_player3=$data['rating_player3'];
-      $rating_player4=$data['rating_player4'];
-      $result=$data['result'];
-
-      if (isset($rating_player1) && is_numeric($rating_player1) && isset($rating_player2) && is_numeric($rating_player2) && isset($rating_player3) && is_numeric($rating_player3) && isset($rating_player4) && is_numeric($rating_player4)) {
-
-      	$avg_teamA = ($rating_player1 + $rating_player2) / 2;
-      	$avg_teamB = ($rating_player3 + $rating_player4) / 2;
-
-			  $competitors = array(
-			    array('id' => 1, 'name' => "Team A", 'skill' => 100, 'rating' => $avg_teamA, 'active' => 1),
-			    array('id' => 2, 'name' => "Team B", 'skill' => 100, 'rating' => $avg_teamB, 'active' => 1),
-			  );
-			  //  initialize the ranking system and add the competitors
-			  $elo = new EloRatingSystem(100, 50);
-			  foreach ($competitors as $competitor) {
-			    $elo->addCompetitor(new EloCompetitor($competitor['id'], $competitor['name'], $competitor['rating']));
-			  }
-
-			  if ($result==1) {
-			    $elo->addResult(1,2);
-			    $match = "Team A defeats Team B";
-			    //$result="player1";
-			  }
-			  elseif ($result==2) {
-			    $elo->addResult(2,1);
-			    $match = "Team B defeats Team A";
-			    //$result="player2";
-			  }
-			  else {
-			    $elo->addResult(1,2, true);
-			    $match = "TIE Team A - Team B";
-			    //$result="draw";
-			  }
-
-			  $elo->updateRatings();
-
-				$tabRank = $elo->getRankings();
-
-				foreach ($tabRank as $idP => $val) {
-					$exp=explode("#", $idP);
-					if ($exp[0]==1) {
-						$evol=$val-$avg_teamA;
-						if ($evol>0) $arrRt[1]="+".number_format($evol, 1);
-						else $arrRt[1]=number_format($evol, 1);
-
-						$arrRt[2]=$arrRt[1];
-
-					}
-					elseif ($exp[0]==2) {
-						$evol=$val-$avg_teamB;
-						if ($evol>0) $arrRt[3]="+".number_format($evol, 1);
-						else $arrRt[3]=number_format($evol, 1);
-
-						$arrRt[4]=$arrRt[3];
-					}
-
-				}
-
-			}
-
-    }
-
-	  return $this->render('site/simulator_double.html.twig', [
-	    'controller_name' => 'RankingsController',
-	    'form' => $form->createView(),
-	    'avg_teamA' => $avg_teamA,
-	    'avg_teamB' => $avg_teamB,
-	    'arrRt' => $arrRt,
-	  ]);
-  }*/
 
 
   /**
-   * @Route("/simulatorpaddle", name="simulator_paddle")
+   * @Route("/simulatorpadel", name="simulator_padel")
    */
   public function simulatordouble2(Request $request)
   {
