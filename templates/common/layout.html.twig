@@ -37,43 +37,38 @@
         
         <ul class="nav nav-pills nav-stacked">
           {# <li><a href="{{ path('homepage') }}">Home</a></li> #}
-          <li><a href="{{ path('rules_sv') }}">RULES SV</a></li>
-          <li><a href="{{ path('rankings_view') }}">RANKINGS - view</a></li>
+          <li><a href="{{ path('rules_sv') }}">Rules på svenska</a></li>
+          <li><a href="{{ path('rankings_view') }}">Rankings</a></li>
           <li><a href="{{ path('simulator') }}">Points simulator (single)</a></li>
-          <li><a href="{{ path('matchs_list', {'maxpage':50, 'page':1}) }}">MATCHS - list</a></li>
-          <li><a href="{{ path('race_slutspel') }}">Race to Lund 2021 Slutspel !</a></li>
-          <li><a href="{{ path('sunday_contest') }}">Sunday 21-22 contest</a></li>
+          <li><a href="{{ path('matchs_list', {'maxpage':50, 'page':1}) }}">Matchs list</a></li>
+          <li><a href="{{ path('tennis_calendar_events') }}">Calendar / events</a></li>
+          <!--<li><a href="{{ path('race_slutspel') }}">Race to Lund 2021 Slutspel !</a></li>
+          <li><a href="{{ path('sunday_contest') }}">Sunday 21-22 contest</a></li>-->
         </ul>
-
-
-        {% if is_granted('ROLE_USER') %} 
-          <ul class="nav nav-pills nav-stacked"><i>USER</i>
-            <li><a href="{{ path('matchs_new') }}">MATCHS - new</a></li>
-          </ul>
-        {% endif %}
 
         <h3>PADEL</h3>
 
         <ul class="nav nav-pills nav-stacked">
           <li><a href="{{ path('simulator_padel') }}">Points simulator (double)</a></li>
-          <li><a href="{{ path('rankings_padel_view') }}">RANKINGS - view</a></li>
+          <li><a href="{{ path('rankings_padel_view') }}">Rankings</a></li>
           <li><a href="{{ path('matchspadel_list', {'maxpage':50, 'page':1}) }}">MATCHS - list</a></li>
         </ul>
 
         {% if is_granted('ROLE_USER') %} 
           <ul class="nav nav-pills nav-stacked"><i>USER</i>
-            <li><a href="{{ path('matchspadel_new') }}">MATCHS - new</a></li>
+            <li><a href="{{ path('matchs_new') }}">New Tennis Match</a></li>
+            <li><a href="{{ path('matchspadel_new') }}">New Padel Match</a></li>
           </ul>
         {% endif %}
 
         {% if is_granted('ROLE_ADMIN') %} 
           <ul class="nav nav-pills nav-stacked"><i>ADMIN</i>
-            <li><a href="{{ path('rankings_generate_tennis') }}">[TENNIS] Generate rankings</a></li>
-            <li><a href="{{ path('rankings_generate_padel') }}">[PADEL] Generate rankings</a></li>
-            <li><a href="{{ path('player_new') }}">PLAYERS - new</a></li>
-            <li><a href="{{ path('players_list', {'maxpage':50, 'page':1}) }}">PLAYERS - list</a></li>
-            <li><a href="{{ path('user_new') }}">USERS - new</a></li>
-            <li><a href="{{ path('user_list') }}">USERS - list</a></li>
+            <li><a href="{{ path('rankings_generate_tennis') }}">Generate Tennis rankings</a></li>
+            <li><a href="{{ path('rankings_generate_padel') }}">Generate Padel rankings</a></li>
+            <li><a href="{{ path('player_new') }}">New Player</a></li>
+            <li><a href="{{ path('players_list', {'maxpage':50, 'page':1}) }}">Players list</a></li>
+            <li><a href="{{ path('user_new') }}">New User</a></li>
+            <li><a href="{{ path('user_list') }}">Users list</a></li>
           </ul>
         {% endif %}
 

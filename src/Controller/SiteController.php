@@ -189,5 +189,15 @@ class SiteController extends AbstractController
             'controller_name' => 'SiteController',
         ]);
     }
+
+    /**
+     * @Route("/tennis-calendar-events", name="tennis_calendar_events")
+     */
+    public function tennisCalendarEvents()
+    {
+        return $this->render('site/events.html.twig', [
+            'controller_name' => 'SiteController',
+        ]);
+    }
 }
 

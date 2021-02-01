@@ -409,7 +409,7 @@ class MatchsController extends Controller
     arsort($arrTot);
 
 
-    return $this->render('site/sunday_contest.html.twig', array(
+    return $this->render('site/events_sunday_contest.html.twig', array(
         "arrSessions" => $arrSessions, 
         "arrContest" => $arrContest, 
         "arrTot" => $arrTot, 
@@ -468,7 +468,7 @@ class MatchsController extends Controller
     }
 
 //    return $this->render('site/race_slutspel.html.twig', array("arrRace" => $arrRace, "arrRaceData" => $arrRaceData
-    return $this->render('site/race_slutspel.html.twig', 
+    return $this->render('site/events_race_slutspel.html.twig', 
       array("arrRaceTot" => $arrRaceTot, "bigTot" => $bigTot)
     );
     
