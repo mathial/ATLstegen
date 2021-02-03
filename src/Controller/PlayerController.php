@@ -357,7 +357,7 @@ class PlayerController extends Controller
 
   /**
    * @Route("/players/matchespaddle/{id}/{page}", 
-   * name="player_view_matches_paddle", 
+   * name="player_view_matches_padel", 
    * requirements={
    *   "id"="\d+", 
    *   "page"="\d+", 

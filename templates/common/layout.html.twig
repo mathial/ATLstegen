@@ -51,7 +51,7 @@
         <ul class="nav nav-pills nav-stacked">
           <li><a href="{{ path('simulator_padel') }}">Points simulator (double)</a></li>
           <li><a href="{{ path('rankings_padel_view') }}">Rankings</a></li>
-          <li><a href="{{ path('matchspadel_list', {'maxpage':50, 'page':1}) }}">MATCHS - list</a></li>
+          <li><a href="{{ path('matchspadel_list', {'maxpage':50, 'page':1}) }}">Matchs list</a></li>
         </ul>
 
         {% if is_granted('ROLE_USER') %} 
