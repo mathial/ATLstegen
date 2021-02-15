@@ -600,6 +600,9 @@ class PlayerController extends Controller
     $player = $em->getRepository('App:Player')->findOneBy(array('id'=>$id));
     $lastR = $em->getRepository('App:Player')->getLastRanking($id);
 
+    $maxVal=0;
+    $minVal=2000;
+
     $rankingScores = $em->getRepository('App:Rankingpos')->findBy(array('idplayer'=>$id), array('idranking' => 'ASC'));
 
     $arrRS=array();
@@ -618,6 +621,10 @@ class PlayerController extends Controller
 
       }
       $arrRS[$rs->getIdRanking()->getDate()->format("Y-m-d")]=$rs->getScore();
+
+      if ($rs->getScore()<$minVal) $minVal=$rs->getScore();
+      if ($rs->getScore()>$maxVal) $maxVal=$rs->getScore();
+
       $arrDate[]=$rs->getIdRanking()->getDate()->format("Y-m-d");
 
     }
@@ -644,6 +651,9 @@ class PlayerController extends Controller
       }
       $df=$rs->getIdRankingpaddle()->getDate()->format("Y-m-d");
       $arrRSPaddle[$df]=$rs->getScore();
+
+      if ($rs->getScore()<$minVal) $minVal=$rs->getScore();
+      if ($rs->getScore()>$maxVal) $maxVal=$rs->getScore();
 
       if (!in_array($df, $arrDate)) $arrDate[]=$df;
     }
@@ -674,6 +684,8 @@ class PlayerController extends Controller
       'arrRS' => $arrRS_tennis_final,
       'lastRPaddle' => $lastRPaddle,
       'arrRSPaddle' => $arrRS_paddle_final,
+      'minVal' => ($minVal-50),
+      'maxVal' => ($maxVal+50),
     ]);
   }
 
