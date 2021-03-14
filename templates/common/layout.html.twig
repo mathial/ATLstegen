@@ -57,7 +57,7 @@
         {% if is_granted('ROLE_USER') %} 
           <ul class="nav nav-pills nav-stacked"><i>USER</i>
             <li><a href="{{ path('matchs_new') }}">New Tennis Match</a></li>
-            <!--<li><a href="{{ path('matchup_generator') }}">Matchups generator</a></li>-->
+            <li><a href="{{ path('matchup_generator') }}">Matchups generator</a></li>
             <li><a href="{{ path('matchspadel_new') }}">New Padel Match</a></li>
           </ul>
         {% endif %}

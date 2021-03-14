@@ -653,14 +653,13 @@ class MatchsController extends Controller
   public function generateMatchups(Request $request)
   {
     
-    $arrRankFinal = array();
-    $matchs = array();
-    $date_from="";
-    
+    $error="";
+    $arrMatch=array();
+
     $em = $this->getDoctrine()->getManager();
 
     $arrPlayer=array();
-    $players = $em->getRepository('App:Player')->findBy(array("activeTennis" => 1), array('nameShort' => 'DESC'));
+    $players = $em->getRepository('App:Player')->findBy(array("activetennis" => 1), array('nameshort' => 'ASC'));
     foreach ($players as $pl) {
       $arrPlayer[$pl->getNameShort()] = $pl->getId();
     }
@@ -670,17 +669,19 @@ class MatchsController extends Controller
 
     $formBuilder
     ->add('sport', ChoiceType::class, array(
-      'choices' => array("Tennis"),
+      'choices' => array("Tennis" => 0),
       'required'   => true,
     ))
     ->add('method_generating', ChoiceType::class, array(
-      'choices' => array("Standard"),
+      'label' => 'Algorithm',
+      'choices' => array("Standard" => 0),
       'required'   => true,
     ))
     ->add('players', ChoiceType::class, array(
+      'label' => 'Players (multiple selection with CTRL key)',
       'choices' => $arrPlayer,
-      'multiple' => false,
-      'required'   => true,
+      'multiple' => true,
+      'required'   => true
     ))
     ->add("Generate", SubmitType::class);
 
@@ -689,11 +690,58 @@ class MatchsController extends Controller
     $form->handleRequest($request);
 
     if ($form->isSubmitted() && $form->isValid()) {
+      $data = $form->getData();
+
+      $sportForm=$data['sport'];
+      $methodForm=$data['method_generating'];
+      $playersForm=$data['players'];
+
+      if ($sportForm==0 && $methodForm==0) {
+
+        $arrPlayerFlip = array_flip($arrPlayer);
+
+        $arrRank=array();
+        $ranking = $em->getRepository('App:Ranking')->findOneBy(array(), array('date' => 'DESC'), 1);
+
+        $detailsRankings=$em->getRepository('App:Rankingpos')->getSelectedRankingpos($ranking->getId(), $playersForm);
+
+        foreach ($detailsRankings as $det) {
+          $arrRank[$det["idplayer"]]=$det;
+        }
+
+        if (count($arrRank)!=count($playersForm)) {
+            $request->getSession()->getFlashBag()->add('error', "Missing players in the rankings. ".count($playersForm)." expected, ".count($arrRank)." obtained");
+            $error="Missing players in the rankings. ".count($playersForm)." expected, ".count($arrRank)." obtained";
+        }
+        else {
+          $nbCourt=0;
+          $player1="";
+          $player2="";
+          foreach($arrRank as $rank) {
+            if ($player1=="")
+              $player1 = $arrPlayerFlip[$rank["idplayer"]]." ".number_format($rank["score"], 0, ".", "")." pts ";
+            else {
+              $player2 = $arrPlayerFlip[$rank["idplayer"]]." ".number_format($rank["score"], 0, ".", "")." pts ";
+
+              $nbCourt++;
+              $arrMatch[]="Court ".$nbCourt." => ".$player1. " VS ".$player2;
+
+              $player1="";
+              $player2="";
+            }
+
+
+          }
+        }
+      }
+
     }
 
     return $this->render('matchs/matchup_generator.html.twig', [
       'controller_name' => 'RankingsController',
-      'form' => $form->createView()
+      'form' => $form->createView(),
+      'error' => $error,
+      'arrMatch' => $arrMatch,
     ]);
   }
 

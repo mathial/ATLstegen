@@ -1,0 +1,26 @@
+{% form_theme form 'bootstrap/bootstrap_4_layout.html.twig' %}
+
+  {% extends "common/layout.html.twig" %}
+
+  {% block body %}
+
+    <h3>Generate Matchups</h3>
+
+    <div class="form">
+      {{ form(form) }}
+    </div>
+
+    {% if error %}
+    	<p><b>{{ error }}</b></p>
+    {% endif %}
+
+      
+
+    {% for match in arrMatch %}
+    	{{match}}<br>
+
+    {% endfor %}
+
+
+  {% endblock %}
+
