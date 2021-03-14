@@ -510,7 +510,7 @@ class RankingspaddleController extends AbstractController
 
 
   /**
-   * @Route("/simulatorpadel", name="simulator_padel")
+   * @Route("/simulatordouble", name="simulator_double")
    */
   public function simulatordouble2(Request $request)
   {

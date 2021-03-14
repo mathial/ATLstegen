@@ -55,7 +55,7 @@ class RankingsController extends AbstractController
 		$formBuilder = $this->createFormBuilder($defaultData);
 
 		$arrPlayersDisplay=array();
-	  $arrDesactivate=array();
+	  $arrDeactivate=array();
 
 	  $formBuilder
 	  ->add('date_ranking', DateType::class, array(

@@ -647,4 +647,54 @@ class MatchsController extends Controller
     
   }
 
+  /**
+   * @Route("/matchs/matchup-generator", name="matchup_generator")
+   */
+  public function generateMatchups(Request $request)
+  {
+    
+    $arrRankFinal = array();
+    $matchs = array();
+    $date_from="";
+    
+    $em = $this->getDoctrine()->getManager();
+
+    $arrPlayer=array();
+    $players = $em->getRepository('App:Player')->findBy(array("activeTennis" => 1), array('nameShort' => 'DESC'));
+    foreach ($players as $pl) {
+      $arrPlayer[$pl->getNameShort()] = $pl->getId();
+    }
+
+    $defaultData = array('message' => 'Type your message here');
+    $formBuilder = $this->createFormBuilder($defaultData);
+
+    $formBuilder
+    ->add('sport', ChoiceType::class, array(
+      'choices' => array("Tennis"),
+      'required'   => true,
+    ))
+    ->add('method_generating', ChoiceType::class, array(
+      'choices' => array("Standard"),
+      'required'   => true,
+    ))
+    ->add('players', ChoiceType::class, array(
+      'choices' => $arrPlayer,
+      'multiple' => false,
+      'required'   => true,
+    ))
+    ->add("Generate", SubmitType::class);
+
+    $form = $formBuilder->getForm();
+
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+    }
+
+    return $this->render('matchs/matchup_generator.html.twig', [
+      'controller_name' => 'RankingsController',
+      'form' => $form->createView()
+    ]);
+  }
+
 }

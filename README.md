@@ -40,3 +40,8 @@ php bin/console doctrine:mapping:import 'App\Entity' annotation --path=src/Entit
 php bin/console make:entity --regenerate App
 ```
 warning: 
+
+
+
+#
+sudo apt install php8.0-mysql
