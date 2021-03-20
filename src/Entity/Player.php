@@ -87,6 +87,13 @@ class Player
     /**
      * @var int|null
      *
+     * @ORM\Column(name="initialRatingDouble", type="integer", nullable=true)
+     */
+    private $initialratingdouble = '0';
+
+    /**
+     * @var int|null
+     *
      * @ORM\Column(name="initialRatingPaddle", type="integer", nullable=true)
      */
     private $initialratingpaddle = '0';
@@ -217,6 +224,18 @@ class Player
     public function setInitialratingtennis(?int $initialratingtennis): self
     {
         $this->initialratingtennis = $initialratingtennis;
+
+        return $this;
+    }
+
+    public function getInitialratingdouble(): ?int
+    {
+        return $this->initialratingdouble;
+    }
+
+    public function setInitialratingdouble(?int $initialratingdouble): self
+    {
+        $this->initialratingdouble = $initialratingdouble;
 
         return $this;
     }
