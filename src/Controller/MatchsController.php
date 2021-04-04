@@ -681,7 +681,8 @@ class MatchsController extends Controller
       'label' => 'Players (multiple selection with CTRL key)',
       'choices' => $arrPlayer,
       'multiple' => true,
-      'required'   => true
+      'required'   => true,
+      'attr' => ['class' => 'generator-players']
     ))
     ->add("Generate", SubmitType::class);
 

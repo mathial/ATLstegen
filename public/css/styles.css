@@ -41,3 +41,7 @@ footer {
 .cond-clayoutdoor, .cond-outdoor{
 	background-color: #FF7F50;
 }
+
+.generator-players {
+	height: 500px !important;
+}
