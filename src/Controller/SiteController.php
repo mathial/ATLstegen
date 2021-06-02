@@ -199,5 +199,15 @@ class SiteController extends AbstractController
             'controller_name' => 'SiteController',
         ]);
     }
+
+    /**
+     * @Route("/longformat-tournament", name="longformat_tournament")
+     */
+    public function tennisLongFormatTournament()
+    {
+        return $this->render('site/longformat_tournament.html.twig', [
+            'controller_name' => 'SiteController',
+        ]);
+    }
 }
 
