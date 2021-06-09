@@ -746,4 +746,39 @@ class MatchsController extends Controller
     ]);
   }
 
+
+  /**
+   * @Route(
+   * "/matchs/listMatchsLongTournament/{year}/{maxpage}/{page}", 
+   * name="matchs_list_longtournament", 
+   * requirements={
+   *   "year"="\d+", 
+   *   "maxpage"="\d+", 
+   *   "page"="\d+" 
+   * })
+   */
+  public function listMatchsLongTournament($year, $maxpage, $page, Request $request)
+  {
+    $em = $this->getDoctrine()->getManager();
+
+    $dql   = 'SELECT m FROM App:Matchs m WHERE m.context = :context ORDER BY m.date DESC';
+    $query = $em->createQuery($dql)
+            ->setParameter('context', "Longformat tournament ".$year);;
+
+    $paginator  = $this->get('knp_paginator');
+
+    $listMatchs = $paginator->paginate(
+      $query, 
+      $request->query->getInt('page', 1),
+      50
+    );
+
+    return $this->render('site/matchs_list_longtournament.html.twig', array("listMatchs" => $listMatchs,
+      'year' => $year
+    ));
+    
+  }
+
+
+
 }
