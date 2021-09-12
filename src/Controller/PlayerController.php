@@ -582,7 +582,230 @@ class PlayerController extends Controller
     
   }
 
+  /**
+   * @Route("/players/matchesdouble/{id}/{page}", 
+   * name="player_view_matches_double", 
+   * requirements={
+   *   "id"="\d+", 
+   *   "page"="\d+", 
+   * })
+   */
+  public function viewMatchesDouble($id, $page, Request $request)
+  {
+    $em = $this->getDoctrine()->getManager();
 
+    $player = $em->getRepository('App:Player')->findOneBy(array('id'=>$id));
+    $lastR = $em->getRepository('App:Player')->getLastRanking($id, "Double");
+
+    $where="WHERE (m.idplayer1= ".$id." OR m.idplayer2= ".$id." OR m.idplayer3= ".$id." OR m.idplayer4= ".$id.")";
+    $maxpage=5000;
+    $listTotMatchs = $em->getRepository('App:Matchsdouble')->getMatchsPerPageByPlayer($page, $maxpage, $id);
+
+    $dql   = "SELECT m FROM App:Matchsdouble m ".$where." ORDER BY m.date DESC";
+    $query = $em->createQuery($dql);
+
+    $paginator  = $this->get('knp_paginator');
+
+    if (is_numeric($maxpage)) {
+      $limitpage=$maxpage;
+      $nbPages = ceil(count($listTotMatchs)/$maxpage);
+    }
+    else {
+      $limitpage=count($listTotMatchs);
+      $nbPages=1;
+    }
+
+    if ($page < 1 || $page > $nbPages) {
+      $page = 1;
+      // throw $this->createNotFoundException("Page ".$page." doesn't exist.");
+    }
+
+    $listMatchs = $paginator->paginate(
+      $query, 
+      $request->query->getInt('page', $page),
+      $limitpage
+    );
+
+
+    /* POINTS EVOL PER MATCH */
+
+    // for each match, we calculate the points evolution
+    $sql_m   = 'SELECT m.id, m.date, m.tie, p1.id AS p1id, p2.id AS p2id, p1.initialRatingDouble AS p1IR, p2.initialRatingDouble AS p2IR, p3.id AS p3id, p4.id AS p4id, p3.initialRatingDouble AS p3IR, p4.initialRatingDouble AS p4IR 
+                  FROM MatchsDouble m, Player p1, Player p2, Player p3, Player p4
+                  '.$where." 
+                  AND p1.id=m.idplayer1
+                  AND p2.id=m.idplayer2
+                  AND p3.id=m.idplayer3
+                  AND p4.id=m.idplayer4
+                  ORDER BY m.date DESC";
+    $stmt = $em->getConnection()->prepare($sql_m);
+    $stmt->execute();
+    $matches = $stmt->fetchAll();
+
+    $arrMEvol=array();
+
+    foreach ($matches as $mat) {
+
+      $rankId="";
+
+      // get the closest ranking
+      $sql_rank = 'SELECT id FROM RankingDouble WHERE date<"'.$mat["date"].'" ORDER BY date DESC LIMIT 0,1';
+      $stmt = $em->getConnection()->prepare($sql_rank);
+      $stmt->execute();
+      $rank = $stmt->fetchAll();
+      if (isset($rank[0])) $rankId=$rank[0]["id"];
+      
+      $rating_player1=$mat["p1IR"];
+      $rating_player2=$mat["p2IR"];
+      $rating_player3=$mat["p3IR"];
+      $rating_player4=$mat["p4IR"];
+
+      $arrMEvol[$mat["id"]]=0;
+
+      if ($rankId!="") {
+        $sql_rank = 'SELECT score FROM RankingPosDouble WHERE idRankingDouble="'.$rankId.'" AND idPlayer='.$mat["p1id"];
+        $stmt = $em->getConnection()->prepare($sql_rank);
+        $stmt->execute();
+        $rank = $stmt->fetchAll();
+        if (isset($rank[0])) $rating_player1=$rank[0]["score"];
+
+        $sql_rank = 'SELECT score FROM RankingPosDouble WHERE idRankingDouble="'.$rankId.'" AND idPlayer='.$mat["p2id"];
+        $stmt = $em->getConnection()->prepare($sql_rank);
+        $stmt->execute();
+        $rank = $stmt->fetchAll();
+        if (isset($rank[0])) $rating_player2=$rank[0]["score"];
+
+        $sql_rank = 'SELECT score FROM RankingPosDouble WHERE idRankingDouble="'.$rankId.'" AND idPlayer='.$mat["p3id"];
+        $stmt = $em->getConnection()->prepare($sql_rank);
+        $stmt->execute();
+        $rank = $stmt->fetchAll();
+        if (isset($rank[0])) $rating_player3=$rank[0]["score"];
+
+        $sql_rank = 'SELECT score FROM RankingPosDouble WHERE idRankingDouble="'.$rankId.'" AND idPlayer='.$mat["p4id"];
+        $stmt = $em->getConnection()->prepare($sql_rank);
+        $stmt->execute();
+        $rank = $stmt->fetchAll();
+        if (isset($rank[0])) $rating_player4=$rank[0]["score"];
+
+      }
+
+      if ($mat["tie"]==0) $result=1;
+      else $result=0;
+
+      if ($id==$mat["p1id"]) $idPFin=1; // team A
+      elseif ($id==$mat["p2id"]) $idPFin=2; // team A 
+      elseif ($id==$mat["p3id"]) $idPFin=3; // team B
+      elseif ($id==$mat["p4id"]) $idPFin=4; // team B
+
+      if (isset($rating_player1) && is_numeric($rating_player1) && isset($rating_player2) && is_numeric($rating_player2) && isset($rating_player3) && is_numeric($rating_player3) && isset($rating_player4) && is_numeric($rating_player4)) {
+
+        $avg_teamA = ($rating_player1 + $rating_player2) / 2;
+        $avg_teamB = ($rating_player3 + $rating_player4) / 2;
+
+        $competitors = array(
+          array('id' => 1, 'name' => "Player 1", 'skill' => 100, 'rating' => $rating_player1, 'active' => 1),
+          array('id' => 2, 'name' => "Player 2", 'skill' => 100, 'rating' => $rating_player2, 'active' => 1),
+          array('id' => 3, 'name' => "Player 3", 'skill' => 100, 'rating' => $rating_player3, 'active' => 1),
+          array('id' => 4, 'name' => "Player 4", 'skill' => 100, 'rating' => $rating_player4, 'active' => 1),
+        );
+
+        //  initialize the ranking system and add the competitors
+        $elo = new EloRatingSystem(100, 50);
+        foreach ($competitors as $competitor) {
+          $elo->addCompetitor(new EloCompetitor($competitor['id'], $competitor['name'], $competitor['rating']));
+        }
+
+        if ($result==1) {
+          $elo->addResultDouble(
+              $competitors[0], 
+              $competitors[1], 
+              $competitors[2], 
+              $competitors[3]
+            );
+          $match = "Team A defeats Team B";
+          //$result="player1";
+        }
+        else {
+          $elo->addResultDouble(
+              $competitors[0], 
+              $competitors[1], 
+              $competitors[2], 
+              $competitors[3],
+              true 
+            );
+          $match = "TIE Team A - Team B";
+          //$result="draw";
+        }
+
+        $elo->updateRatings();
+
+        $tabRank = $elo->getRankings();
+
+
+        foreach ($tabRank as $idP => $val) {
+          $exp=explode("#", $idP);
+          if ($exp[0]==1) {
+            $evol=$val-$rating_player1;
+            if ($evol>0) $arrRt[1]="+".number_format($evol, 1);
+            else $arrRt[1]=number_format($evol, 1);
+            if ($idP==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[1];
+          }
+          elseif ($exp[0]==2) {
+            $evol=$val-$rating_player2;
+            if ($evol>0) $arrRt[2]="+".number_format($evol, 1);
+            else $arrRt[2]=number_format($evol, 1);
+            if ($idP==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[2];
+          }
+          elseif ($exp[0]==3) {
+            $evol=$val-$rating_player3;
+            if ($evol>0) $arrRt[3]="+".number_format($evol, 1);
+            else $arrRt[3]=number_format($evol, 1);
+            if ($idP==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[3];
+          }
+          elseif ($exp[0]==4) {
+            $evol=$val-$rating_player4;
+            if ($evol>0) $arrRt[4]="+".number_format($evol, 1);
+            else $arrRt[4]=number_format($evol, 1);
+            if ($idP==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[4];
+          }
+
+
+          /*if ($exp[0]==1) {
+            $evol=$val-$avg_teamA;
+            if ($evol>0) $arrRt[1]="+".number_format($evol, 1);
+            else $arrRt[1]=number_format($evol, 1);
+
+            $arrRt[2]=$arrRt[1];
+
+            if ($idP==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[1];
+
+          }
+          elseif ($exp[0]==2) {
+            $evol=$val-$avg_teamB;
+            if ($evol>0) $arrRt[3]="+".number_format($evol, 1);
+            else $arrRt[3]=number_format($evol, 1);
+
+            $arrRt[4]=$arrRt[3];
+
+            if ($idP==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[3];
+          }*/
+
+        }
+      
+      }
+    }
+    /* END POINTS EVOL PER MATCH */
+
+    return $this->render('site/player_view_matches_double.html.twig', array("listMatchs" => $listMatchs,
+      'player' => $player,
+      'lastR' => $lastR,
+      'maxpage' => $maxpage,
+      'nbPages' => $nbPages,
+      'page' => $page,
+      'arrMEvol' => $arrMEvol
+    ));
+    
+  }
 
   /**
    * @Route("/players/evolution/{id}", 
@@ -783,6 +1006,9 @@ class PlayerController extends Controller
     ->add('initialRatingPaddle', TextType::class, array(
       'required'   => true,
     ))
+    ->add('initialRatingDouble', TextType::class, array(
+      'required'   => true,
+    ))
     // ->add('username', TextType::class, array(
     //   'required'   => false,
     // ))
@@ -864,6 +1090,10 @@ class PlayerController extends Controller
             $player->setActivepaddle(1);
           }
           else $player->setActivepaddle(0);
+
+          if ($form->get('initialRatingDouble')->getData()!=0 && is_numeric($form->get('initialRatingDouble')->getData())) {
+            $player->setActivetennis(1);
+          }
 
           $em->persist($player);
           $em->flush();

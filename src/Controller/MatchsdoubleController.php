@@ -174,7 +174,8 @@ class MatchsdoubleController extends Controller
 
     return $this->render('site/matchs_form.html.twig', array(
       'form' => $form->createView(),
-      'form_title' => "New match"
+      'form_title' => "New match",
+      'type_match' => "Tennis DOUBLE"
     ));
     
   }
@@ -210,7 +211,8 @@ class MatchsdoubleController extends Controller
 
     return $this->render('site/matchs_form.html.twig', array(
       'form' => $form->createView(),
-      'form_title' => "Update match"
+      'form_title' => "Update match",
+      'type_match' => "Tennis DOUBLE"
     ));
     
   }

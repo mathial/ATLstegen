@@ -263,7 +263,7 @@ class Player
 
         return $this;
     }
-    
+
     public function getCountry(): ?Country
     {
         return $this->idcountry;

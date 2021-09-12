@@ -46,7 +46,7 @@
         
         <ul class="nav nav-pills nav-stacked">
           <li><a href="{{ path('rankings_view') }}">Single Rankings</a></li>
-          <!--<li><a href="{{ path('rankings_view') }}">Double Rankings</a></li>-->
+          <li><a href="{{ path('rankings_double_view') }}">Double Rankings</a></li>
           <li><a href="{{ path('matchs_list', {'maxpage':50, 'page':1}) }}">Single Matchs list</a></li>
           <li><a href="{{ path('matchsdouble_list', {'maxpage':50, 'page':1}) }}">Double Matchs list</a></li>
           <li><a href="{{ path('tennis_calendar_events') }}">Calendar / events</a></li>
@@ -80,7 +80,8 @@
 
         {% if is_granted('ROLE_ADMIN') %} 
           <ul class="nav nav-pills nav-stacked"><i>ADMIN</i>
-            <li><a href="{{ path('rankings_generate_tennis') }}">Generate Tennis rankings</a></li>
+            <li><a href="{{ path('rankings_generate_tennis') }}">Generate Tennis SINGLE rankings</a></li>
+            <li><a href="{{ path('rankings_generate_double') }}">Generate Tennis DOUBLE rankings</a></li>
             <li><a href="{{ path('rankings_generate_padel') }}">Generate Padel rankings</a></li>
             <li><a href="{{ path('player_new') }}">New Player</a></li>
             <li><a href="{{ path('players_list', {'maxpage':50, 'page':1}) }}">Players list</a></li>
