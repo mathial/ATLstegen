@@ -173,7 +173,11 @@ class RankingsdoubleController extends AbstractController
 				if ($basedRate[$pId]==0) {
 					//get the last ranking of a player at a specific date
 					$ranking = $em->getRepository('App:Player')->getLastRanking($pId, "Tennis", $date_from->format("Y-m-d"));
-					$basedRate[$pId]=(int)number_format($ranking["score"], 0, ".", "");
+
+					if ($ranking["score"]==0 || $ranking["score"]=="-") $basedRate[$pId]=$player->getInitialRatingTennis();
+					else $basedRate[$pId]=(int)number_format($ranking["score"], 0, ".", "");
+
+					if ($basedRate[$pId]==0)  $request->getSession()->getFlashBag()->add('error', 'Impossible to initiate a rating for player '.$pId);
 					$player->setInitialRatingDouble($basedRate[$pId]);
 
 				}
