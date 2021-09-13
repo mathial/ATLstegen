@@ -40,9 +40,16 @@
         tooltip: {
         },
         series: [{ 
-          name:"Tennis", 
+          name:"Tennis SINGLE", 
           data: [
             {% for date, score in arrRS %}
+              {{ score|number_format(1, '.', '') }},
+            {% endfor %}
+          ]
+          },{ 
+          name:"Tennis DOUBLE", 
+          data: [
+            {% for date, score in arrRSDouble %}
               {{ score|number_format(1, '.', '') }},
             {% endfor %}
           ]

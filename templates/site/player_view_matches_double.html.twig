@@ -4,15 +4,15 @@
 
   {% include "site/player_header.html.twig" %}
 
-  <h3>List Matchs Tennis SINGLE ({{ listMatchs|length }}) - Page {{ page }} / {{ nbPages }}</h3>
+  <h3>List Matchs Tennis DOUBLE ({{ listMatchs|length }}) - Page {{ page }} / {{ nbPages }}</h3>
 
   <div class="table-responsive">
     <table class="table">
       <tr>
         <th>#</th>
         <th>{{ knp_pagination_sortable(listMatchs, 'Date', 'm.date') }}</th>
-        <th>Player1</th>
-        <th>Player2</th>
+        <th>Team A</th>
+        <th>Team B</th>
         <th>Score</th>
         <th>{{ knp_pagination_sortable(listMatchs, 'Context', 'm.context') }}</th>
         <th>{{ knp_pagination_sortable(listMatchs, 'Conditions', 'm.conditions') }}</th>
@@ -25,33 +25,31 @@
         <tr>
           <td>{{ ind }}</td>
           <td>{{ match.date|date("Y-m-d") }}</td>
-
           {% if match.tie!=1 %}
             <td class="winner-player">
           {% else %}
             <td>
           {% endif %}
 
-            {% if match.idplayer1.id == player.id %}
+            {% if match.idplayer1.id == player.id or match.idplayer2.id == player.id %}
               <span class="selected-player">
             {% else %}
               <span>
             {% endif %}
 
-            <a href="{{ path('player_view', {'id':match.idplayer1.id}) }}">{{ match.idplayer1.nameshort }}</a>
+            <a href="{{ path('player_view', {'id':match.idplayer1.id}) }}">{{ match.idplayer1.nameshort }}</a> - <a href="{{ path('player_view', {'id':match.idplayer2.id}) }}">{{ match.idplayer2.nameshort }}</a>
             </span>
           </td>
-
           <td>
-            {% if match.idplayer2.id == player.id %}
+            {% if match.idplayer3.id == player.id or match.idplayer4.id == player.id %}
               <span class="selected-player">
             {% else %}
               <span>
             {% endif %}
-            <a href="{{ path('player_view', {'id':match.idplayer2.id}) }}">{{ match.idplayer2.nameshort }}</a>
+
+            <a href="{{ path('player_view', {'id':match.idplayer3.id}) }}">{{ match.idplayer3.nameshort }}</a> - <a href="{{ path('player_view', {'id':match.idplayer4.id}) }}">{{ match.idplayer4.nameshort }}</a>
             </span>
           </td>
-
           <td>{{ match.score }}</td>
           <td>{{ match.context }}</td>
           <td class="cond-{{ match.conditions|replace({' ': ''}) }}">{{ match.conditions }}</td>

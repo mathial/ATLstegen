@@ -171,9 +171,11 @@ class RankingsdoubleController extends AbstractController
 				// specific double
 				// if initial_rating=0 => get the last single rating
 				if ($basedRate[$pId]==0) {
-					$ranking = $em->getRepository('App:Player')->getLastRanking($pId);
-					$basedRate[$pId]=number_format($ranking["score"], 0);
+					//get the last ranking of a player at a specific date
+					$ranking = $em->getRepository('App:Player')->getLastRanking($pId, "Tennis", $date_from->format("Y-m-d"));
+					$basedRate[$pId]=(int)number_format($ranking["score"], 0, ".", "");
 					$player->setInitialRatingDouble($basedRate[$pId]);
+
 				}
 
 

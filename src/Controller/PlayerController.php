@@ -323,24 +323,23 @@ class PlayerController extends Controller
             $evol=$val-$rating_player1;
             if ($evol>0) $arrRt[1]="+".number_format($evol, 1);
             else $arrRt[1]=number_format($evol, 1);
-
-            if ($idP==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[1];
+            if ($exp[0]==$idPFin) {$arrMEvol[$mat["id"]]=$arrRt[1]; }
           }
           elseif ($exp[0]==2) {
             $evol=$val-$rating_player2;
             if ($evol>0) $arrRt[2]="+".number_format($evol, 1);
             else $arrRt[2]=number_format($evol, 1);
-
-            if ($idP==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[2];
+            if ($exp[0]==$idPFin) {$arrMEvol[$mat["id"]]=$arrRt[2]; }
           }
-          
+         
+
+             
         }
       
       }
 
     }
     /* END POINTS EVOL PER MATCH */
-
 
     return $this->render('site/player_view_matches.html.twig', array("listMatchs" => $listMatchs,
       'player' => $player,
@@ -521,25 +520,25 @@ class PlayerController extends Controller
             $evol=$val-$rating_player1;
             if ($evol>0) $arrRt[1]="+".number_format($evol, 1);
             else $arrRt[1]=number_format($evol, 1);
-            if ($idP==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[1];
+            if ($exp[0]==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[1];
           }
           elseif ($exp[0]==2) {
             $evol=$val-$rating_player2;
             if ($evol>0) $arrRt[2]="+".number_format($evol, 1);
             else $arrRt[2]=number_format($evol, 1);
-            if ($idP==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[2];
+            if ($exp[0]==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[2];
           }
           elseif ($exp[0]==3) {
             $evol=$val-$rating_player3;
             if ($evol>0) $arrRt[3]="+".number_format($evol, 1);
             else $arrRt[3]=number_format($evol, 1);
-            if ($idP==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[3];
+            if ($exp[0]==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[3];
           }
           elseif ($exp[0]==4) {
             $evol=$val-$rating_player4;
             if ($evol>0) $arrRt[4]="+".number_format($evol, 1);
             else $arrRt[4]=number_format($evol, 1);
-            if ($idP==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[4];
+            if ($exp[0]==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[4];
           }
 
 
@@ -550,7 +549,7 @@ class PlayerController extends Controller
 
             $arrRt[2]=$arrRt[1];
 
-            if ($idP==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[1];
+            if ($exp[0]==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[1];
 
           }
           elseif ($exp[0]==2) {
@@ -560,7 +559,7 @@ class PlayerController extends Controller
 
             $arrRt[4]=$arrRt[3];
 
-            if ($idP==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[3];
+            if ($exp[0]==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[3];
           }*/
 
         }
@@ -748,25 +747,25 @@ class PlayerController extends Controller
             $evol=$val-$rating_player1;
             if ($evol>0) $arrRt[1]="+".number_format($evol, 1);
             else $arrRt[1]=number_format($evol, 1);
-            if ($idP==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[1];
+            if ($exp[0]==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[1];
           }
           elseif ($exp[0]==2) {
             $evol=$val-$rating_player2;
             if ($evol>0) $arrRt[2]="+".number_format($evol, 1);
             else $arrRt[2]=number_format($evol, 1);
-            if ($idP==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[2];
+            if ($exp[0]==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[2];
           }
           elseif ($exp[0]==3) {
             $evol=$val-$rating_player3;
             if ($evol>0) $arrRt[3]="+".number_format($evol, 1);
             else $arrRt[3]=number_format($evol, 1);
-            if ($idP==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[3];
+            if ($exp[0]==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[3];
           }
           elseif ($exp[0]==4) {
             $evol=$val-$rating_player4;
             if ($evol>0) $arrRt[4]="+".number_format($evol, 1);
             else $arrRt[4]=number_format($evol, 1);
-            if ($idP==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[4];
+            if ($exp[0]==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[4];
           }
 
 
@@ -777,7 +776,7 @@ class PlayerController extends Controller
 
             $arrRt[2]=$arrRt[1];
 
-            if ($idP==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[1];
+            if ($exp[0]==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[1];
 
           }
           elseif ($exp[0]==2) {
@@ -787,7 +786,7 @@ class PlayerController extends Controller
 
             $arrRt[4]=$arrRt[3];
 
-            if ($idP==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[3];
+            if ($exp[0]==$idPFin) $arrMEvol[$mat["id"]]=$arrRt[3];
           }*/
 
         }
@@ -854,6 +853,41 @@ class PlayerController extends Controller
     // sorting per index
     ksort($arrRS);
 
+    // EVOL RANKING DOUBLE 
+    
+    $lastRDouble = $em->getRepository('App:Player')->getLastRanking($id, "Double");
+
+    $rankingScoresDouble = $em->getRepository('App:Rankingposdouble')->findBy(array('idplayer'=>$id), array('idrankingdouble' => 'ASC'));
+
+    $arrRSDouble=array();
+
+
+    foreach ($rankingScoresDouble as $key=>$rs) {
+      // add the initial rankings on the first loop
+      if ($key==0) {
+        $date_1week = new \DateTime($rs->getIdRankingdouble()->getDate()->format("Y-m-d"));
+        // initial rankings
+        $date_1_week_format=$date_1week->modify('-7 day')->format("Y-m-d");
+        $arrRSDouble[$date_1_week_format] = $player->getinitialRatingDouble();
+
+        if (!in_array($date_1_week_format, $arrDate)) $arrDate[]=$date_1_week_format;
+
+      }
+      $df=$rs->getIdRankingdouble()->getDate()->format("Y-m-d");
+      $arrRSDouble[$df]=$rs->getScore();
+
+      if ($rs->getScore()<$minVal) $minVal=$rs->getScore();
+      if ($rs->getScore()>$maxVal) $maxVal=$rs->getScore();
+
+      if (!in_array($df, $arrDate)) $arrDate[]=$df;
+    }
+    // sorting per index
+    ksort($arrRSDouble);
+
+
+
+    // EVOL RANKING PADEL 
+
     $lastRPaddle = $em->getRepository('App:Player')->getLastRanking($id, "Paddle");
 
     $rankingScoresPaddle = $em->getRepository('App:Rankingpospaddle')->findBy(array('idplayer'=>$id), array('idrankingpaddle' => 'ASC'));
@@ -883,6 +917,9 @@ class PlayerController extends Controller
     // sorting per index
     ksort($arrRSPaddle);
 
+
+
+
     // sorting per index
     asort($arrDate);
 
@@ -893,6 +930,9 @@ class PlayerController extends Controller
 
       if (isset($arrRSPaddle[$date])) $arrRS_paddle_final[$date]=$arrRSPaddle[$date];
       else $arrRS_paddle_final[$date]="";
+
+      if (isset($arrRSDouble[$date])) $arrRS_double_final[$date]=$arrRSDouble[$date];
+      else $arrRS_double_final[$date]="";
 
       if (isset($arrRS[$date])) $arrRS_tennis_final[$date]=$arrRS[$date];
       else $arrRS_tennis_final[$date]="";
@@ -906,7 +946,9 @@ class PlayerController extends Controller
       'lastR' => $lastR,
       'arrRS' => $arrRS_tennis_final,
       'lastRPaddle' => $lastRPaddle,
+      'lastRDouble' => $lastRDouble,
       'arrRSPaddle' => $arrRS_paddle_final,
+      'arrRSDouble' => $arrRS_double_final,
       'minVal' => ($minVal-50),
       'maxVal' => ($maxVal+50),
     ]);
