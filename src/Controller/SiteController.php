@@ -209,5 +209,15 @@ class SiteController extends AbstractController
             'controller_name' => 'SiteController',
         ]);
     }
+
+    /**
+     * @Route("/the-division-league", name="division_league")
+     */
+    public function tennisDivisionLeague()
+    {
+        return $this->render('site/division_league.html.twig', [
+            'controller_name' => 'SiteController',
+        ]);
+    }
 }
 

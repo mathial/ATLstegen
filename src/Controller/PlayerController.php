@@ -1046,6 +1046,7 @@ class PlayerController extends Controller
       'required'   => true,
     ))
     ->add('initialRatingPaddle', TextType::class, array(
+      'label'    => 'Initial Rating Padel',
       'required'   => true,
     ))
     ->add('initialRatingDouble', TextType::class, array(
@@ -1077,7 +1078,7 @@ class PlayerController extends Controller
         'required'   => true,
       ))
       ->add('activepaddle', ChoiceType::class, array(
-        'label'    => 'Active Paddle',
+        'label'    => 'Active Padel',
         'choices' => array("no" => 0, "yes" => 1),
         'required'   => true,
       ))
