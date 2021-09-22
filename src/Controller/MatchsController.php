@@ -297,7 +297,7 @@ class MatchsController extends Controller
         $contenu.=($match->getTie()==1 ? ' (TIE)' : "");
         $contenu.='<br>'.$match->getConditions().' - '.$match->getContext();
 
-        if (mail($_SERVER['EMAIL_ADMIN'], "[ATL-St.] tennis match - ".$user->getUsername()." (".$match->getDate()->format('Y-m-d').")", $contenu, $headers)) {}
+        if (mail($_SERVER['EMAIL_ADMIN'], "[ATL-St.] tennis single - ".$user->getUsername()." (".$match->getDate()->format('Y-m-d').")", $contenu, $headers)) {}
         else {
           $request->getSession()->getFlashBag()->add('error', 'Error sending email to '.$_SERVER['EMAIL_ADMIN']);
 
