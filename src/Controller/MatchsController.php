@@ -230,7 +230,7 @@ class MatchsController extends Controller
     ))
     ->add('context', ChoiceType::class, array(
       'label'    => 'Context',
-      'choices' => array("Stege" => "Stege", "Stege (söndag 21-22)" => "Stege (söndag 21-22)", "A-serien" => "A-serien", "Sprinttennis tournament" => "Sprinttennis tournament", "Longformat tournament 2021" => "Longformat tournament 2021", "ATL Klubbmästerskap" => "ATL Klubbmästerskap"),
+      'choices' => array("Stege" => "Stege", "Stege (söndag 21-22)" => "Stege (söndag 21-22)", "A-serien" => "A-serien", "Sprinttennis tournament" => "Sprinttennis tournament", "Longformat tournament 2021" => "Longformat tournament 2021", "ATL Klubbmästerskap" => "ATL Klubbmästerskap", "Division League" => "Division League"),
       'required'   => true,
     ))
     ->add('tie', ChoiceType::class, array(
@@ -781,6 +781,37 @@ class MatchsController extends Controller
     
   }
 
+  /**
+   * @Route(
+   * "/matchs/listMatchsDivisionLeague/{year}/{maxpage}/{page}", 
+   * name="matchs_list_divisionleague", 
+   * requirements={
+   *   "year"="\d+", 
+   *   "maxpage"="\d+", 
+   *   "page"="\d+" 
+   * })
+   */
+  public function listMatchsDivisionLeague($year, $maxpage, $page, Request $request)
+  {
+    $em = $this->getDoctrine()->getManager();
+
+    $dql   = 'SELECT m FROM App:Matchs m WHERE m.context = :context ORDER BY m.date DESC';
+    $query = $em->createQuery($dql)
+            ->setParameter('context', "Division League");;
+
+    $paginator  = $this->get('knp_paginator');
+
+    $listMatchs = $paginator->paginate(
+      $query, 
+      $request->query->getInt('page', 1),
+      100
+    );
+
+    return $this->render('site/matchs_list_divisionleague.html.twig', array("listMatchs" => $listMatchs,
+      'year' => $year
+    ));
+    
+  }
 
 
 }
