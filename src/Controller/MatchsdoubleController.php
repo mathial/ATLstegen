@@ -86,6 +86,11 @@ class MatchsdoubleController extends Controller
       'label'    => 'Score',
       'required' => true,
     ))
+    ->add('tie', ChoiceType::class, array(
+      'label'    => 'TIE ?',
+      'choices' => array("no" => 0, "yes" => 1),
+      'required'   => true,
+    ))
     ->add('conditions', ChoiceType::class, array(
       'label'    => 'Conditions',
       'choices' => array("indoor" => "indoor", "outdoor" => "outdoor"),
@@ -94,11 +99,6 @@ class MatchsdoubleController extends Controller
     ->add('context', ChoiceType::class, array(
       'label'    => 'Conditions',
       'choices' => array("Stege" => "Stege", "A-serien" => "A-serien"),
-      'required'   => true,
-    ))
-    ->add('tie', ChoiceType::class, array(
-      'label'    => 'Tie',
-      'choices' => array("no" => 0, "yes" => 1),
       'required'   => true,
     ))
     ;
