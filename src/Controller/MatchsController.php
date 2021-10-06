@@ -223,6 +223,11 @@ class MatchsController extends Controller
       'label'    => 'Score',
       'required' => true,
     ))
+    ->add('tie', ChoiceType::class, array(
+      'label'    => 'TIE ?',
+      'choices' => array("no" => 0, "yes" => 1),
+      'required'   => true,
+    ))
     ->add('conditions', ChoiceType::class, array(
       'label'    => 'Conditions',
       'choices' => array("hard indoor" => "hard indoor", "clay outdoor" => "clay outdoor"),
@@ -231,11 +236,6 @@ class MatchsController extends Controller
     ->add('context', ChoiceType::class, array(
       'label'    => 'Context',
       'choices' => array("Stege" => "Stege", "Stege (söndag 21-22)" => "Stege (söndag 21-22)", "A-serien" => "A-serien", "Sprinttennis tournament" => "Sprinttennis tournament", "Longformat tournament 2021" => "Longformat tournament 2021", "ATL Klubbmästerskap" => "ATL Klubbmästerskap", "Division League" => "Division League"),
-      'required'   => true,
-    ))
-    ->add('tie', ChoiceType::class, array(
-      'label'    => 'Tie',
-      'choices' => array("no" => 0, "yes" => 1),
       'required'   => true,
     ))
     ;
