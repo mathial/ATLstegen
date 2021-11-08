@@ -21,6 +21,13 @@ php composer.phar require symfony/apache-pack
 php bin/console cache:clear
 ```
 
+if the copy does not work, try without https.
+
+on the server => 
+/usr/local/php74/bin/php composer.phar update
+update composer.json with the correct version of php
+nano composer.json
+
 
 #PROD ENABLING SWAP
 https://getcomposer.org/doc/articles/troubleshooting.md#proc-open-fork-failed-errors
