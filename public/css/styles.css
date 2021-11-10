@@ -59,7 +59,16 @@ footer {
     width: auto;
     float: left;
     margin: 20px;
+    min-width: 110px;
 }
+
+#divTitle {
+
+    margin: 20px auto 0 auto;
+    float: left;
+    min-width: 500px;
+}
+
 
 #header a.headerTitle {
     color: #fff;
@@ -69,8 +78,8 @@ footer {
     background: #fc0;
     color: #000;
     text-align: center;
-    margin: 20px auto 0 auto;
     padding: 20px;
+    margin: auto;
     -webkit-border-radius: 60px;
     -moz-border-radius: 60px;
     border-radius: 60px;
