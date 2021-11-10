@@ -45,3 +45,37 @@ footer {
 .generator-players {
 	height: 500px !important;
 }
+
+#header {
+	width: 100%;
+	background: #000;
+	margin: 0;
+	padding: 20px 10px 30px 0;
+	color: #fff;
+}
+
+#header img {
+    height: 80px;
+    width: auto;
+    float: left;
+    margin: 20px;
+}
+
+#header a.headerTitle {
+    color: #fff;
+    font-size: 24px;
+    display: block;
+    width: 320px;
+    background: #fc0;
+    color: #000;
+    text-align: center;
+    margin: 20px auto 0 auto;
+    padding: 20px;
+    -webkit-border-radius: 60px;
+    -moz-border-radius: 60px;
+    border-radius: 60px;
+}
+
+#menu {
+	margin-top: 20px;
+}
