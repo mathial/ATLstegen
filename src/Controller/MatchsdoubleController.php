@@ -277,6 +277,7 @@ class MatchsdoubleController extends Controller
                   AND p3.id=m.idplayer3
                   AND p4.id=m.idplayer4
                   ORDER BY m.date DESC, m.id DESC";
+
     $stmt = $em->getConnection()->prepare($sql_m);
     $stmt->execute();
     $matches = $stmt->fetchAll();
@@ -287,14 +288,14 @@ class MatchsdoubleController extends Controller
 
       $rankId="";
 
-      /*
+      
       // get the closest ranking
       $sql_rank = 'SELECT id FROM RankingDouble WHERE date<="'.$mat["date"].'" ORDER BY date DESC LIMIT 0,1';
       $stmt = $em->getConnection()->prepare($sql_rank);
       $stmt->execute();
       $rank = $stmt->fetchAll();
       if (isset($rank[0])) $rankId=$rank[0]["id"];
-      */
+      
       
       $rating_player1=$mat["p1IR"];
       $rating_player2=$mat["p2IR"];
