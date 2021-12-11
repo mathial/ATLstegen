@@ -165,13 +165,24 @@ class SiteController extends AbstractController
      */
     public function index()
     {   
+
+        return $this->render('common/index.html.twig', [
+            'controller_name' => 'SiteController',
+        ]);
+    }
+
+    /**
+     * @Route("/tennis-index", name="tennis_index")
+     */
+    public function indexTennis()
+    {   
         $rtTopLast=$this->getTopLastTennisPerf();
 
         $rtSeries=$this->getBestSeries();
 
 //print_r($rtSeries);
 
-        return $this->render('common/index.html.twig', [
+        return $this->render('site/tennis_index.html.twig', [
             'controller_name' => 'SiteController',
             'top3TennisPerf' => $rtTopLast["top"],
             'last3TennisPerf' => $rtTopLast["last"],

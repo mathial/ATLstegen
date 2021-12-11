@@ -1,87 +1,23 @@
 {% extends "common/layout.html.twig" %}
 
 {% block body %}
-  <h1>TENNIS</h1>
-
-  <h3>Primary targets for next week!</h3>
-  <p><i>Top 3 players of the week</i></p>
-  <div class="table-responsive">
-	  <table class="table">
-	    <tr>
-	      <th>#</th>
-	      <th>Player</th>
-	      <th>Evol</th>
-	    </tr>
-
-	    {% set rank = 1 %}
-			{% for p in top3TennisPerf %}
-				<tr>
-					<td>{{ rank }}</td>
-	        <td><a href="{{ path('player_view', {'id':p["player"].id}) }}">{{ p["player"].nameshort }}</a></td>
-	        <td><b>{{ p["evol"] }}</b></td>
-
-				</tr>
-
-				{% set rank = rank + 1 %}
-			{% endfor %}
-		</table>
-	</div>
-
-	<h3>Blood thirsty, next week is payback time!</h3>
-	<p><i>Bottom 3 players of the week</i></p>
-  <div class="table-responsive">
-	  <table class="table">
-	    <tr>
-	      <th>#</th>
-	      <th>Player</th>
-	      <th>Evol</th>
-	    </tr>
-
-	    {% set rank = nbEvol %}
-			{% for p in last3TennisPerf %}
-				<tr>
-					<td>{{ rank }}</td>
-	        <td><a href="{{ path('player_view', {'id':p["player"].id}) }}">{{ p["player"].nameshort }}</a></td>
-	        <td><b>{{ p["evol"] }}</b></td>
-
-				</tr>
-
-				{% set rank = rank - 1 %}
-			{% endfor %}
-		</table>
-	</div>
+  <h1>Welcome to the ATL Internal Tour !</h1>
 
 
-	<h3>Best series</h3>
-	<p><i>Players with at least 5 matchs played during the last 60 days</i></p>
-  <div class="table-responsive">
-	  <table class="table">
-	    <tr>
-	      <th>#</th>
-	      <th>Player</th>
-	      <th>W</th>
-	      <th>D</th>
-	      <th>T</th>
-	      <th>tot</th>
-	      <!--<th>score</th>-->
-	    </tr>
+  <h3>Overview</h3>
+  
+  <p>"Stegen" is an unofficial competition we have created in ATL. To help people finding partners and playing matches !</p>
+  <p>Any kind of players are welcome : juniors and seniors, men and women, super skilled players and beginners.</p>
+  <p>We are organizing several events (regular weekly sessions, annual tournaments, league, etc.) and a ranking system for those who crave for competition ;-)</p>
 
-	    {% set rank = 1 %}
-			{% for id, p in rtSeries %}
-				<tr>
-					<td>{{ rank }}</td>
-	        <td><a href="{{ path('player_view', {'id':id}) }}">{{ p["player"].nameshort }}</a></td>
-	        <td>{{ p["W"] }}</td>
-	        <td>{{ p["D"] }}</td>
-	        <td>{{ p["T"] }}</td>
-	        <td>{{ p["tot"] }}</td>
-	        <!--<td>{{ p["score"] }}</td>-->
+  <p>The "Tour" is much more active in tennis than in padel, because of the facilities available : 8 tennis indoor courts at VictoriaStadion, 5 tennis outdoor courts at Smörlyckan. "Only" 1 indoor padel court in VictoriaStadion, and 2 outdoor courts at Smörlyckan.</p>
 
-				</tr>
+  <p>All the matches played through "Stegen" are integrated in our database. You will start playing with an initial rating (based on your level when you start) and it will evolve week after week, depending on your results against other "Stegen" players. We generate the new rankings/ratings every monday.<p>
 
-				{% set rank = rank + 1 %}
-			{% endfor %}
-		</table>
-	</div>
+  <p>This system is willing to be super flexible. You play when you can, when you want. And several different events are available, with different formats. To help anyone to find something that could suit him or her. Some players are playing matches several times a week, by attending all the events and/or playing "stegen matches", others are playing every other month or even more rarely.</p>
+
+  <p>You can find <a href="{{ path('tennis_index') }}">here a page that describes our different tennis events</a>.</p>
+
+  <p><img src="{{ asset('img/recap_stegen_galaxy.png') }}" width="100%"></p>
 
 {% endblock %}
