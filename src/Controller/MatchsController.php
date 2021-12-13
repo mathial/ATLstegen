@@ -772,7 +772,7 @@ class MatchsController extends Controller
     $listMatchs = $paginator->paginate(
       $query, 
       $request->query->getInt('page', 1),
-      100
+      $maxpage
     );
 
     return $this->render('site/matchs_list_longtournament.html.twig', array("listMatchs" => $listMatchs,
@@ -804,7 +804,7 @@ class MatchsController extends Controller
     $listMatchs = $paginator->paginate(
       $query, 
       $request->query->getInt('page', 1),
-      100
+      $maxpage
     );
 
     return $this->render('site/matchs_list_divisionleague.html.twig', array("listMatchs" => $listMatchs,
