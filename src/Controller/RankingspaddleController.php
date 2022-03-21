@@ -86,6 +86,42 @@ class RankingspaddleController extends AbstractController
 
       if ($based_ranking!="init") {
       	$rankingpaddle = $em->getRepository('App:Rankingpaddle')->findOneBy(array("id" => $based_ranking));
+
+      	if($generate_ranking==1) {
+
+					// check if a ranking exist at that date
+					$sql = '
+				    SELECT * FROM RankingPaddle WHERE date = :date
+				    ';
+				  $stmt = $em->getConnection()->prepare($sql);
+					$stmt->execute(['date' => $date_from->format("Y-m-d")]);
+					if ($rankingExist = $stmt->fetchAll()) {
+
+						// delete all the pos 
+						$sql = '
+				    DELETE FROM RankingPosPaddle WHERE idRanking = :idR
+				    ';
+						$stmt = $em->getConnection()->prepare($sql);
+						$nbDeletes = $stmt->execute(['idR' => $rankingExist[0]["id"]]);
+						if ($nbDeletes>0) {
+							$request->getSession()->getFlashBag()->add('info',  $stmt->rowCount().' RankingPosPadel deleted ('.$date_from->format("Y-m-d").' // id#'.$rankingExist[0]["id"].').');
+						}
+
+						// and then delete the rankings
+						$sql = '
+				    DELETE FROM RankingDouble WHERE id = :idR
+				    ';
+						$stmt = $em->getConnection()->prepare($sql);
+						$nbDeletes = $stmt->execute(['idR' => $rankingExist[0]["id"]]);
+						if ($nbDeletes>0) {
+							$request->getSession()->getFlashBag()->add('info', 'RankingPadel deleted ('.$date_from->format("Y-m-d").' // id#'.$rankingExist[0]["id"].').');
+						}
+
+					}
+					
+	      }
+
+
       }
 
       $sql = '
@@ -191,14 +227,6 @@ class RankingspaddleController extends AbstractController
 		  $tabRank = $elo->getRankings();
 
 		  if ($generate_ranking==1) {
-				$sql = '
-			    DELETE FROM RankingPaddle WHERE date = :date
-			    ';
-				$stmt = $em->getConnection()->prepare($sql);
-				$nbDeletes = $stmt->execute(['date' => $date_from->format("Y-m-d")]);
-				if ($nbDeletes>0) {
-					$request->getSession()->getFlashBag()->add('info', 'Rankingpaddle deleted ('.$date_from->format("Y-m-d").').');
-				}
 
 				$rankingpaddle=new Rankingpaddle();
 				$rankingpaddle->setDate($date_from);
