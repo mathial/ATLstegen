@@ -350,6 +350,33 @@ class MatchsController extends Controller
     
   }
 
+  /**
+   * @Route(
+   * "/matchs/delete/{id}", 
+   * name="match_delete", 
+   * requirements={
+   *   "id"="\d+" 
+   * })
+   */
+  public function delete($id, Request $request) {
+
+    if ($this->getUser()!== NULL && in_array('ROLE_ADMIN', $this->getUser()->getRoles(), true)) {
+
+        $em = $this->getDoctrine()->getManager();
+        $match = $em->getRepository('App:Matchs')->findOneBy(['id' => $id]);
+
+        $em->remove($match);
+        $em->flush();
+
+        $request->getSession()->getFlashBag()->add('success', 'Match '.$id.' deleted.');
+    }
+    else {
+        $request->getSession()->getFlashBag()->add('error', 'Only for ADMINS.');
+    }
+
+    return $this->redirectToRoute('matchs_list', array('maxpage' =>50, 'page'=>1));
+    
+  }
 
   /**
    * @Route(
