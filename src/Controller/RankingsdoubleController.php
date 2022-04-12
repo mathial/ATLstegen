@@ -312,16 +312,23 @@ class RankingsdoubleController extends AbstractController
 
 
 	/**
-   * @Route("/rankingsdouble/view", name="rankings_double_view")
-   * @Route("/rankingsdouble/view/{id}", name="rankings_double_view_id")
+   * @Route("/rankingsdouble/view", name="rankings_double_view", defaults={"id" = null, "AO" = 1})
+   * @Route("/rankingsdouble/view/{id}", name="rankings_double_view_id", defaults={"AO" = 1})
    * @Route("/rankingsdouble/view/{id}/{AO}", name="rankings_double_view_id_ao")
    */
   public function viewRanking($id=null, $AO=1, Request $request)
   {
-  	if ($id<>null) $defaultId=$id;
-  	else $defaultId=57;
-
   	$em = $this->getDoctrine()->getManager();
+
+  	if ($id<>null) {
+			$ranking = $em->getRepository('App:Rankingdouble')->findOneBy(array('id' => $id));
+		}
+  	else {
+  		$ranking = $em->getRepository('App:Rankingdouble')->getLastRanking();
+  	}
+
+  	if ($id<>null) $defaultId=$id;
+  	else $defaultId=$ranking->getId();
 
   	$activeOnly=$AO;
 		$arrRank=array();
@@ -359,12 +366,12 @@ class RankingsdoubleController extends AbstractController
       $url = $this->generateUrl('rankings_double_view_id_ao', array('id' => $idRanking, 'AO' => $activeOnly));
       return $this->redirect($url);
 		}	
-		elseif ($id<>null) {
+		/*elseif ($id<>null) {
 			$ranking = $em->getRepository('App:Rankingdouble')->findOneBy(array('id' => $id));
 		}
   	else {
   		$ranking = $em->getRepository('App:Rankingdouble')->getLastRanking();
-  	}
+  	}*/
 
 		$ranking_1 =  $em->getRepository('App:Rankingdouble')->getRankingBefore($ranking->getDate()->format("Y-m-d"));
 

@@ -296,16 +296,23 @@ class RankingspaddleController extends AbstractController
 
 
 	/**
-   * @Route("/rankingspadel/view", name="rankings_padel_view")
-   * @Route("/rankingspadel/view/{id}", name="rankings_padel_view_id")
+   * @Route("/rankingspadel/view", name="rankings_padel_view", defaults={"id" = null, "AO" = 1})
+   * @Route("/rankingspadel/view/{id}", name="rankings_padel_view_id", defaults={"AO" = 1})
    * @Route("/rankingspadel/view/{id}/{AO}", name="rankings_padel_view_id_ao")
    */
   public function viewRanking($id=null, $AO=1, Request $request)
-  {
-  	if ($id<>null) $defaultId=$id;
-  	else $defaultId=57;
-
+  {	
   	$em = $this->getDoctrine()->getManager();
+
+  	if ($id<>null) {
+			$ranking = $em->getRepository('App:Rankingpaddle')->findOneBy(array('id' => $id));
+		}
+  	else {
+  		$ranking = $em->getRepository('App:Rankingpaddle')->getLastRanking();
+  	}
+
+  	if ($id<>null) $defaultId=$id;
+  	else $defaultId=$ranking->getId();
 
   	$activeOnly=$AO;
 		$arrRank=array();
@@ -343,12 +350,12 @@ class RankingspaddleController extends AbstractController
       $url = $this->generateUrl('rankings_padel_view_id_ao', array('id' => $idRanking, 'AO' => $activeOnly));
       return $this->redirect($url);
 		}	
-		elseif ($id<>null) {
+		/*elseif ($id<>null) {
 			$ranking = $em->getRepository('App:Rankingpaddle')->findOneBy(array('id' => $id));
 		}
   	else {
   		$ranking = $em->getRepository('App:Rankingpaddle')->getLastRanking();
-  	}
+  	}*/
 
 		$ranking_1 =  $em->getRepository('App:Rankingpaddle')->getRankingBefore($ranking->getDate()->format("Y-m-d"));
 

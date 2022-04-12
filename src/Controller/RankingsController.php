@@ -284,65 +284,73 @@ class RankingsController extends AbstractController
 
 
 	/**
-   * @Route("/rankings/view", name="rankings_view")
-   * @Route("/rankings/view/{id}", name="rankings_view_id")
+   * @Route("/rankings/view", name="rankings_view", defaults={"id" = null, "AO" = 1})
+   * @Route("/rankings/view/{id}", name="rankings_view_id", defaults={"AO" = 1})
    * @Route("/rankings/view/{id}/{AO}", name="rankings_view_id_ao")
    */
   public function viewRanking($id=null, $AO=1, Request $request)
   {
-  	if ($id<>null) $defaultId=$id;
-  	else $defaultId=57;
-
   	$em = $this->getDoctrine()->getManager();
 
-  	$activeOnly=$AO;
-	$arrRank=array();
-	$rankings = $em->getRepository('App:Ranking')->findBy(array(), array('date' => 'DESC'));
-	foreach ($rankings as $rank) {
-		$arrRank[$rank->getDate()->format("Y-m-d")] = $rank->getId();
-	}
-
-	$defaultData = array('message' => 'Type your message here');
-	$formBuilder = $this->createFormBuilder($defaultData);
-
-	$formBuilder
-	->add('id_ranking', ChoiceType::class, array(
-		'choices' => $arrRank,
-	  'required' => true,
-	  'data' => $defaultId,
-	))
-	->add('active_only', CheckboxType::class, array(
-		'label' => "Only active players.",
-	   'required' => false,
-	   'data' => ($activeOnly==1 ? true : false)
-	))
-	->add("Select", SubmitType::class);
-
-	$form = $formBuilder->getForm();
-
-	$form->handleRequest($request);
-
-	if ($form->isSubmitted() && $form->isValid()) {
-	  $data = $form->getData();
-
-      $idRanking=$data['id_ranking'];
-      $activeOnly=(isset($data['active_only']) && $data['active_only']!="" ? $data['active_only'] : 0);
-
-      $url = $this->generateUrl('rankings_view_id_ao', array('id' => $idRanking, 'AO' => $activeOnly));
-      return $this->redirect($url);
-	}	
-	elseif ($id<>null) {
-		$ranking = $em->getRepository('App:Ranking')->findOneBy(array('id' => $id));
-	}
+  	if ($id<>null) {
+			$ranking = $em->getRepository('App:Ranking')->findOneBy(array('id' => $id));
+		}
   	else {
   		$ranking = $em->getRepository('App:Ranking')->getLastRanking();
   	}
 
-	$ranking_1 =  $em->getRepository('App:Ranking')->getRankingBefore($ranking->getDate()->format("Y-m-d"));
+  	if ($id<>null) $defaultId=$id;
+  	else $defaultId=$ranking->getId();
+
+  	$activeOnly=$AO;
+
+		$arrRank=array();
+		$rankings = $em->getRepository('App:Ranking')->findBy(array(), array('date' => 'DESC'));
+		foreach ($rankings as $rank) {
+			$arrRank[$rank->getDate()->format("Y-m-d")] = $rank->getId();
+		}
+
+		$defaultData = array('message' => 'Type your message here');
+		$formBuilder = $this->createFormBuilder($defaultData);
+
+		$formBuilder
+		->add('id_ranking', ChoiceType::class, array(
+			'choices' => $arrRank,
+		  'required' => true,
+		  'data' => $defaultId,
+		))
+		->add('active_only', CheckboxType::class, array(
+			'label' => "Only active players.",
+		   'required' => false,
+		   'data' => ($activeOnly==1 ? true : false)
+		))
+		->add("Select", SubmitType::class);
+
+		$form = $formBuilder->getForm();
+
+		$form->handleRequest($request);
+
+		if ($form->isSubmitted() && $form->isValid()) {
+		  $data = $form->getData();
+
+	      $idRanking=$data['id_ranking'];
+	      $activeOnly=(isset($data['active_only']) && $data['active_only']!="" ? $data['active_only'] : 0);
+
+	      $url = $this->generateUrl('rankings_view_id_ao', array('id' => $idRanking, 'AO' => $activeOnly));
+	      return $this->redirect($url);
+		}	
+		/*elseif ($id<>null) {
+			$ranking = $em->getRepository('App:Ranking')->findOneBy(array('id' => $id));
+		}
+  	else {
+  		$ranking = $em->getRepository('App:Ranking')->getLastRanking();
+  	}*/
+
+		$ranking_1 =  $em->getRepository('App:Ranking')->getRankingBefore($ranking->getDate()->format("Y-m-d"));
 
   	$detailsRankings=$em->getRepository('App:Rankingpos')->findBy(array('idranking' => $ranking));
   	$detailsPlayer=array();
-	$arrTotal=array();
+		$arrTotal=array();
   	$arrTotal["score"]=0;
   	$arrTotal["evolscore"]=0;
   	$arrTotal["evolpos"]=0;
