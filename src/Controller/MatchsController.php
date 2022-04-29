@@ -429,10 +429,12 @@ class MatchsController extends Controller
       $nbM = $stmt->fetchAll();
 
       foreach ($nbM as $year) {
+
+        $arrTotPerYear[$year["yearDate"]]++;
+
         $arrContest[$player["idP"]][$year["yearDate"]]=$year["tot"];
         if (!isset($arrTot[$player["idP"]])) {
           $arrTot[$player["idP"]]=0;
-          $arrTotPerYear[$year["yearDate"]]++;
         }
         $arrTot[$player["idP"]]+=$year["tot"];
 
