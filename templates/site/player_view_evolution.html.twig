@@ -43,21 +43,33 @@
           name:"Tennis SINGLE", 
           data: [
             {% for date, score in arrRS %}
-              {{ score|number_format(1, '.', '') }},
+              {% if score is null %}
+                null,
+              {% else %}
+                {{ score|number_format(1, '.', '') }},
+              {% endif %}
             {% endfor %}
           ]
           },{ 
           name:"Tennis DOUBLE", 
           data: [
             {% for date, score in arrRSDouble %}
-              {{ score|number_format(1, '.', '') }},
+              {% if score is null %}
+                null,
+              {% else %}
+                {{ score|number_format(1, '.', '') }},
+              {% endif %}
             {% endfor %}
           ]
           },{ 
           name:"Padel", 
           data: [
             {% for date, score in arrRSPaddle %}
-              {{ score|number_format(1, '.', '') }},
+              {% if score is null %}
+                null,
+              {% else %}
+                {{ score|number_format(1, '.', '') }},
+              {% endif %}
             {% endfor %}
           ]
           }

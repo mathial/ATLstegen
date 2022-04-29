@@ -890,24 +890,24 @@ class PlayerController extends Controller
 
     $lastRPaddle = $em->getRepository('App:Player')->getLastRanking($id, "Paddle");
 
-    $rankingScoresPaddle = $em->getRepository('App:Rankingpospaddle')->findBy(array('idplayer'=>$id), array('idrankingpaddle' => 'ASC'));
+    $rankingScoresPadel = $em->getRepository('App:Rankingpospaddle')->findBy(array('idplayer'=>$id), array('idrankingpaddle' => 'ASC'));
 
-    $arrRSPaddle=array();
+    $arrRSPadel=array();
 
 
-    foreach ($rankingScoresPaddle as $key=>$rs) {
+    foreach ($rankingScoresPadel as $key=>$rs) {
       // add the initial rankings on the first loop
       if ($key==0) {
         $date_1week = new \DateTime($rs->getIdRankingpaddle()->getDate()->format("Y-m-d"));
         // initial rankings
         $date_1_week_format=$date_1week->modify('-7 day')->format("Y-m-d");
-        $arrRSPaddle[$date_1_week_format] = $player->getinitialRatingPaddle();
+        $arrRSPadel[$date_1_week_format] = $player->getinitialRatingPaddle();
 
         if (!in_array($date_1_week_format, $arrDate)) $arrDate[]=$date_1_week_format;
 
       }
       $df=$rs->getIdRankingpaddle()->getDate()->format("Y-m-d");
-      $arrRSPaddle[$df]=$rs->getScore();
+      $arrRSPadel[$df]=$rs->getScore();
 
       if ($rs->getScore()<$minVal) $minVal=$rs->getScore();
       if ($rs->getScore()>$maxVal) $maxVal=$rs->getScore();
@@ -915,8 +915,7 @@ class PlayerController extends Controller
       if (!in_array($df, $arrDate)) $arrDate[]=$df;
     }
     // sorting per index
-    ksort($arrRSPaddle);
-
+    ksort($arrRSPadel);
 
 
 
@@ -924,18 +923,18 @@ class PlayerController extends Controller
     asort($arrDate);
 
     $arrRS_tennis_final=array();
-    $arrRS_paddle_final=array();
+    $arrRS_padel_final=array();
 
     foreach ($arrDate as $date) {
 
-      if (isset($arrRSPaddle[$date])) $arrRS_paddle_final[$date]=$arrRSPaddle[$date];
-      else $arrRS_paddle_final[$date]="";
+      if (isset($arrRSPadel[$date])) $arrRS_padel_final[$date]=$arrRSPadel[$date];
+      else $arrRS_padel_final[$date]=null;
 
       if (isset($arrRSDouble[$date])) $arrRS_double_final[$date]=$arrRSDouble[$date];
-      else $arrRS_double_final[$date]="";
+      else $arrRS_double_final[$date]=null;
 
       if (isset($arrRS[$date])) $arrRS_tennis_final[$date]=$arrRS[$date];
-      else $arrRS_tennis_final[$date]="";
+      else $arrRS_tennis_final[$date]=null;
 
     }
 
@@ -947,7 +946,7 @@ class PlayerController extends Controller
       'arrRS' => $arrRS_tennis_final,
       'lastRPaddle' => $lastRPaddle,
       'lastRDouble' => $lastRDouble,
-      'arrRSPaddle' => $arrRS_paddle_final,
+      'arrRSPaddle' => $arrRS_padel_final,
       'arrRSDouble' => $arrRS_double_final,
       'minVal' => ($minVal-50),
       'maxVal' => ($maxVal+50),
