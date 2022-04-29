@@ -398,14 +398,14 @@ class MatchsController extends Controller
     $arrSessions["tot"]=0;
     $arrTotPerYear=array();
 
+    // in case no match yet in pending year
+    $arrSessions[date("Y")]=0;
+    $arrTotPerYear[date("Y")]=0;
     foreach ($nbM as $year) {
       $arrSessions[$year["yearDate"]]=$year["tot"];
       $arrSessions["tot"]+=$year["tot"];
       $arrTotPerYear[$year["yearDate"]]=0;
     }
-    // in case no match yet in pending year
-    $arrSessions[date("Y")]=0;
-    $arrTotPerYear[date("Y")]=0;
 
     $sql   = 'SELECT DISTINCT idPlayer1 AS idP FROM Matchs m WHERE context="Stege (söndag 21-22)" 
     UNION SELECT DISTINCT idPlayer2 AS idP FROM Matchs m WHERE context="Stege (söndag 21-22)" 
