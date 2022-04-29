@@ -20,6 +20,16 @@
       </table>
     {% endif %}
 
+    {% if arrActivate|length >0 %}
+      <p>{{ arrActivate|length }} player(s) reactivated</p>
+
+      {% for activate in arrActivate %}
+        {{ activate }}, 
+      {% endfor %}
+
+      </table>
+    {% endif %}
+
     {% if arrMatchs|length >0 %}
 
       <h3>{{ arrMatchs|length }} match(s)</h3>

@@ -56,6 +56,7 @@ class RankingsController extends AbstractController
 
 		$arrPlayersDisplay=array();
 	  $arrDeactivate=array();
+	  $arrActivate=array();
 
 	  $formBuilder
 	  ->add('date_ranking', DateType::class, array(
@@ -175,11 +176,24 @@ class RankingsController extends AbstractController
 					//print_r($lastMatchP);
 					$now_1_Y = date('Y-m-d', strtotime('-1 year'));
 
-					if ($lastMatchP->getDate()->format("Y-m-d") <= $now_1_Y && $player->getActiveTennis()==1) {
-						$arrDeactivate[]=$player->getNameshort();
-						if ($generate_ranking==1) {
-							$player->setActivetennis(0);
-							$em->flush();
+					// if player did not play for a year => deactivate
+					if ($lastMatchP->getDate()->format("Y-m-d") <= $now_1_Y) {
+						if ($player->getActiveTennis()==1) {
+							$arrDeactivate[]=$player->getNameshort();
+							if ($generate_ranking==1) {
+								$player->setActivetennis(0);
+								$em->flush();
+							}
+						} 
+					}
+					else {
+						// if player was inactive => reactivate
+						if (!in_array($player->getNameshort(), $arrActivate) && $player->getActiveTennis()==0) {
+							$arrActivate[]=$player->getNameshort();
+							if ($generate_ranking==1) {
+								$player->setActivetennis(1);
+								$em->flush();
+							}
 						}
 					}
 				}
@@ -278,7 +292,8 @@ class RankingsController extends AbstractController
 	    'dateFrom' => $date_from,
 	    'arrMatchs' => $matchs,
 	    'arrPlayersDisplay' => $arrPlayersDisplay,
-	    'arrDeactivate' => $arrDeactivate
+	    'arrDeactivate' => $arrDeactivate,
+	    'arrActivate' => $arrActivate
 	  ]);
 	}
 
