@@ -100,7 +100,7 @@ class PlayerController extends Controller
       foreach ($arrStatsMatchs as $idP => $data) {
         $dataPlayer = $em->getRepository('App:Player')->findOneBy(array('id'=>$idP));
 
-        $arrStatsOpponentsDetails[$idP]["name"]=$dataPlayer->getNameLong();
+        $arrStatsOpponentsDetails[$idP]["name"]=$dataPlayer->getNameShort();
         $arrStatsOpponentsDetails[$idP]["id"]=$idP;
         $arrStatsOpponentsDetails[$idP]["nbM"]=$data["nbM"];
         $arrStatsOpponentsDetails[$idP]["nbW"]=$data["nbW"];
