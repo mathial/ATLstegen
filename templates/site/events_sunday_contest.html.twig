@@ -30,6 +30,14 @@
         {% endfor %}
         <th>Tot</th>
       </tr>
+      <tr>
+        <!-- number of players -->
+        <th>({{ arrTotPerYear["total"] }} pl.)</th>
+        {% for year in 2018..yearNow %}
+          <th>({{ arrTotPerYear[year] }} pl.)</th>
+        {% endfor %}
+        <th>Tot</th>
+      </tr>
       {% for id,tot in arrTot %}
 
         <tr>

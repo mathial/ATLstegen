@@ -396,11 +396,16 @@ class MatchsController extends Controller
 
     $arrSessions=array();
     $arrSessions["tot"]=0;
+    $arrTotPerYear=array();
+
     foreach ($nbM as $year) {
       $arrSessions[$year["yearDate"]]=$year["tot"];
       $arrSessions["tot"]+=$year["tot"];
+      $arrTotPerYear[$year["yearDate"]]=0;
     }
-
+    // in case no match yet in pending year
+    $arrSessions[date("Y")]=0;
+    $arrTotPerYear[date("Y")]=0;
 
     $sql   = 'SELECT DISTINCT idPlayer1 AS idP FROM Matchs m WHERE context="Stege (söndag 21-22)" 
     UNION SELECT DISTINCT idPlayer2 AS idP FROM Matchs m WHERE context="Stege (söndag 21-22)" 
@@ -413,6 +418,7 @@ class MatchsController extends Controller
     $arrContest=array();
     $arrContestData=array();
 
+
     foreach ($players as $player) {
       $dataPlayer = $em->getRepository('App:Player')->findOneBy(array('id'=>$player["idP"]));
 
@@ -424,8 +430,10 @@ class MatchsController extends Controller
 
       foreach ($nbM as $year) {
         $arrContest[$player["idP"]][$year["yearDate"]]=$year["tot"];
-        if (!isset($arrTot[$player["idP"]])) $arrTot[$player["idP"]]=0;
-
+        if (!isset($arrTot[$player["idP"]])) {
+          $arrTot[$player["idP"]]=0;
+          $arrTotPerYear[$year["yearDate"]]++;
+        }
         $arrTot[$player["idP"]]+=$year["tot"];
 
         $arrContest[$player["idP"]][$year["yearDate"]."%"]=number_format($arrContest[$player["idP"]][$year["yearDate"]]*100/$arrSessions[$year["yearDate"]],0);
@@ -436,13 +444,14 @@ class MatchsController extends Controller
     }
 
     arsort($arrTot);
-
+    $arrTotPerYear["total"]=count($arrTot);
 
     return $this->render('site/events_sunday_contest.html.twig', array(
         "arrSessions" => $arrSessions, 
         "arrContest" => $arrContest, 
         "arrTot" => $arrTot, 
-        "arrContestData" => $arrContestData
+        "arrContestData" => $arrContestData,
+        "arrTotPerYear" => $arrTotPerYear
     ));
     
   }
