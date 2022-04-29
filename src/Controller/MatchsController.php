@@ -387,9 +387,10 @@ class MatchsController extends Controller
   {
     $em = $this->getDoctrine()->getManager();
 
+    $contextName="Stege (söndag 21-22)";
 
     // count distinct sessions
-    $sql_nb   = 'SELECT COUNT(DISTINCT date) AS tot, YEAR(date) AS yearDate FROM Matchs m WHERE context="Stege (söndag 21-22)" GROUP BY yearDate';
+    $sql_nb   = 'SELECT COUNT(DISTINCT date) AS tot, YEAR(date) AS yearDate FROM Matchs m WHERE context="'.$contextName.'" GROUP BY yearDate';
     $stmt = $em->getConnection()->prepare($sql_nb);
     $stmt->execute();
     $nbM = $stmt->fetchAll();
@@ -407,8 +408,8 @@ class MatchsController extends Controller
       $arrTotPerYear[$year["yearDate"]]=0;
     }
 
-    $sql   = 'SELECT DISTINCT idPlayer1 AS idP FROM Matchs m WHERE context="Stege (söndag 21-22)" 
-    UNION SELECT DISTINCT idPlayer2 AS idP FROM Matchs m WHERE context="Stege (söndag 21-22)" 
+    $sql   = 'SELECT DISTINCT idPlayer1 AS idP FROM Matchs m WHERE context="'.$contextName.'" 
+    UNION SELECT DISTINCT idPlayer2 AS idP FROM Matchs m WHERE context="'.$contextName.'" 
     ORDER BY idP';
     $stmt = $em->getConnection()->prepare($sql);
     $stmt->execute();
@@ -417,12 +418,14 @@ class MatchsController extends Controller
     $arrTot=array();
     $arrContest=array();
     $arrContestData=array();
-
+    $arrIdPlayer=array();
 
     foreach ($players as $player) {
       $dataPlayer = $em->getRepository('App:Player')->findOneBy(array('id'=>$player["idP"]));
 
-      $sql_nb   = 'SELECT COUNT(DISTINCT date) AS tot, YEAR(date) AS yearDate FROM Matchs m WHERE context="Stege (söndag 21-22)" AND (idPlayer1 = '.$player["idP"].' OR idPlayer2 = '.$player["idP"].') 
+      $arrIdPlayer[]=$player["idP"];
+
+      $sql_nb   = 'SELECT COUNT(DISTINCT date) AS tot, YEAR(date) AS yearDate FROM Matchs m WHERE context="'.$contextName.'" AND (idPlayer1 = '.$player["idP"].' OR idPlayer2 = '.$player["idP"].') 
         GROUP BY yearDate';
       $stmt = $em->getConnection()->prepare($sql_nb);
       $stmt->execute();
@@ -448,12 +451,66 @@ class MatchsController extends Controller
     arsort($arrTot);
     $arrTotPerYear["total"]=count($arrTot);
 
+
+    // OBTAINING THE RATING AVERAGE OF PLAYERS JOINING THE SESSION
+    // 1- get an array of PlayerRating[idPlayer][Year] to store the annual average rating per player (distinct ratings)
+    // 2- for every single sunday session, calculate the rating average of all the players joining
+    // 3- display with a graph
+
+    //1- 
+    $sqlRatingAvg   = 'SELECT P.id, AVG(DISTINCT RP.score) as avg_score, YEAR(R.date) as annee
+    FROM `Ranking` R, RankingPos RP, Player P 
+    WHERE R.id=RP.idRanking AND RP.idPlayer=P.id 
+    and RP.idPlayer in ('.implode(",", $arrIdPlayer).')
+    GROUP BY P.id, YEAR(R.date)
+    ORDER BY P.id, annee DESC
+    ';
+    $stmt = $em->getConnection()->prepare($sqlRatingAvg);
+    $stmt->execute();
+    $rRatingAvg = $stmt->fetchAll();
+
+    $arrRatingAvg=array();
+    foreach ($rRatingAvg as $ravg) {
+      $arrRatingAvg[$ravg["id"]][$ravg["annee"]]=$ravg["avg_score"];
+    }
+
+    //2-
+    $sqlPlayerSession='SELECT DISTINCT(idPlayer1) as idP, date, YEAR(date) as annee FROM Matchs WHERE context="'.$contextName.'"
+    UNION
+    SELECT DISTINCT(idPlayer2) as idP, date, YEAR(date) as annee FROM Matchs WHERE context="'.$contextName.'"
+    ORDER BY date';
+    $stmt = $em->getConnection()->prepare($sqlPlayerSession);
+    $stmt->execute();
+    $rPlayerSession = $stmt->fetchAll();
+
+    $arrSessionAvgRating=array();
+    foreach ($rPlayerSession as $rps) {
+      if (!isset($arrSessionAvgRating[$rps["date"]])) {
+        $arrSessionAvgRating[$rps["date"]]["nbP"]=0;
+        $arrSessionAvgRating[$rps["date"]]["totRat"]=0;
+        $arrSessionAvgRating[$rps["date"]]["avgRat"]=0;
+      }
+
+      // si pas de rating : player who just appeared and has not been ranked yet, element not included
+
+      if (isset($arrRatingAvg[$rps["idP"]][$rps["annee"]])) {
+        $arrSessionAvgRating[$rps["date"]]["nbP"]++;
+        $arrSessionAvgRating[$rps["date"]]["totRat"]+=$arrRatingAvg[$rps["idP"]][$rps["annee"]];
+        $arrSessionAvgRating[$rps["date"]]["avgRat"]=$arrSessionAvgRating[$rps["date"]]["totRat"] / $arrSessionAvgRating[$rps["date"]]["nbP"];
+      }
+      else {
+        echo "no averageRating for player ".$rps["idP"]." on date ".$rps["date"]."<br>";
+      }
+
+    }
+
     return $this->render('site/events_sunday_contest.html.twig', array(
         "arrSessions" => $arrSessions, 
         "arrContest" => $arrContest, 
         "arrTot" => $arrTot, 
         "arrContestData" => $arrContestData,
-        "arrTotPerYear" => $arrTotPerYear
+        "arrTotPerYear" => $arrTotPerYear,
+        "arrSessionAvgRating" => $arrSessionAvgRating
     ));
     
   }

@@ -1,6 +1,58 @@
 {% extends "common/layout.html.twig" %}
 
 {% block body %}
+  
+  {% if arrSessionAvgRating|length > 0 %}
+  <script type="text/javascript">
+
+    $( document ).ready(function() {
+      console.log("ready");
+      $('#graph').highcharts({
+        title: {
+            text: 'Rankings evolution for sunday sessions',
+            x: -20 //center
+        },
+        xAxis: {
+            categories: [
+              {% for date, data in arrSessionAvgRating %}
+                "{{ date }}",
+              {% endfor %}
+            ],
+            labels: {
+              rotation: -90,
+              overflow: "false"
+            }
+        },
+        yAxis: {
+          reversed: false,
+          min: 600, 
+            title: {
+                text: 'points'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        
+        tooltip: {
+        },
+        series: [{ 
+          name:"Average", 
+          data: [
+            {% for date, data in arrSessionAvgRating %}
+              {{ data["avgRat"]|number_format(1, '.', '') }},
+            {% endfor %}
+          ]
+          }
+        ]
+      });
+    });
+    
+  </script>
+  {% endif %}
+
 
   <h3>Sunday 21-22 contest</h3>
 
@@ -20,6 +72,9 @@
     {% endfor %}
     </ul>
   </div>
+
+
+  <div id="graph" style="min-width: 310px; height: 500px; margin: 0 auto"></div>
 
   <div class="table-responsive">
     <table class="table">
