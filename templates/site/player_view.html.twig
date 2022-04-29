@@ -5,6 +5,36 @@
 
   {% include "site/player_header.html.twig" %}
 
+
+  {% if arrHistoryM|length >0 %}
+    <div class="table-responsive">
+      <table class="table">
+        <tr>
+          <th>Year</th>
+          <th class="cond-hardindoor" colspan=5>Hard Indoors (W-T-D-Tot-%Def)</th>
+          <th class="cond-clayoutdoor" colspan=5>Clay outdoors (W-T-D-Tot-%Def)</th>
+        </tr>
+
+        {% for annee, hist in arrHistoryM %}
+          <tr>
+            <td>{{ annee }}</td>
+            {% for condDet, histDet in hist %}
+              <td>{{ histDet["nbW"] }}</td>
+              <td>{{ histDet["nbT"] }}</td>
+              <td>{{ histDet["nbD"] }}</td>
+              <td>{{ histDet["nbM"] }}</td>
+              <td>
+              {% if histDet["nbM"] != 0 %}
+                {{ (histDet["nbD"]*100/histDet["nbM"])|number_format(1, '.', '') }}%
+              {% endif %}
+              </td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+  {% endif %}
+
   {% if arrStatsOpponents|length >0 %}
 
   	<h3>Stats {{ arrStatsOpponents|length }} opponent(s) - {{ nbMTot }} match(s)</h3>
@@ -14,8 +44,8 @@
         <tr>
           <th>Player</th>
           <th>Wins</th>
-          <th>Def.</th>
           <th>Ties</th>
+          <th>Def.</th>
           <th>Tot</th>
           <th>Details</th>
         </tr>
@@ -24,8 +54,8 @@
           <tr>
             <td><a href="{{ path('player_view', {'id':opp.id}) }}">{{ opp.name }}</a></td>
             <td>{{ opp.nbW }}</td>
-            <td>{{ opp.nbD }}</td>
             <td>{{ opp.nbT }}</td>
+            <td>{{ opp.nbD }}</td>
             {% if opp.sold > 0 %}
               <td class="sold-positiv">
             {% elseif opp.sold < 0 %}

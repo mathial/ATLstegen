@@ -39,10 +39,28 @@ class PlayerController extends Controller
     $player = $em->getRepository('App:Player')->findOneBy(array('id'=>$id));
     $lastR = $em->getRepository('App:Player')->getLastRanking($id);
 
+
+    $arrHistoryM=array();
+    $arrConditions=["hard indoor", "clay outdoor"];
+
+    for ($iY=2017; $iY<=date("Y"); $iY++) {
+      foreach ($arrConditions as $cond) {
+        $arrHistoryM[$iY][$cond]["nbM"]=0;
+        $arrHistoryM[$iY][$cond]["nbW"]=0;
+        $arrHistoryM[$iY][$cond]["nbD"]=0;
+        $arrHistoryM[$iY][$cond]["nbT"]=0;
+      }
+    }
+    foreach ($arrConditions as $cond) {
+      $arrHistoryM["tot"][$cond]["nbM"]=0;
+      $arrHistoryM["tot"][$cond]["nbW"]=0;
+      $arrHistoryM["tot"][$cond]["nbD"]=0;
+      $arrHistoryM["tot"][$cond]["nbT"]=0;
+    }
+
     $arrStatsOpponents=array();
     $arrStatsMatchs=array();
     $arrStatsOpponentsDetails=array();
-
 
     $arrStatsOpponentsPaddle=array();
     $arrStatsMatchsPaddle=array();
@@ -50,7 +68,8 @@ class PlayerController extends Controller
 
     if ($player) {
       $sql = '
-        SELECT idplayer1, idplayer2, tie FROM Matchs, Player P1, Player P2
+        SELECT idplayer1, idplayer2, tie , conditions, YEAR(date) AS annee
+        FROM Matchs, Player P1, Player P2
         WHERE idplayer1=P1.id
         AND idplayer2=P2.id
         AND (idplayer1 = :idPlayer OR idplayer2 = :idPlayer)
@@ -76,17 +95,30 @@ class PlayerController extends Controller
           $arrStatsMatchs[$oppId]["sold"]=0;
         }
 
+        if ($opp["conditions"]=="hard outdoor") $opp["conditions"]="hard indoor";
         $arrStatsMatchs[$oppId]["nbM"]++;
+        $arrHistoryM[$opp["annee"]][$opp["conditions"]]["nbM"]++;
+        $arrHistoryM["tot"][$opp["conditions"]]["nbM"]++;
 
-        if ($opp["tie"]==1) $arrStatsMatchs[$oppId]["nbT"]++;
+        if ($opp["tie"]==1) {
+          $arrStatsMatchs[$oppId]["nbT"]++;
+          $arrHistoryM[$opp["annee"]][$opp["conditions"]]["nbT"]++;
+          $arrHistoryM["tot"][$opp["conditions"]]["nbT"]++;
+        }
         else {
           if ($opp["idplayer1"]==$id) {
             $arrStatsMatchs[$oppId]["nbW"]++;
             $arrStatsMatchs[$oppId]["sold"]++;
+
+            $arrHistoryM[$opp["annee"]][$opp["conditions"]]["nbW"]++;
+            $arrHistoryM["tot"][$opp["conditions"]]["nbW"]++;
           }
           else {
             $arrStatsMatchs[$oppId]["nbD"]++;
             $arrStatsMatchs[$oppId]["sold"]--;
+
+            $arrHistoryM[$opp["annee"]][$opp["conditions"]]["nbD"]++;
+            $arrHistoryM["tot"][$opp["conditions"]]["nbD"]++;
           }
         }
 
@@ -183,6 +215,8 @@ class PlayerController extends Controller
       'lastR' => $lastR,
       'arrStatsOpponents' => $arrStatsOpponentsDetails,
       'nbMTot' => $nbMTot,
+      'arrConditions' => $arrConditions,
+      'arrHistoryM' => $arrHistoryM
       /*'arrStatsOpponentsPaddle' => $arrStatsOpponentsDetailsPaddle,
       'nbMTotPaddle' => $nbMTotPaddle,*/
     ]);
