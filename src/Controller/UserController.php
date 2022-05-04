@@ -33,7 +33,7 @@ class UserController extends Controller
   {
     $em = $this->getDoctrine()->getManager();
 
-    $listUsers = $em->getRepository('App:User')->findAll();
+    $listUsers = $em->getRepository('App:User')->findBy(array(), array('username' => 'ASC'));
 
     return $this->render('site/user_list.html.twig', array("listUsers" => $listUsers
     ));
