@@ -221,6 +221,16 @@ class SiteController extends AbstractController
     }
 
     /**
+     * @Route("/longformat-tournament-2021", name="longformat_tournament_2021")
+     */
+    public function tennisLongFormatTournament2021()
+    {
+        return $this->render('site/longformat_tournament_2021.html.twig', [
+            'controller_name' => 'SiteController',
+        ]);
+    }
+
+    /**
      * @Route("/the-division-league", name="division_league")
      */
     public function tennisDivisionLeague()
