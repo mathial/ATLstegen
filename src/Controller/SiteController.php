@@ -211,11 +211,11 @@ class SiteController extends AbstractController
     }
 
     /**
-     * @Route("/longformat-tournament", name="longformat_tournament")
+     * @Route("/summer-tournament", name="summer_longformat_tournament")
      */
-    public function tennisLongFormatTournament()
+    public function tennisSummerTournament()
     {
-        return $this->render('site/longformat_tournament.html.twig', [
+        return $this->render('site/longformat_summer_tournament.html.twig', [
             'controller_name' => 'SiteController',
         ]);
     }
