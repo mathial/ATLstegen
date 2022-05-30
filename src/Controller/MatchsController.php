@@ -235,7 +235,7 @@ class MatchsController extends Controller
     ))
     ->add('context', ChoiceType::class, array(
       'label'    => 'Context',
-      'choices' => array("Stege" => "Stege", "Stege (söndag 21-22)" => "Stege (söndag 21-22)", "A-serien" => "A-serien", "Sprinttennis tournament" => "Sprinttennis tournament", "Longformat tournament 2021" => "Longformat tournament 2021", "ATL Klubbmästerskap" => "ATL Klubbmästerskap", "Division League" => "Division League"),
+      'choices' => array("Stege" => "Stege", "Stege (söndag 21-22)" => "Stege (söndag 21-22)", "A-serien" => "A-serien", "Sprinttennis tournament" => "Sprinttennis tournament", "Summer tournament 2022" => "Summer tournament 2022", "ATL Klubbmästerskap" => "ATL Klubbmästerskap", "Division League" => "Division League"),
       'required'   => true,
     ))
     ;
