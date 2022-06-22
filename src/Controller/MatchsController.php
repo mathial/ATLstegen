@@ -858,9 +858,15 @@ class MatchsController extends Controller
   {
     $em = $this->getDoctrine()->getManager();
 
+    $context="";
+
+    if ($year=="2021") $context="Longformat tournament ".$year;
+    else {
+      $context="Summer tournament ".$year;
+    }
     $dql   = 'SELECT m FROM App:Matchs m WHERE m.context = :context ORDER BY m.date DESC';
     $query = $em->createQuery($dql)
-            ->setParameter('context', "Longformat tournament ".$year);;
+            ->setParameter('context', $context);;
 
     $paginator  = $this->get('knp_paginator');
 
