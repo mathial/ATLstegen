@@ -32,6 +32,233 @@ class RankingsController extends AbstractController
       ]);
   }
 
+  public function testMethodController($var) {
+  	return "tarace".$var;
+  }
+
+
+  public function calculateRankings ($em, $date_from, $generate_ranking, $based_ranking) {
+
+
+  	$arrResults=array();
+		$arrResults["playersDisplay"]=array();
+		$arrResults["playersDeactivate"]=array();
+		$arrResults["playersActivate"]=array();
+		$arrResults["messages"]=array();
+
+
+    if ($based_ranking!="init") {
+    	$ranking = $em->getRepository('App:Ranking')->findOneBy(array("id" => $based_ranking));
+
+    	if($generate_ranking==1) {
+
+				// check if a ranking exist at that date
+				$sql = '
+			    SELECT * FROM Ranking WHERE date = :date
+			    ';
+			  $stmt = $em->getConnection()->prepare($sql);
+				$stmt->execute(['date' => $date_from->format("Y-m-d")]);
+				if ($rankingExist = $stmt->fetchAll()) {
+
+					// delete all the pos 
+					$sql = '
+			    DELETE FROM RankingPos WHERE idRanking = :idR
+			    ';
+					$stmt = $em->getConnection()->prepare($sql);
+					$nbDeletes = $stmt->execute(['idR' => $rankingExist[0]["id"]]);
+					if ($nbDeletes>0) {
+						//$request->getSession()->getFlashBag()->add('info',  $stmt->rowCount().' RankingPos deleted ('.$date_from->format("Y-m-d").' // id#'.$rankingExist[0]["id"].').');
+						$arrResults["messages"][]=[
+							'type' => 'info',
+							'msg' => $stmt->rowCount().' RankingPos deleted ('.$date_from->format("Y-m-d").' // id#'.$rankingExist[0]["id"].').'
+						];
+
+					}
+
+					// and then delete the rankings
+					$sql = '
+			    DELETE FROM Ranking WHERE id = :idR
+			    ';
+					$stmt = $em->getConnection()->prepare($sql);
+					$nbDeletes = $stmt->execute(['idR' => $rankingExist[0]["id"]]);
+					if ($nbDeletes>0) {
+						//$request->getSession()->getFlashBag()->add('info', 'Ranking deleted ('.$date_from->format("Y-m-d").' // id#'.$rankingExist[0]["id"].').');
+						$arrResults["messages"][]=[
+							'type' => 'info',
+							'msg' => 'Ranking deleted ('.$date_from->format("Y-m-d").' // id#'.$rankingExist[0]["id"].').'
+						];
+					}
+
+				}
+				
+      }
+
+    }
+
+    $sql = '
+	    SELECT DISTINCT idPlayer1 FROM Matchs WHERE date <= :date
+	    ';
+		$stmt = $em->getConnection()->prepare($sql);
+		$stmt->execute(['date' => $date_from->format("Y-m-d")]);
+		$players1 = $stmt->fetchAll();
+		
+		$sql = '
+	    SELECT DISTINCT idPlayer2 FROM Matchs WHERE date <= :date
+	    ';
+		$stmt = $em->getConnection()->prepare($sql);
+		$stmt->execute(['date' => $date_from->format("Y-m-d")]);
+		$players2 = $stmt->fetchAll();
+		
+		
+	  if ($based_ranking!="init") {
+	  	$sql = ' SELECT id, idPlayer1, idPlayer2, tie FROM Matchs WHERE date < :date AND date>= :date_based ';
+	  	$stmt = $em->getConnection()->prepare($sql);
+			$stmt->execute(['date' => $date_from->format("Y-m-d"), 'date_based' => $ranking->getDate()->format("Y-m-d")]);
+	  }
+	  else {
+	  	$sql = 'SELECT id, idPlayer1, idPlayer2, tie FROM Matchs WHERE date < :date';
+	  	$stmt = $em->getConnection()->prepare($sql);
+			$stmt->execute(['date' => $date_from->format("Y-m-d")]);
+	  }
+		
+		$matchs = $stmt->fetchAll();
+
+		$arrPlayers=array();
+		$arrResults["playersDisplay"]=array();
+
+		foreach ($players1 as $row) {
+			$arrPlayers[]=$row["idPlayer1"];
+		}
+		foreach ($players2 as $row) {
+			$arrPlayers[]=$row["idPlayer2"];
+		}
+
+		$elo = new EloRatingSystem(100, 50);
+
+		foreach($arrPlayers as $pId) {
+			$player = $em->getRepository('App:Player')->findOneBy(array("id" => $pId));
+			$arrResults["playersDisplay"][$pId]=$player->getNameshort();
+
+			if (!in_array($player->getNameshort(), $arrResults["playersDeactivate"])) {				
+				// get the last match played by the player
+				$lastMatchP = $em->getRepository('App:Matchs')->findLastMatchPerPlayer($pId);
+				//print_r($lastMatchP);
+				$now_1_Y = date('Y-m-d', strtotime('-1 year'));
+
+				// if player did not play for a year => deactivate
+				if ($lastMatchP->getDate()->format("Y-m-d") <= $now_1_Y) {
+					if ($player->getActiveTennis()==1) {
+						$arrResults["playersDeactivate"][]=$player->getNameshort();
+						if ($generate_ranking==1) {
+							$player->setActivetennis(0);
+							$em->flush();
+						}
+					} 
+				}
+				else {
+					// if player was inactive => reactivate
+					if (!in_array($player->getNameshort(), $arrResults["playersActivate"]) && $player->getActiveTennis()==0) {
+						$arrResults["playersActivate"][]=$player->getNameshort();
+						if ($generate_ranking==1) {
+							$player->setActivetennis(1);
+							$em->flush();
+						}
+					}
+				}
+			}
+
+
+			// get the ranking expected
+			if ($based_ranking=="init") {
+				$basedRate=$player->getInitialRatingTennis();
+			}
+			else {
+				$rankPos = $em->getRepository('App:Rankingpos')->findOneBy(array("idranking" => $based_ranking, "idplayer" => $player->getId()));
+				if ($rankPos) {
+					$basedRate = $rankPos->getScore();
+				}
+				else {
+					// echo "RIEN".$based_ranking."/".$player->getId()."/".count($rankPos)."<br>";
+					$basedRate = $player->getInitialRatingTennis();
+				}
+			}
+
+			$elo->addCompetitor(new EloCompetitor($player->getId(), $player->getNameshort(), $basedRate));
+		}
+		
+		foreach($matchs as $m) {
+			if ($m["tie"]==1) $tie=true;
+			else $tie=false;
+			$elo->addResult($m["idPlayer1"], $m["idPlayer2"], $tie);
+		}
+
+		$elo->updateRatings();
+
+	  $tabRank = $elo->getRankings();
+
+	  if ($generate_ranking==1) {
+
+			$ranking=new Ranking();
+			$ranking->setDate($date_from);
+			$ranking->setDategeneration(new \DateTime(date("Y-m-d H:i:s")));
+
+			$em->persist($ranking);
+      $em->flush();
+
+      $arrResults["messages"][]=['type' => 'success', 'msg' => 'Ranking created'];
+
+	  }
+
+	  $iR = 0;
+	  $oldR=0;
+	  $pos=0;
+	  foreach ($tabRank as $idName => $val) {
+	  	$iR++;
+	    $row=array();
+	    $expl_rank=explode("#", $idName);
+
+	    if ($oldR!=$val) {
+	    	$pos=$iR;
+	    }
+
+	    $row["id"]=$expl_rank[0];
+	    $row["rank"]=$pos;
+	    $row["name"]=$expl_rank[1];
+	    $row["rating"]=$val;
+
+	    $arrRankFinal[]=$row;
+
+	    if ($generate_ranking==1) {
+	    	$ranking_pos = new Rankingpos();
+	    	$player = $em->getRepository('App:Player')->findOneBy(array("id" => $expl_rank[0]));
+	    	
+	    	$ranking_pos->setIdranking($ranking);
+	    	$ranking_pos->setIdplayer($player);
+	    	$ranking_pos->setPosition($pos);
+	    	$ranking_pos->setScore($val);
+
+				$em->persist($ranking_pos);
+	    }
+
+	    $oldR=$val;
+	  }
+
+		if ($generate_ranking==1) {
+
+			foreach($matchs as $m) {
+				$match = $em->getRepository('App:Matchs')->findOneBy(array("id" => $m["id"]));
+				$match->setIdranking($ranking->getId());
+				$em->persist($match);
+			}
+
+     	$em->flush();
+		}
+
+		return $arrResults;
+
+
+  }
+
   /**
    * @Route("/rankings/generate", name="rankings_generate_tennis")
    */
@@ -54,9 +281,10 @@ class RankingsController extends AbstractController
 		$defaultData = array('message' => 'Type your message here');
 		$formBuilder = $this->createFormBuilder($defaultData);
 
-		$arrPlayersDisplay=array();
-	  $arrDeactivate=array();
-	  $arrActivate=array();
+		$arrResults=array();
+		$arrResults["playersDisplay"]=array();
+		$arrResults["playersDeactivate"]=array();
+		$arrResults["playersActivate"]=array();
 
 	  $formBuilder
 	  ->add('date_ranking', DateType::class, array(
@@ -83,10 +311,13 @@ class RankingsController extends AbstractController
       // data is an array with "name", "email", and "message" keys
       $data = $form->getData();
 
-      $date_from=$data['date_ranking'];
-      $generate_ranking=$data['generate_ranking'];
-      $based_ranking=$data['based_ranking'];
-
+      $arrResults = $this->calculateRankings ($em, $data['date_ranking'], $data['generate_ranking'], $data['based_ranking']);
+      if (isset($arrResults["messages"])) {
+      	foreach($arrResults["messages"] as $elt ) {
+      		$request->getSession()->getFlashBag()->add($elt["type"], $elt["msg"]);
+      	}
+      } 
+      /*
       if ($based_ranking!="init") {
       	$ranking = $em->getRepository('App:Ranking')->findOneBy(array("id" => $based_ranking));
 
@@ -155,7 +386,7 @@ class RankingsController extends AbstractController
 			$matchs = $stmt->fetchAll();
 
 			$arrPlayers=array();
-			$arrPlayersDisplay=array();
+			$arrResults["playersDisplay"]=array();
 
 			foreach ($players1 as $row) {
 				$arrPlayers[]=$row["idPlayer1"];
@@ -168,9 +399,9 @@ class RankingsController extends AbstractController
 
 			foreach($arrPlayers as $pId) {
 				$player = $em->getRepository('App:Player')->findOneBy(array("id" => $pId));
-				$arrPlayersDisplay[$pId]=$player->getNameshort();
+				$arrResults["playersDisplay"][$pId]=$player->getNameshort();
 
-				if (!in_array($player->getNameshort(), $arrDeactivate)) {				
+				if (!in_array($player->getNameshort(), $arrResults["playersDeactivate"])) {				
 					// get the last match played by the player
 					$lastMatchP = $em->getRepository('App:Matchs')->findLastMatchPerPlayer($pId);
 					//print_r($lastMatchP);
@@ -179,7 +410,7 @@ class RankingsController extends AbstractController
 					// if player did not play for a year => deactivate
 					if ($lastMatchP->getDate()->format("Y-m-d") <= $now_1_Y) {
 						if ($player->getActiveTennis()==1) {
-							$arrDeactivate[]=$player->getNameshort();
+							$arrResults["playersDeactivate"][]=$player->getNameshort();
 							if ($generate_ranking==1) {
 								$player->setActivetennis(0);
 								$em->flush();
@@ -188,8 +419,8 @@ class RankingsController extends AbstractController
 					}
 					else {
 						// if player was inactive => reactivate
-						if (!in_array($player->getNameshort(), $arrActivate) && $player->getActiveTennis()==0) {
-							$arrActivate[]=$player->getNameshort();
+						if (!in_array($player->getNameshort(), $arrResults["playersActivate"]) && $player->getActiveTennis()==0) {
+							$arrResults["playersActivate"][]=$player->getNameshort();
 							if ($generate_ranking==1) {
 								$player->setActivetennis(1);
 								$em->flush();
@@ -282,7 +513,7 @@ class RankingsController extends AbstractController
 
        	$em->flush();
 			}
-
+			*/
     }
 
 	  return $this->render('site/generate_rankings_tennis.html.twig', [
@@ -291,9 +522,9 @@ class RankingsController extends AbstractController
 	    'arrRankFinal' => $arrRankFinal,
 	    'dateFrom' => $date_from,
 	    'arrMatchs' => $matchs,
-	    'arrPlayersDisplay' => $arrPlayersDisplay,
-	    'arrDeactivate' => $arrDeactivate,
-	    'arrActivate' => $arrActivate
+	    'arrPlayersDisplay' => $arrResults["playersDisplay"],
+	    'arrDeactivate' => $arrResults["playersDeactivate"],
+	    'arrActivate' => $arrResults["playersActivate"]
 	  ]);
 	}
 
