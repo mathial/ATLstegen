@@ -65,6 +65,16 @@ class GenerateTennisSingleRankingsCommand extends Command
           }
         }
 
+        if (isset($results["playersDeactivate"])) {
+          $output->writeln(count($results["playersDeactivate"]). "player(s) to deactivate");
+          print_r($results["playersDeactivate"]);
+        }
+
+        if (isset($results["playersActivate"])) {
+          $output->writeln(count($results["playersActivate"]). "player(s) to activate");
+          print_r($results["playersActivate"]);
+        }
+
     } else {
         $output->writeln('ERROR : wrong date format, must be YYYY-MM-AA');
 

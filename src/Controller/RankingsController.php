@@ -226,7 +226,7 @@ class RankingsController extends AbstractController
 	    $row["name"]=$expl_rank[1];
 	    $row["rating"]=$val;
 
-	    $arrRankFinal[]=$row;
+	    $arrResults["rankFinal"][]=$row;
 
 	    if ($generate_ranking==1) {
 	    	$ranking_pos = new Rankingpos();
@@ -265,7 +265,6 @@ class RankingsController extends AbstractController
   public function generateRankings(Request $request)
   {
   	
-	  $arrRankFinal = array();
 	  $matchs = array();
 		$date_from="";
 		
@@ -285,6 +284,7 @@ class RankingsController extends AbstractController
 		$arrResults["playersDisplay"]=array();
 		$arrResults["playersDeactivate"]=array();
 		$arrResults["playersActivate"]=array();
+		$arrResults["rankFinal"]=array();
 
 	  $formBuilder
 	  ->add('date_ranking', DateType::class, array(
@@ -311,13 +311,19 @@ class RankingsController extends AbstractController
       // data is an array with "name", "email", and "message" keys
       $data = $form->getData();
 
-      $arrResults = $this->calculateRankings ($em, $data['date_ranking'], $data['generate_ranking'], $data['based_ranking']);
+      $date_from=$data['date_ranking'];
+      $generate_ranking=$data['generate_ranking'];
+      $based_ranking=$data['based_ranking'];
+
+      
+      $arrResults = $this->calculateRankings ($em, $date_from, $generate_ranking, $based_ranking);
       if (isset($arrResults["messages"])) {
       	foreach($arrResults["messages"] as $elt ) {
       		$request->getSession()->getFlashBag()->add($elt["type"], $elt["msg"]);
       	}
-      } 
+      }
       /*
+      
       if ($based_ranking!="init") {
       	$ranking = $em->getRepository('App:Ranking')->findOneBy(array("id" => $based_ranking));
 
@@ -486,7 +492,7 @@ class RankingsController extends AbstractController
 		    $row["name"]=$expl_rank[1];
 		    $row["rating"]=$val;
 
-		    $arrRankFinal[]=$row;
+		    $arrResults["rankFinal"][]=$row;
 
 		    if ($generate_ranking==1) {
 		    	$ranking_pos = new Rankingpos();
@@ -519,7 +525,7 @@ class RankingsController extends AbstractController
 	  return $this->render('site/generate_rankings_tennis.html.twig', [
 	    'controller_name' => 'RankingsController',
 	    'form' => $form->createView(),
-	    'arrRankFinal' => $arrRankFinal,
+	    'arrRankFinal' => $arrResults["rankFinal"],
 	    'dateFrom' => $date_from,
 	    'arrMatchs' => $matchs,
 	    'arrPlayersDisplay' => $arrResults["playersDisplay"],
