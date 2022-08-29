@@ -50,9 +50,14 @@ class GenerateTennisSingleRankingsCommand extends Command
 
         $em = $this->container->get('doctrine')->getManager();
 
+        // get the last ranking
+        $ranking = $em->getRepository('App:Ranking')->getLastRanking();
+        $output->writeln("Last ranking id is ".$ranking->getId());
+
+
         //$rkgC = $this->container->get('RankingsController');        
         $rkgC = new RankingsController();
-        $results = $rkgC->calculateRankings($em, new \DateTime($inputDate), 1, 309);
+        $results = $rkgC->calculateRankings($em, new \DateTime($inputDate), 1, $ranking->getId());
         
         if (isset($results["messages"])) {
           foreach($results["messages"] as $elt) {

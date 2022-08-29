@@ -82,3 +82,7 @@ warning:
 #
 sudo apt install php8.1-mysql
 sudo apt install php8.1-xml
+
+### COMMANDS ###
+
+php bin/console app:generate-tennis-single-rankings YYYY-MM-DD

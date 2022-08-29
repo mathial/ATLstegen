@@ -205,7 +205,7 @@ class RankingsController extends AbstractController
 			$em->persist($ranking);
       $em->flush();
 
-      $arrResults["messages"][]=['type' => 'success', 'msg' => 'Ranking created'];
+      $arrResults["messages"][]=['type' => 'success', 'msg' => 'Ranking created #'.$ranking->getId()];
 
 	  }
 
