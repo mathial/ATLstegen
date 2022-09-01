@@ -47,8 +47,8 @@
               </b></td>
               <td>{{ detailsPlayer[det.idplayer.id]["evol"] }}</td>
               <td>{{ detailsPlayer[det.idplayer.id]["wins"] }}</td>
-              <td>{{ detailsPlayer[det.idplayer.id]["defeats"] }}</td>
               <td>{{ detailsPlayer[det.idplayer.id]["ties"] }}</td>
+              <td>{{ detailsPlayer[det.idplayer.id]["defeats"] }}</td>
               <td>{{ detailsPlayer[det.idplayer.id]["wins"] + detailsPlayer[det.idplayer.id]["ties"] + detailsPlayer[det.idplayer.id]["defeats"] }}</td>
             </tr>
 
@@ -63,8 +63,8 @@
             <th>{{ arrTotal["score"]|number_format(0, '.', ' ') }}</th>
             <th>{{ arrTotal["evolscore"]|number_format(0, '.', ' ') }}</th>
             <th>{{ arrTotal["wins"] }}</th>
-            <th>{{ arrTotal["defeats"] }}</th>
             <th>{{ arrTotal["ties"] }}</th>
+            <th>{{ arrTotal["defeats"] }}</th>
             <th>{{ arrTotal["total"] }}</th>
           </tr>
         {% endif %}
