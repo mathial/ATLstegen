@@ -97,7 +97,7 @@ class MatchspaddleController extends Controller
       'required'   => true,
     ))
     ->add('context', ChoiceType::class, array(
-      'label'    => 'Conditions',
+      'label'    => 'Context',
       'choices' => array("Stege" => "Stege", "ATLs Padelstege" => "ATLs Padelstege"),
       'required'   => true,
     ))
