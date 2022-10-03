@@ -44,6 +44,7 @@ class RankingsController extends AbstractController
 		$arrResults["playersDisplay"]=array();
 		$arrResults["playersDeactivate"]=array();
 		$arrResults["playersActivate"]=array();
+		$arrResults["matchs"]=array();
 		$arrResults["messages"]=array();
 
 
@@ -254,6 +255,8 @@ class RankingsController extends AbstractController
      	$em->flush();
 		}
 
+		$arrResults["matchs"]=$matchs;
+
 		return $arrResults;
 
 
@@ -284,6 +287,7 @@ class RankingsController extends AbstractController
 		$arrResults["playersDisplay"]=array();
 		$arrResults["playersDeactivate"]=array();
 		$arrResults["playersActivate"]=array();
+		$arrResults["matchs"]=array();
 		$arrResults["rankFinal"]=array();
 
 	  $formBuilder
@@ -527,7 +531,7 @@ class RankingsController extends AbstractController
 	    'form' => $form->createView(),
 	    'arrRankFinal' => $arrResults["rankFinal"],
 	    'dateFrom' => $date_from,
-	    'arrMatchs' => $matchs,
+	    'arrMatchs' => $arrResults["matchs"],
 	    'arrPlayersDisplay' => $arrResults["playersDisplay"],
 	    'arrDeactivate' => $arrResults["playersDeactivate"],
 	    'arrActivate' => $arrResults["playersActivate"]
