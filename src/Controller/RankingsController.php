@@ -335,7 +335,6 @@ class RankingsController extends AbstractController
 
       // check if there are matches without any ranking linked
 
-      //$matchesWithoutRankings = $em->getRepository('App:Matchs')->findBy(array('idranking' => null));
       $matchesWithoutRankings = $em->getRepository('App:Matchs')->getMatchesWithoutRankings($based_ranking_date);
 
       foreach($matchesWithoutRankings as $matW) {

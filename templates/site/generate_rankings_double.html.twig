@@ -10,6 +10,29 @@
       {{ form(form) }}
     </div>
 
+    {% if arrMatchesWithoutRankings|length >0 %}
+
+      <h3>{{ arrMatchesWithoutRankings|length }} match(s) WITHOUT ANY RANKINGS LINKED</h3>
+      <table class="table">
+      <tr>
+        <th>#</th>
+        <th>Team A (winner)</th>
+        <th>Team B (loser)</th>
+        <th>Date</th>
+      </tr>
+
+      {% for match in arrMatchesWithoutRankings %}
+        <tr>
+          <td>{{ match.id }}</td>
+          <td>{{ match.idPlayer1 }} - {{ match.idPlayer2 }}</td>
+          <td>{{ match.idPlayer3 }} - {{ match.idPlayer4 }}</td>
+          <td>{{ match.date }}</td>
+        </tr>
+      {% endfor %}
+
+      </table>
+    {% endif %}
+
     {% if arrMatchs|length >0 %}
 
       <h3>{{ arrMatchs|length }} match(s)</h3>
@@ -37,6 +60,7 @@
         </table>
       </div>
     {% endif %}
+
 
     {% if arrRankFinal|length >0 %}
 

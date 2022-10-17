@@ -31,6 +31,256 @@ class RankingsdoubleController extends AbstractController
       ]);
   }
 
+  public function calculateRankings ($em, $date_from, $generate_ranking, $based_ranking) {
+
+
+  	$arrResults=array();
+		$arrResults["playersDisplay"]=array();
+		$arrResults["matchs"]=array();
+		$arrResults["messages"]=array();
+
+
+    if ($based_ranking!="init") {
+    	$rankingdouble = $em->getRepository('App:Rankingdouble')->findOneBy(array("id" => $based_ranking));
+
+
+    	if($generate_ranking==1) {
+
+				// check if a ranking exist at that date
+				$sql = '
+			    SELECT * FROM RankingDouble WHERE date = :date
+			    ';
+			  $stmt = $em->getConnection()->prepare($sql);
+				$stmt->execute(['date' => $date_from->format("Y-m-d")]);
+				if ($rankingExist = $stmt->fetchAll()) {
+
+					// delete all the pos 
+					$sql = '
+			    DELETE FROM RankingPosDouble WHERE idRankingdouble = :idR
+			    ';
+					$stmt = $em->getConnection()->prepare($sql);
+					$nbDeletes = $stmt->execute(['idR' => $rankingExist[0]["id"]]);
+					if ($nbDeletes>0) {
+						//$request->getSession()->getFlashBag()->add('info',  $stmt->rowCount().' RankingPosDouble deleted ('.$date_from->format("Y-m-d").' // id#'.$rankingExist[0]["id"].').');
+						$arrResults["messages"][]=[
+							'type' => 'info',
+							'msg' => $stmt->rowCount().' RankingPosDouble deleted ('.$date_from->format("Y-m-d").' // id#'.$rankingExist[0]["id"].').'
+						];
+					}
+
+					// and then delete the rankings
+					$sql = '
+			    DELETE FROM RankingDouble WHERE id = :idR
+			    ';
+					$stmt = $em->getConnection()->prepare($sql);
+					$nbDeletes = $stmt->execute(['idR' => $rankingExist[0]["id"]]);
+					if ($nbDeletes>0) {
+						//$request->getSession()->getFlashBag()->add('info', 'RankingDouble deleted ('.$date_from->format("Y-m-d").' // id#'.$rankingExist[0]["id"].').');
+						$arrResults["messages"][]=[
+							'type' => 'info',
+							'msg' => 'RankingDouble deleted ('.$date_from->format("Y-m-d").' // id#'.$rankingExist[0]["id"].').'
+						];
+					}
+
+				}
+				
+      }
+
+    }
+
+    $sql = '
+	    SELECT DISTINCT idPlayer1 FROM MatchsDouble WHERE date <= :date
+	    ';
+		$stmt = $em->getConnection()->prepare($sql);
+		$stmt->execute(['date' => $date_from->format("Y-m-d")]);
+		$players1 = $stmt->fetchAll();
+		
+		$sql = '
+	    SELECT DISTINCT idPlayer2 FROM MatchsDouble WHERE date <= :date
+	    ';
+		$stmt = $em->getConnection()->prepare($sql);
+		$stmt->execute(['date' => $date_from->format("Y-m-d")]);
+		$players2 = $stmt->fetchAll();
+
+		$sql = '
+	    SELECT DISTINCT idPlayer3 FROM MatchsDouble WHERE date <= :date
+	    ';
+		$stmt = $em->getConnection()->prepare($sql);
+		$stmt->execute(['date' => $date_from->format("Y-m-d")]);
+		$players3 = $stmt->fetchAll();
+
+		$sql = '
+	    SELECT DISTINCT idPlayer4 FROM MatchsDouble WHERE date <= :date
+	    ';
+		$stmt = $em->getConnection()->prepare($sql);
+		$stmt->execute(['date' => $date_from->format("Y-m-d")]);
+		$players4 = $stmt->fetchAll();
+		
+		
+	  if ($based_ranking!="init") {
+	  	$sql = ' SELECT id, idPlayer1, idPlayer2, idPlayer3, idPlayer4, tie FROM MatchsDouble WHERE date < :date AND date>= :date_based ';
+	  	$stmt = $em->getConnection()->prepare($sql);
+			$stmt->execute(['date' => $date_from->format("Y-m-d"), 'date_based' => $rankingdouble->getDate()->format("Y-m-d")]);
+	  }
+	  else {
+	  	$sql = 'SELECT id, idPlayer1, idPlayer2, idPlayer3, idPlayer4, tie FROM MatchsDouble WHERE date < :date';
+	  	$stmt = $em->getConnection()->prepare($sql);
+			$stmt->execute(['date' => $date_from->format("Y-m-d")]);
+	  }
+		
+		$matchs = $stmt->fetchAll();
+
+		$arrPlayers=array();
+		$arrResults["playersDisplay"]=array();
+
+		foreach ($players1 as $row) {
+			$arrPlayers[]=$row["idPlayer1"];
+		}
+		foreach ($players2 as $row) {
+			$arrPlayers[]=$row["idPlayer2"];
+		}
+		foreach ($players3 as $row) {
+			$arrPlayers[]=$row["idPlayer3"];
+		}
+		foreach ($players4 as $row) {
+			$arrPlayers[]=$row["idPlayer4"];
+		}
+
+		$elo = new EloRatingSystem(100, 50);
+
+		foreach($arrPlayers as $pId) {
+			$player = $em->getRepository('App:Player')->findOneBy(array("id" => $pId));
+			$arrResults["playersDisplay"][$pId]=$player->getNameshort();
+
+			// get the ranking expected
+			if ($based_ranking=="init") {
+				$basedRate[$pId]=$player->getInitialRatingDouble();
+
+			}
+			else {
+				$rankPos = $em->getRepository('App:Rankingposdouble')->findOneBy(array("idrankingdouble" => $based_ranking, "idplayer" => $player->getId()));
+				if ($rankPos) {
+					$basedRate[$pId] = $rankPos->getScore();
+				}
+				else {
+					$basedRate[$pId] = $player->getInitialRatingDouble();
+					//echo "RIEN".$based_ranking."/".$player->getId()." - ".$basedRate[$pId]."<br>";
+				}
+			}
+
+			// specific double
+			// if initial_rating=0 => get the last single rating
+			if ($basedRate[$pId]==0) {
+				//get the last ranking of a player at a specific date
+				$ranking = $em->getRepository('App:Player')->getLastRanking($pId, "Tennis", $date_from->format("Y-m-d"));
+
+				if ($ranking["score"]==0 || $ranking["score"]=="-") $basedRate[$pId]=$player->getInitialRatingTennis();
+				else $basedRate[$pId]=(int)number_format($ranking["score"], 0, ".", "");
+
+				if ($basedRate[$pId]==0)  {
+					//$request->getSession()->getFlashBag()->add('error', 'Impossible to initiate a rating for player '.$pId);
+					$arrResults["messages"][]=[
+							'type' => 'error',
+							'msg' => 'Impossible to initiate a rating for player '.$pId
+						];
+				}
+				$player->setInitialRatingDouble($basedRate[$pId]);
+
+			}
+
+
+			$elo->addCompetitor(new EloCompetitor($player->getId(), $player->getNameshort(), $basedRate[$pId]));
+		}
+		
+		foreach($matchs as $m) {
+			if ($m["tie"]==1) $tie=true;
+			else $tie=false;
+
+			//$elo->addResultDouble($m["idPlayer1"], $m["idPlayer2"], $m["idPlayer3"], $m["idPlayer4"], $tie);
+
+			$elo->addResultDouble(
+		    		array("id" => $m["idPlayer1"], "rating" => $basedRate[$m["idPlayer1"]]), 
+		    		array("id" => $m["idPlayer2"], "rating" => $basedRate[$m["idPlayer2"]]), 
+		    		array("id" => $m["idPlayer3"], "rating" => $basedRate[$m["idPlayer3"]]), 
+		    		array("id" => $m["idPlayer4"], "rating" => $basedRate[$m["idPlayer4"]]), 
+		    		$tie
+		    	);
+
+		}
+
+		$elo->updateRatings();
+
+	  $tabRank = $elo->getRankings();
+
+	  if ($generate_ranking==1) {
+
+			$rankingdouble=new Rankingdouble();
+			$rankingdouble->setDate($date_from);
+			$rankingdouble->setDategeneration(new \DateTime(date("Y-m-d H:i:s")));
+
+			$em->persist($rankingdouble);
+      $em->flush();
+      //$request->getSession()->getFlashBag()->add('success', 'Rankingdouble created');
+      $arrResults["messages"][]=[
+				'type' => 'success',
+				'msg' => 'Rankingdouble created'
+			];
+	  }
+
+	  $iR = 0;
+	  $oldR=0;
+	  $pos=0;
+	  foreach ($tabRank as $idName => $val) {
+	  	$iR++;
+	    $row=array();
+	    $expl_rank=explode("#", $idName);
+
+	    if ($oldR!=$val) {
+	    	$pos=$iR;
+	    }
+
+	    $row["id"]=$expl_rank[0];
+	    $row["rank"]=$pos;
+	    $row["name"]=$expl_rank[1];
+	    $row["rating"]=$val;
+
+	    //$arrRankFinal[]=$row;
+	    $arrResults["rankFinal"][]=$row;
+
+	    if ($generate_ranking==1) {
+	    	$rankingdouble_pos = new Rankingposdouble();
+	    	$player = $em->getRepository('App:Player')->findOneBy(array("id" => $expl_rank[0]));
+	    	
+	    	$rankingdouble_pos->setIdrankingdouble($rankingdouble);
+	    	$rankingdouble_pos->setIdplayer($player);
+	    	$rankingdouble_pos->setPosition($pos);
+	    	$rankingdouble_pos->setScore($val);
+
+				$em->persist($rankingdouble_pos);
+	    }
+
+	    $oldR=$val;
+	  }
+
+		if ($generate_ranking==1) {
+
+			foreach($matchs as $m) {
+				$match = $em->getRepository('App:Matchsdouble')->findOneBy(array("id" => $m["id"]));
+				$match->setIdrankingdouble($rankingdouble->getId());
+				$em->persist($match);
+			}
+
+     	$em->flush();
+		}
+
+
+		$arrResults["matchs"]=$matchs;
+
+		return $arrResults;
+
+	}
+
+
   /**
    * @Route("/rankingsdouble/generate", name="rankings_generate_double")
    */
@@ -53,7 +303,11 @@ class RankingsdoubleController extends AbstractController
 		$defaultData = array('message' => 'Type your message here');
 		$formBuilder = $this->createFormBuilder($defaultData);
 
-		$arrPlayersDisplay=array();
+		$arrResults=array();
+		$arrResults["playersDisplay"]=array();
+		$arrResults["matchs"]=array();
+		$arrResults["rankFinal"]=array();
+		$matchesWithoutRankingsFinal=array();
 	  
 	  $formBuilder
 	  ->add('date_ranking', DateType::class, array(
@@ -83,7 +337,14 @@ class RankingsdoubleController extends AbstractController
       $date_from=$data['date_ranking'];
       $generate_ranking=$data['generate_ranking'];
       $based_ranking=$data['based_ranking'];
+			$based_ranking_date="";
 
+      if ($based_ranking!="init") {
+	      $rankingBase = $em->getRepository('App:Rankingdouble')->findOneBy(array('id' => $based_ranking));
+	      $based_ranking_date = $rankingBase->getDate()->format("Y-m-d");
+      }
+
+      /*
       if ($based_ranking!="init") {
       	$rankingdouble = $em->getRepository('App:Rankingdouble')->findOneBy(array("id" => $based_ranking));
 
@@ -297,16 +558,42 @@ class RankingsdoubleController extends AbstractController
 
        	$em->flush();
 			}
+			*/
 
+			$arrResults = $this->calculateRankings ($em, $date_from, $generate_ranking, $based_ranking);
+      if (isset($arrResults["messages"])) {
+      	foreach($arrResults["messages"] as $elt ) {
+      		$request->getSession()->getFlashBag()->add($elt["type"], $elt["msg"]);
+      	}
+      }
+
+
+
+			// check if there are matches without any ranking linked
+
+      $matchesWithoutRankings = $em->getRepository('App:Matchsdouble')->getMatchesWithoutRankings($based_ranking_date);
+
+      foreach($matchesWithoutRankings as $matW) {
+      	$matchesWithoutRankingsFinal[]=array(
+      		"id" => $matW->getId(),
+      		"idPlayer1" => $matW->getIdplayer1()->getNameshort(),
+      		"idPlayer2" => $matW->getIdplayer2()->getNameshort(),
+      		"idPlayer3" => $matW->getIdplayer3()->getNameshort(),
+      		"idPlayer4" => $matW->getIdplayer4()->getNameshort(),
+      		"date" => $matW->getDate()->format("Y-m-d")
+      	);
+      }
+      
     }
 
 	  return $this->render('site/generate_rankings_double.html.twig', [
 	    'controller_name' => 'RankingsdoubleController',
 	    'form' => $form->createView(),
-	    'arrRankFinal' => $arrRankFinal,
+	    'arrRankFinal' => $arrResults["rankFinal"],
 	    'dateFrom' => $date_from,
-	    'arrMatchs' => $matchs,
-	    'arrPlayersDisplay' => $arrPlayersDisplay,
+	    'arrMatchs' => $arrResults["matchs"],
+	    'arrPlayersDisplay' => $arrResults["playersDisplay"],
+	    'arrMatchesWithoutRankings' => $matchesWithoutRankingsFinal
 	  ]);
 	}
 
