@@ -319,7 +319,12 @@ class RankingsController extends AbstractController
       $date_from=$data['date_ranking'];
       $generate_ranking=$data['generate_ranking'];
       $based_ranking=$data['based_ranking'];
+      $based_ranking_date="";
 
+      if ($based_ranking!="init") {
+	      $rankingBase = $em->getRepository('App:Ranking')->findOneBy(array('id' => $based_ranking));
+	      $based_ranking_date = $rankingBase->getDate()->format("Y-m-d");
+      }
       
       $arrResults = $this->calculateRankings ($em, $date_from, $generate_ranking, $based_ranking);
       if (isset($arrResults["messages"])) {
@@ -331,14 +336,14 @@ class RankingsController extends AbstractController
       // check if there are matches without any ranking linked
 
       //$matchesWithoutRankings = $em->getRepository('App:Matchs')->findBy(array('idranking' => null));
-      $matchesWithoutRankings = $em->getRepository('App:Matchs')->getMatchesWithoutRankings($data['date_ranking']->format("Y-m-d"));
-      
+      $matchesWithoutRankings = $em->getRepository('App:Matchs')->getMatchesWithoutRankings($based_ranking_date);
+
       foreach($matchesWithoutRankings as $matW) {
       	$matchesWithoutRankingsFinal[]=array(
       		"id" => $matW->getId(),
       		"idPlayer1" => $matW->getIdplayer1()->getNameshort(),
       		"idPlayer2" => $matW->getIdplayer2()->getNameshort(),
-      		"tie" => $matW->getTie()
+      		"date" => $matW->getDate()->format("Y-m-d")
       	);
       }
 
