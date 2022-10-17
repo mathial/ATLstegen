@@ -67,7 +67,7 @@ class MatchsRepository extends EntityRepository {
   public function getMatchesWithoutRankings($date) {
     $query = $this->createQueryBuilder('m')
     ->where(' m.idranking is null')
-    ->andWhere('m.date <= :datePreviousRanking')
+    ->andWhere('m.date < :datePreviousRanking')
     ->orderBy('m.date', 'DESC')
     ->setParameter('datePreviousRanking', $date)
     ->getQuery()
