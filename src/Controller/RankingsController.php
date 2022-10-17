@@ -341,7 +341,6 @@ class RankingsController extends AbstractController
       		"tie" => $matW->getTie()
       	);
       }
-      print_r($arrResults["matchesWithoutRankings"]);
 
     }
 
