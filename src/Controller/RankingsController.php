@@ -289,7 +289,7 @@ class RankingsController extends AbstractController
 		$arrResults["playersActivate"]=array();
 		$arrResults["matchs"]=array();
 		$arrResults["rankFinal"]=array();
-		$arrResults["matchesWithoutRankings"]=array();
+		$matchesWithoutRankingsFinal=array();
 
 	  $formBuilder
 	  ->add('date_ranking', DateType::class, array(
@@ -330,11 +330,11 @@ class RankingsController extends AbstractController
 
       // check if there are matches without any ranking linked
 
-      $matchesWithoutRankings = $em->getRepository('App:Matchs')->findBy(array('idranking' => null));
-      //$arrResults["matchesWithoutRankings"]=count($matchesWithoutRankings);
-      //$arrResults["matchesWithoutRankings"] = $em->getRepository('App:Matchs')->getMatchesWithoutRankings();
+      //$matchesWithoutRankings = $em->getRepository('App:Matchs')->findBy(array('idranking' => null));
+      $matchesWithoutRankings = $em->getRepository('App:Matchs')->getMatchesWithoutRankings($data['date_ranking']->format("Y-m-d"));
+      
       foreach($matchesWithoutRankings as $matW) {
-      	$arrResults["matchesWithoutRankings"][]=array(
+      	$matchesWithoutRankingsFinal[]=array(
       		"id" => $matW->getId(),
       		"idPlayer1" => $matW->getIdplayer1()->getNameshort(),
       		"idPlayer2" => $matW->getIdplayer2()->getNameshort(),
@@ -353,7 +353,7 @@ class RankingsController extends AbstractController
 	    'arrPlayersDisplay' => $arrResults["playersDisplay"],
 	    'arrDeactivate' => $arrResults["playersDeactivate"],
 	    'arrActivate' => $arrResults["playersActivate"],
-	    'arrMatchesWithoutRankings' => $arrResults["matchesWithoutRankings"]
+	    'arrMatchesWithoutRankings' => $matchesWithoutRankingsFinal
 	  ]);
 	}
 
