@@ -51,4 +51,22 @@ class MatchspaddleRepository extends EntityRepository {
 
     return new Paginator($query, true);
   }
+
+  // get all the matches without any linked Idranking before a specific date (date of the last ranking should be provided)
+  public function getMatchesWithoutRankings($date) {
+    $query = $this->createQueryBuilder('m')
+    ->where(' m.idrankingpaddle is null')
+    ->andWhere('m.date < :datePreviousRanking')
+    ->orderBy('m.date', 'DESC')
+    ->setParameter('datePreviousRanking', $date)
+    ->getQuery()
+    ->getResult()
+    ;
+
+    return $query;
+
+  }
+
+
+
 }

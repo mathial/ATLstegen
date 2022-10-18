@@ -567,8 +567,6 @@ class RankingsdoubleController extends AbstractController
       	}
       }
 
-
-
 			// check if there are matches without any ranking linked
 
       $matchesWithoutRankings = $em->getRepository('App:Matchsdouble')->getMatchesWithoutRankings($based_ranking_date);

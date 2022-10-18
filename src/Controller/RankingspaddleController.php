@@ -31,6 +31,236 @@ class RankingspaddleController extends AbstractController
       ]);
   }
 
+  public function calculateRankings ($em, $date_from, $generate_ranking, $based_ranking) {
+
+
+  	$arrResults=array();
+		$arrResults["playersDisplay"]=array();
+		$arrResults["matchs"]=array();
+		$arrResults["messages"]=array();
+
+
+    if ($based_ranking!="init") {
+    	$rankingpaddle = $em->getRepository('App:Rankingpaddle')->findOneBy(array("id" => $based_ranking));
+
+    	if($generate_ranking==1) {
+
+				// check if a ranking exist at that date
+				$sql = '
+			    SELECT * FROM RankingPaddle WHERE date = :date
+			    ';
+			  $stmt = $em->getConnection()->prepare($sql);
+				$stmt->execute(['date' => $date_from->format("Y-m-d")]);
+				if ($rankingExist = $stmt->fetchAll()) {
+
+					// delete all the pos 
+					$sql = '
+			    DELETE FROM RankingPosPaddle WHERE idRanking = :idR
+			    ';
+					$stmt = $em->getConnection()->prepare($sql);
+					$nbDeletes = $stmt->execute(['idR' => $rankingExist[0]["id"]]);
+					if ($nbDeletes>0) {
+						//$request->getSession()->getFlashBag()->add('info',  $stmt->rowCount().' RankingPosPadel deleted ('.$date_from->format("Y-m-d").' // id#'.$rankingExist[0]["id"].').');
+						$arrResults["messages"][]=[
+							'type' => 'info',
+							'msg' => $stmt->rowCount().' RankingPosPadel deleted ('.$date_from->format("Y-m-d").' // id#'.$rankingExist[0]["id"].').'
+						];
+					}
+
+					// and then delete the rankings
+					$sql = '
+			    DELETE FROM RankingPaddle WHERE id = :idR
+			    ';
+					$stmt = $em->getConnection()->prepare($sql);
+					$nbDeletes = $stmt->execute(['idR' => $rankingExist[0]["id"]]);
+					if ($nbDeletes>0) {
+						//$request->getSession()->getFlashBag()->add('info', 'RankingPadel deleted ('.$date_from->format("Y-m-d").' // id#'.$rankingExist[0]["id"].').');
+						$arrResults["messages"][]=[
+							'type' => 'info',
+							'msg' => 'RankingPadel deleted ('.$date_from->format("Y-m-d").' // id#'.$rankingExist[0]["id"].').'
+						];
+					}
+
+				}
+				
+      }
+
+
+    }
+
+    $sql = '
+	    SELECT DISTINCT idPlayer1 FROM MatchsPaddle WHERE date <= :date
+	    ';
+		$stmt = $em->getConnection()->prepare($sql);
+		$stmt->execute(['date' => $date_from->format("Y-m-d")]);
+		$players1 = $stmt->fetchAll();
+		
+		$sql = '
+	    SELECT DISTINCT idPlayer2 FROM MatchsPaddle WHERE date <= :date
+	    ';
+		$stmt = $em->getConnection()->prepare($sql);
+		$stmt->execute(['date' => $date_from->format("Y-m-d")]);
+		$players2 = $stmt->fetchAll();
+
+		$sql = '
+	    SELECT DISTINCT idPlayer3 FROM MatchsPaddle WHERE date <= :date
+	    ';
+		$stmt = $em->getConnection()->prepare($sql);
+		$stmt->execute(['date' => $date_from->format("Y-m-d")]);
+		$players3 = $stmt->fetchAll();
+
+		$sql = '
+	    SELECT DISTINCT idPlayer4 FROM MatchsPaddle WHERE date <= :date
+	    ';
+		$stmt = $em->getConnection()->prepare($sql);
+		$stmt->execute(['date' => $date_from->format("Y-m-d")]);
+		$players4 = $stmt->fetchAll();
+		
+		
+	  if ($based_ranking!="init") {
+	  	$sql = ' SELECT id, idPlayer1, idPlayer2, idPlayer3, idPlayer4, tie FROM MatchsPaddle WHERE date < :date AND date>= :date_based ';
+	  	$stmt = $em->getConnection()->prepare($sql);
+			$stmt->execute(['date' => $date_from->format("Y-m-d"), 'date_based' => $rankingpaddle->getDate()->format("Y-m-d")]);
+	  }
+	  else {
+	  	$sql = 'SELECT id, idPlayer1, idPlayer2, idPlayer3, idPlayer4, tie FROM MatchsPaddle WHERE date < :date';
+	  	$stmt = $em->getConnection()->prepare($sql);
+			$stmt->execute(['date' => $date_from->format("Y-m-d")]);
+	  }
+		
+		$matchs = $stmt->fetchAll();
+
+		$arrPlayers=array();
+		//$arrPlayersDisplay=array();
+		$arrResults["playersDisplay"]=array();
+
+		foreach ($players1 as $row) {
+			$arrPlayers[]=$row["idPlayer1"];
+		}
+		foreach ($players2 as $row) {
+			$arrPlayers[]=$row["idPlayer2"];
+		}
+		foreach ($players3 as $row) {
+			$arrPlayers[]=$row["idPlayer3"];
+		}
+		foreach ($players4 as $row) {
+			$arrPlayers[]=$row["idPlayer4"];
+		}
+
+		$elo = new EloRatingSystem(100, 50);
+
+		foreach($arrPlayers as $pId) {
+			$player = $em->getRepository('App:Player')->findOneBy(array("id" => $pId));
+			$arrResults["playersDisplay"][$pId]=$player->getNameshort();
+
+			// get the ranking expected
+			if ($based_ranking=="init") {
+				$basedRate[$pId]=$player->getInitialRatingPaddle();
+			}
+			else {
+				$rankPos = $em->getRepository('App:Rankingpospaddle')->findOneBy(array("idrankingpaddle" => $based_ranking, "idplayer" => $player->getId()));
+				if ($rankPos) {
+					$basedRate[$pId] = $rankPos->getScore();
+				}
+				else {
+					$basedRate[$pId] = $player->getInitialRatingPaddle();
+					//echo "RIEN".$based_ranking."/".$player->getId()." - ".$basedRate[$pId]."<br>";
+				}
+			}
+
+			$elo->addCompetitor(new EloCompetitor($player->getId(), $player->getNameshort(), $basedRate[$pId]));
+		}
+		
+		foreach($matchs as $m) {
+			if ($m["tie"]==1) $tie=true;
+			else $tie=false;
+
+			//$elo->addResultDouble($m["idPlayer1"], $m["idPlayer2"], $m["idPlayer3"], $m["idPlayer4"], $tie);
+
+			$elo->addResultDouble(
+    		array("id" => $m["idPlayer1"], "rating" => $basedRate[$m["idPlayer1"]]), 
+    		array("id" => $m["idPlayer2"], "rating" => $basedRate[$m["idPlayer2"]]), 
+    		array("id" => $m["idPlayer3"], "rating" => $basedRate[$m["idPlayer3"]]), 
+    		array("id" => $m["idPlayer4"], "rating" => $basedRate[$m["idPlayer4"]]), 
+    		$tie
+    	);
+
+		}
+
+		$elo->updateRatings();
+
+	  $tabRank = $elo->getRankings();
+
+	  if ($generate_ranking==1) {
+
+			$rankingpaddle=new Rankingpaddle();
+			$rankingpaddle->setDate($date_from);
+			$rankingpaddle->setDategeneration(new \DateTime(date("Y-m-d H:i:s")));
+
+			$em->persist($rankingpaddle);
+      $em->flush();
+      //$request->getSession()->getFlashBag()->add('success', 'Rankingpaddle created');
+      $arrResults["messages"][]=[
+				'type' => 'success',
+				'msg' => 'Rankingpaddle created'
+			];
+	  }
+
+	  $iR = 0;
+	  $oldR=0;
+	  $pos=0;
+	  foreach ($tabRank as $idName => $val) {
+	  	$iR++;
+	    $row=array();
+	    $expl_rank=explode("#", $idName);
+
+	    if ($oldR!=$val) {
+	    	$pos=$iR;
+	    }
+
+	    $row["id"]=$expl_rank[0];
+	    $row["rank"]=$pos;
+	    $row["name"]=$expl_rank[1];
+	    $row["rating"]=$val;
+
+	    //$arrRankFinal[]=$row;
+	    $arrResults["rankFinal"][]=$row;
+
+	    if ($generate_ranking==1) {
+	    	$rankingpaddle_pos = new Rankingpospaddle();
+	    	$player = $em->getRepository('App:Player')->findOneBy(array("id" => $expl_rank[0]));
+	    	
+	    	$rankingpaddle_pos->setIdrankingpaddle($rankingpaddle);
+	    	$rankingpaddle_pos->setIdplayer($player);
+	    	$rankingpaddle_pos->setPosition($pos);
+	    	$rankingpaddle_pos->setScore($val);
+
+				$em->persist($rankingpaddle_pos);
+	    }
+
+	    $oldR=$val;
+	  }
+
+		if ($generate_ranking==1) {
+
+			foreach($matchs as $m) {
+				$match = $em->getRepository('App:Matchspaddle')->findOneBy(array("id" => $m["id"]));
+				$match->setIdrankingpaddle($rankingpaddle->getId());
+				$em->persist($match);
+			}
+
+     	$em->flush();
+		}
+
+
+		$arrResults["matchs"]=$matchs;
+
+		return $arrResults;
+
+	}
+
+
+
   /**
    * @Route("/rankingspadel/generate", name="rankings_generate_padel")
    */
@@ -53,7 +283,11 @@ class RankingspaddleController extends AbstractController
 		$defaultData = array('message' => 'Type your message here');
 		$formBuilder = $this->createFormBuilder($defaultData);
 
-		$arrPlayersDisplay=array();
+		$arrResults=array();
+		$arrResults["playersDisplay"]=array();
+		$arrResults["matchs"]=array();
+		$arrResults["rankFinal"]=array();
+		$matchesWithoutRankingsFinal=array();
 	  
 	  $formBuilder
 	  ->add('date_ranking', DateType::class, array(
@@ -84,6 +318,12 @@ class RankingspaddleController extends AbstractController
       $generate_ranking=$data['generate_ranking'];
       $based_ranking=$data['based_ranking'];
 
+      if ($based_ranking!="init") {
+	      $rankingBase = $em->getRepository('App:Rankingpaddle')->findOneBy(array('id' => $based_ranking));
+	      $based_ranking_date = $rankingBase->getDate()->format("Y-m-d");
+      }
+
+      /*
       if ($based_ranking!="init") {
       	$rankingpaddle = $em->getRepository('App:Rankingpaddle')->findOneBy(array("id" => $based_ranking));
 
@@ -282,15 +522,40 @@ class RankingspaddleController extends AbstractController
        	$em->flush();
 			}
 
+			*/
+
+
+			$arrResults = $this->calculateRankings ($em, $date_from, $generate_ranking, $based_ranking);
+      if (isset($arrResults["messages"])) {
+      	foreach($arrResults["messages"] as $elt ) {
+      		$request->getSession()->getFlashBag()->add($elt["type"], $elt["msg"]);
+      	}
+      }
+
+			// check if there are matches without any ranking linked
+
+      $matchesWithoutRankings = $em->getRepository('App:Matchspaddle')->getMatchesWithoutRankings($based_ranking_date);
+
+      foreach($matchesWithoutRankings as $matW) {
+      	$matchesWithoutRankingsFinal[]=array(
+      		"id" => $matW->getId(),
+      		"idPlayer1" => $matW->getIdplayer1()->getNameshort(),
+      		"idPlayer2" => $matW->getIdplayer2()->getNameshort(),
+      		"idPlayer3" => $matW->getIdplayer3()->getNameshort(),
+      		"idPlayer4" => $matW->getIdplayer4()->getNameshort(),
+      		"date" => $matW->getDate()->format("Y-m-d")
+      	);
+      }
     }
 
 	  return $this->render('site/generate_rankings_paddle.html.twig', [
 	    'controller_name' => 'RankingspaddleController',
 	    'form' => $form->createView(),
-	    'arrRankFinal' => $arrRankFinal,
+	    'arrRankFinal' => $arrResults["rankFinal"],
 	    'dateFrom' => $date_from,
-	    'arrMatchs' => $matchs,
-	    'arrPlayersDisplay' => $arrPlayersDisplay,
+	    'arrMatchs' => $arrResults["matchs"],
+	    'arrPlayersDisplay' => $arrResults["playersDisplay"],
+	    'arrMatchesWithoutRankings' => $matchesWithoutRankingsFinal
 	  ]);
 	}
 
