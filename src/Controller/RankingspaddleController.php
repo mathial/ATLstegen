@@ -55,7 +55,7 @@ class RankingspaddleController extends AbstractController
 
 					// delete all the pos 
 					$sql = '
-			    DELETE FROM RankingPosPaddle WHERE idRanking = :idR
+			    DELETE FROM RankingPosPaddle WHERE idRankingPaddle = :idR
 			    ';
 					$stmt = $em->getConnection()->prepare($sql);
 					$nbDeletes = $stmt->execute(['idR' => $rankingExist[0]["id"]]);
