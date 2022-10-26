@@ -217,6 +217,35 @@ class MatchspaddleController extends Controller
     
   }
 
+
+  /**
+   * @Route(
+   * "/matchspadel/delete/{id}", 
+   * name="matchpadel_delete", 
+   * requirements={
+   *   "id"="\d+" 
+   * })
+   */
+  public function delete($id, Request $request) {
+
+    if ($this->getUser()!== NULL && in_array('ROLE_ADMIN', $this->getUser()->getRoles(), true)) {
+
+        $em = $this->getDoctrine()->getManager();
+        $match = $em->getRepository('App:Matchspaddle')->findOneBy(['id' => $id]);
+
+        $em->remove($match);
+        $em->flush();
+
+        $request->getSession()->getFlashBag()->add('success', 'Match '.$id.' deleted.');
+    }
+    else {
+        $request->getSession()->getFlashBag()->add('error', 'Only for ADMINS.');
+    }
+
+    return $this->redirectToRoute('matchspadel_list', array('maxpage' =>50, 'page'=>1));
+    
+  }
+
     /**
    * @Route(
    * "/matchspadel/list/{maxpage}/{page}", 
