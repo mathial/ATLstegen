@@ -19,6 +19,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Doctrine\ORM\EntityRepository;
 
 use App\Entity\User;
+use App\Entity\Player;
 
 class UserController extends Controller
 {
@@ -52,6 +53,15 @@ class UserController extends Controller
       ))
       ->add('password', TextType::class, array(
         'required'   => true,
+      ))
+      ->add('idplayer', EntityType::class, array(
+        'label'   => 'Player',
+        'class' => Player::class,
+        'query_builder' => function (EntityRepository $er) {
+          return $er->createQueryBuilder('p')
+              ->orderBy('p.nameshort', 'ASC');
+        },
+        'choice_label' => 'nameshort',
       ))
       ->add('roles', ChoiceType::class, array(
         'multiple' => true,

@@ -6,7 +6,9 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
- * @ORM\Table(name="User")
+ * User
+ *
+ * @ORM\Table(name="User", uniqueConstraints={@ORM\UniqueConstraint(name="UNIQ_2DA17977F85E0677", columns={"username"})}, indexes={@ORM\Index(name="PlayerUser", columns={"idPlayer"})})
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  */
 class User implements UserInterface
@@ -33,6 +35,17 @@ class User implements UserInterface
      * @ORM\Column(type="string")
      */
     private $password;
+
+    /**
+     * @var \Player
+     *
+     * @ORM\ManyToOne(targetEntity="Player")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="idPlayer", referencedColumnName="id")
+     * })
+     */
+    private $idplayer;
+
 
     public function getId(): ?int
     {
@@ -105,5 +118,17 @@ class User implements UserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    public function getIdplayer(): ?Player
+    {
+        return $this->idplayer;
+    }
+
+    public function setIdplayer(?Player $idplayer): self
+    {
+        $this->idplayer = $idplayer;
+
+        return $this;
     }
 }
