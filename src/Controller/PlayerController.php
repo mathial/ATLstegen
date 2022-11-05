@@ -37,7 +37,9 @@ class PlayerController extends Controller
     $em = $this->getDoctrine()->getManager();
 
     $player = $em->getRepository('App:Player')->findOneBy(array('id'=>$id));
-    $lastR = $em->getRepository('App:Player')->getLastRanking($id);
+    $lastRTS = $em->getRepository('App:Player')->getLastRanking($id);
+    $lastRTD = $em->getRepository('App:Player')->getLastRanking($id, "Double");
+    $lastRP = $em->getRepository('App:Player')->getLastRanking($id, "Paddle");
 
 
     $arrHistoryM=array();
@@ -212,7 +214,9 @@ class PlayerController extends Controller
     return $this->render('site/player_view.html.twig', [
       'controller_name' => 'PlayerController',
       'player' => $player,
-      'lastR' => $lastR,
+      'lastRTS' => $lastRTS,
+      'lastRTD' => $lastRTD,
+      'lastRP' => $lastRP,
       'arrStatsOpponents' => $arrStatsOpponentsDetails,
       'nbMTot' => $nbMTot,
       'arrConditions' => $arrConditions,
