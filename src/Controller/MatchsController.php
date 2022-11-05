@@ -200,25 +200,61 @@ class MatchsController extends Controller
       'label'   => 'Date',
       'format' => 'yyyy-MM-dd',
       'widget' => 'single_text',
-    ))
-    ->add('idplayer1', EntityType::class, array(
-      'label'   => 'Winner',
-      'class' => Player::class,
-      'query_builder' => function (EntityRepository $er) {
-        return $er->createQueryBuilder('p')
-            ->orderBy('p.nameshort', 'ASC');
-      },
-      'choice_label' => 'nameshort',
-    ))
-    ->add('idplayer2', EntityType::class, array(
-      'label'   => '2nd player',
-      'class' => Player::class,
-      'query_builder' => function (EntityRepository $er) {
-        return $er->createQueryBuilder('p')
-            ->orderBy('p.nameshort', 'ASC');
-      },
-      'choice_label' => 'nameshort',
-    ))
+    ));
+
+    // for the new matches, set the user idPlayer as default
+    if ($mode=="add") {
+      $user = $this->get('security.token_storage')->getToken()->getUser();
+      $playerDefault=$user->getIdplayer();
+
+
+      $formBuilder
+      ->add('idplayer1', EntityType::class, array(
+        'label'   => 'Winner',
+        'class' => Player::class,
+        'query_builder' => function (EntityRepository $er) {
+          return $er->createQueryBuilder('p')
+              ->orderBy('p.nameshort', 'ASC');
+        },
+        'choice_label' => 'nameshort',
+        'data' => $playerDefault
+      ))
+      ->add('idplayer2', EntityType::class, array(
+        'label'   => '2nd player',
+        'class' => Player::class,
+        'query_builder' => function (EntityRepository $er) {
+          return $er->createQueryBuilder('p')
+              ->orderBy('p.nameshort', 'ASC');
+        },
+        'choice_label' => 'nameshort',
+        'data' => $playerDefault
+      ));
+    }
+
+    else {
+      $formBuilder
+      ->add('idplayer1', EntityType::class, array(
+        'label'   => 'Winner',
+        'class' => Player::class,
+        'query_builder' => function (EntityRepository $er) {
+          return $er->createQueryBuilder('p')
+              ->orderBy('p.nameshort', 'ASC');
+        },
+        'choice_label' => 'nameshort',
+      ))
+      ->add('idplayer2', EntityType::class, array(
+        'label'   => '2nd player',
+        'class' => Player::class,
+        'query_builder' => function (EntityRepository $er) {
+          return $er->createQueryBuilder('p')
+              ->orderBy('p.nameshort', 'ASC');
+        },
+        'choice_label' => 'nameshort',
+        'empty_data' => (isset($playerDefault) ? $playerDefault : null)
+      ));
+    }
+
+    $formBuilder
     ->add('score', TextType::class, array(
       'label'    => 'Score',
       'required' => true,
