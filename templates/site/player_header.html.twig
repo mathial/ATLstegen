@@ -6,18 +6,22 @@
 </div>
 
 <div>
-  {% if lastRTS.position != "-" %}
+  {% if lastRTS is defined and lastRTS.position != "-" %}
   <label>Rankings Tennis (single)</label>
   #{{ lastRTS.position }} - {{ lastRTS.score|number_format(0, ',', '') }}pts<br>
   {% endif %}
-  {% if lastRTD.position != "-" %}
+  {% if lastRTD is defined and lastRTD.position != "-" %}
   <label>Rankings Tennis (double)</label>
   #{{ lastRTD.position }} - {{ lastRTD.score|number_format(0, ',', '') }}pts<br>
   {% endif %}
-  {% if lastRP.position != "-" %}
+  {% if lastRP is defined and lastRP.position != "-" %}
   <label>Rankings Padel</label>
   #{{ lastRP.position }} - {{ lastRP.score|number_format(0, ',', '') }}pts<br>
   {% endif %}
+  {% if lastR is defined and lastR.position != "-" %}
+  <label>Rankings</label>
+  #{{ lastR.position }} - {{ lastR.score|number_format(0, ',', '') }}pts<br>
+  {% endif %}  
 </div>
 {# 	<div>
 	<label>Name short</label>
