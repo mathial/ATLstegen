@@ -792,7 +792,7 @@ class MatchsController extends Controller
     $em = $this->getDoctrine()->getManager();
 
     $arrPlayer=array();
-    $players = $em->getRepository('App:Player')->findBy(array("activetennis" => 1), array('nameshort' => 'ASC'));
+    $players = $em->getRepository('App:Player')->findBy(array(), array('nameshort' => 'ASC'));
     foreach ($players as $pl) {
       $arrPlayer[$pl->getNameShort()] = $pl->getId();
     }
