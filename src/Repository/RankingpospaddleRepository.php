@@ -2,16 +2,16 @@
 
 namespace App\Repository;
 
-use App\Entity\Rankingposdouble;
+use App\Entity\Rankingpospaddle;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 //use Symfony\Bridge\Doctrine\RegistryInterface;
 use Doctrine\Persistence\ManagerRegistry;
 
-class RankingposdoubleRepository extends ServiceEntityRepository {
+class RankingpospaddleRepository extends ServiceEntityRepository {
 
   public function __construct(ManagerRegistry $registry)
   {
-      parent::__construct($registry, Rankingposdouble::class);
+      parent::__construct($registry, Rankingpospaddle::class);
   }
 
   public function getSelectedRankingpos($idRanking, $arrIdPlayers) { 
@@ -20,8 +20,8 @@ class RankingposdoubleRepository extends ServiceEntityRepository {
     $em = $this->getEntityManager();
     $sql = '
         SELECT idplayer, position, score, date 
-        FROM RankingPosDouble RP, RankingDouble R 
-        WHERE R.id=RP.idRankingDouble
+        FROM RankingPosPaddle RP, RankingPaddle R 
+        WHERE R.id=RP.idRankingPaddle
         AND R.id=:idRanking 
         AND RP.idPlayer IN ('.implode(",", $arrIdPlayers).') 
         ORDER BY score DESC 

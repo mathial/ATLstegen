@@ -802,12 +802,12 @@ class MatchsController extends Controller
 
     $formBuilder
     ->add('sport', ChoiceType::class, array(
-      'choices' => array("Tennis" => 0),
+      'choices' => array("Tennis-single" => 0, "Padel" => 2),
       'required'   => true,
     ))
     ->add('method_generating', ChoiceType::class, array(
       'label' => 'Algorithm',
-      'choices' => array("Standard" => 0),
+      'choices' => array("Standard (sorted by ratings)" => 0),
       'required'   => true,
     ))
     ->add('players', ChoiceType::class, array(
@@ -832,39 +832,102 @@ class MatchsController extends Controller
 
       if ($sportForm==0 && $methodForm==0) {
 
-        $arrPlayerFlip = array_flip($arrPlayer);
-
-        $arrRank=array();
-        $ranking = $em->getRepository('App:Ranking')->findOneBy(array(), array('date' => 'DESC'), 1);
-
-        $detailsRankings=$em->getRepository('App:Rankingpos')->getSelectedRankingpos($ranking->getId(), $playersForm);
-
-        foreach ($detailsRankings as $det) {
-          $arrRank[$det["idplayer"]]=$det;
-        }
-
-        if (count($arrRank)!=count($playersForm)) {
-            $request->getSession()->getFlashBag()->add('error', "Missing players in the rankings. ".count($playersForm)." expected, ".count($arrRank)." obtained");
-            $error="Missing players in the rankings. ".count($playersForm)." expected, ".count($arrRank)." obtained";
+        if (count($playersForm)%2!=0) {
+          $request->getSession()->getFlashBag()->add('error', count($playersForm)." players selected, needs an even number to work");
+          $error=count($playersForm)." players selected, needs an even number to work";
         }
         else {
-          $nbCourt=0;
-          $player1="";
-          $player2="";
-          foreach($arrRank as $rank) {
-            if ($player1=="")
-              $player1 = $arrPlayerFlip[$rank["idplayer"]]." ".number_format($rank["score"], 0, ".", "")." pts ";
-            else {
-              $player2 = $arrPlayerFlip[$rank["idplayer"]]." ".number_format($rank["score"], 0, ".", "")." pts ";
+          $arrPlayerFlip = array_flip($arrPlayer);
 
-              $nbCourt++;
-              $arrMatch[]="Court ".$nbCourt." => ".$player1. " VS ".$player2;
+          $arrRank=array();
+          $ranking = $em->getRepository('App:Ranking')->findOneBy(array(), array('date' => 'DESC'), 1);
 
-              $player1="";
-              $player2="";
+          $detailsRankings=$em->getRepository('App:Rankingpos')->getSelectedRankingpos($ranking->getId(), $playersForm);
+
+          foreach ($detailsRankings as $det) {
+            $arrRank[$det["idplayer"]]=$det;
+          }
+
+          if (count($arrRank)!=count($playersForm)) {
+              $request->getSession()->getFlashBag()->add('error', "Missing players in the rankings. ".count($playersForm)." expected, ".count($arrRank)." obtained");
+              $error="Missing players in the rankings. ".count($playersForm)." expected, ".count($arrRank)." obtained";
+          }
+          else {
+            $nbCourt=0;
+            $player1="";
+            $player2="";
+            foreach($arrRank as $rank) {
+              if ($player1=="")
+                $player1 = $arrPlayerFlip[$rank["idplayer"]]." ".number_format($rank["score"], 0, ".", "")." pts ";
+              else {
+                $player2 = $arrPlayerFlip[$rank["idplayer"]]." ".number_format($rank["score"], 0, ".", "")." pts ";
+
+                $nbCourt++;
+                $arrMatch[]="Court ".$nbCourt." => ".$player1. " VS ".$player2;
+
+                $player1="";
+                $player2="";
+              }
+
+
             }
+          }
+        }
+        
+      }
+      elseif ($sportForm==2 && $methodForm==0) {
+
+        if (count($playersForm)%4!=0) {
+          $request->getSession()->getFlashBag()->add('error', "Only ".count($playersForm)." players selected, needs a multiple of 4.");
+          $error="Only ".count($playersForm)." players selected, needs a multiple of 4.";
+        }
+        else {
+          $arrPlayerFlip = array_flip($arrPlayer);
+
+          $arrRank=array();
+          $ranking = $em->getRepository('App:Rankingpaddle')->findOneBy(array(), array('date' => 'DESC'), 1);
+
+          $detailsRankings=$em->getRepository('App:Rankingpospaddle')->getSelectedRankingpos($ranking->getId(), $playersForm);
+
+          foreach ($detailsRankings as $det) {
+            $arrRank[$det["idplayer"]]=$det;
+          }
+
+          if (count($arrRank)!=count($playersForm)) {
+              $request->getSession()->getFlashBag()->add('error', "Missing players in the rankings. ".count($playersForm)." expected, ".count($arrRank)." obtained");
+              $error="Missing players in the rankings. ".count($playersForm)." expected, ".count($arrRank)." obtained";
+          }
+          else {
+            $nbCourt=0;
+            $player1="";
+            $player2="";
+            $player3="";
+            $player4="";
+            foreach($arrRank as $rank) {
+              if ($player1=="")
+                $player1 = $arrPlayerFlip[$rank["idplayer"]]." ".number_format($rank["score"], 0, ".", "")." pts ";
+              elseif ($player2=="")
+                $player2 = $arrPlayerFlip[$rank["idplayer"]]." ".number_format($rank["score"], 0, ".", "")." pts ";
+              elseif ($player3=="")
+                $player3 = $arrPlayerFlip[$rank["idplayer"]]." ".number_format($rank["score"], 0, ".", "")." pts ";
+              else {
+                $player4 = $arrPlayerFlip[$rank["idplayer"]]." ".number_format($rank["score"], 0, ".", "")." pts ";
+
+                $nbCourt++;
+                $arrMatch[]="*Court ".$nbCourt."*:";
+                $arrMatch[]=$player1. " - ".$player4;
+                $arrMatch[]="VS";
+                $arrMatch[]=$player2. " - ".$player3;
+                $arrMatch[]="";
+
+                $player1="";
+                $player2="";
+                $player3="";
+                $player4="";
+              }
 
 
+            }
           }
         }
       }
@@ -872,7 +935,7 @@ class MatchsController extends Controller
     }
 
     return $this->render('matchs/matchup_generator.html.twig', [
-      'controller_name' => 'RankingsController',
+      'controller_name' => 'MatchsController',
       'form' => $form->createView(),
       'error' => $error,
       'arrMatch' => $arrMatch,
