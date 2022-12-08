@@ -153,7 +153,7 @@ class MatchsdoubleController extends Controller
     ))
     ->add('context', ChoiceType::class, array(
       'label'    => 'Context',
-      'choices' => array("Stege" => "Stege", "A-serien" => "A-serien"),
+      'choices' => array("Stege" => "Stege", "A-serien" => "A-serien", "Vinnarbana" => "Vinnarbana"),
       'required'   => true,
     ))
     ;
