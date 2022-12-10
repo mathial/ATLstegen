@@ -80,8 +80,8 @@ warning:
 
 
 #
-sudo apt install php8.1-mysql
-sudo apt install php8.1-xml
+sudo apt install php8.2-mysql
+sudo apt install php8.2-xml
 
 ### COMMANDS ###
 

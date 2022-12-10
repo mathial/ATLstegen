@@ -16,7 +16,7 @@ class RankingposdoubleRepository extends ServiceEntityRepository {
 
   public function getSelectedRankingpos($idRanking, $arrIdPlayers) { 
 
-   
+   echo count($arrIdPlayers)." players to find;";
     $em = $this->getEntityManager();
     $sql = '
         SELECT idplayer, position, score, date 
@@ -31,6 +31,7 @@ class RankingposdoubleRepository extends ServiceEntityRepository {
     $stmt = $em->getConnection()->prepare($sql);
     $stmt->execute(['idRanking' => $idRanking]);
     $RP = $stmt->fetchAll();
+   echo count($RP)." rankings found;";
 
     return $RP;
 

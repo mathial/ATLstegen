@@ -747,6 +747,9 @@ class RankingsdoubleController extends AbstractController
 					if (!isset($detailsPlayer[$win["idPlayer".$iP]]["ties"]))
 						$detailsPlayer[$win["idPlayer".$iP]]["wins"]=0;
 
+					if (!isset($detailsPlayer[$tie["idPlayer".$iP]]["ties"])){
+						$detailsPlayer[$tie["idPlayer".$iP]]["ties"]=0;
+					}
 					$detailsPlayer[$tie["idPlayer".$iP]]["ties"]+=$tie["tot"];			
 
 					if (!isset($detailsPlayer[$tie["idPlayer".$iP]]["wins"])) {
