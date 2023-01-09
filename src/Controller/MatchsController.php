@@ -85,12 +85,16 @@ class MatchsController extends Controller
     /* POINTS EVOL PER MATCH */
 
     // for each match, we calculate the points evolution
+    // only for the matches displayed (LIMIT !!)
     $sql_m   = 'SELECT m.id, m.date, m.tie, p1.id AS p1id, p2.id AS p2id, p1.initialRatingTennis AS p1IR, p2.initialRatingTennis AS p2IR 
                   FROM Matchs m, Player p1, Player p2
                   '.($where!="" ? $where : " WHERE 1 ")." 
                   AND p1.id=m.idplayer1
                   AND p2.id=m.idplayer2
-                  ORDER BY m.date DESC, m.id DESC";
+                  ORDER BY m.date DESC, m.id DESC
+                  LIMIT ".($page-1)*$limitpage.", ".$limitpage;
+
+
     $stmt = $em->getConnection()->prepare($sql_m);
     $stmt->execute();
     $matches = $stmt->fetchAll();
@@ -112,6 +116,7 @@ class MatchsController extends Controller
       $rating_player2=$mat["p2IR"];
       $arrMEvol[$mat["id"]]=0;
 
+      
       if ($rankId!="") {
         $sql_rank = 'SELECT score FROM RankingPos WHERE idRanking="'.$rankId.'" AND idPlayer='.$mat["p1id"];
         $stmt = $em->getConnection()->prepare($sql_rank);
@@ -129,9 +134,6 @@ class MatchsController extends Controller
 
       if ($mat["tie"]==0) $result=1;
       else $result=0;
-
-     /* if ($id==$mat["p1id"]) $idPFin=1;
-      else $idPFin=2;*/
 
       if (isset($rating_player1) && is_numeric($rating_player1) && isset($rating_player2) && is_numeric($rating_player2)) {
 
@@ -711,9 +713,6 @@ class MatchsController extends Controller
 
       if ($m->getTie()==0) $result=1;
       else $result=0;
-
-     /* if ($id==$mat["p1id"]) $idPFin=1;
-      else $idPFin=2;*/
 
       if (isset($rating_player1) && is_numeric($rating_player1) && isset($rating_player2) && is_numeric($rating_player2)) {
 

@@ -353,6 +353,7 @@ class MatchspaddleController extends Controller
     /* POINTS EVOL PER MATCH */
 
     // for each match, we calculate the points evolution
+    // only for the matches displayed (LIMIT !!)
     $sql_m   = 'SELECT m.id, m.date, m.tie, p1.id AS p1id, p2.id AS p2id, p1.initialRatingPaddle AS p1IR, p2.initialRatingPaddle AS p2IR, p3.id AS p3id, p4.id AS p4id, p3.initialRatingPaddle AS p3IR, p4.initialRatingPaddle AS p4IR 
                   FROM MatchsPaddle m, Player p1, Player p2, Player p3, Player p4
                   '.($where!="" ? $where : " WHERE 1 ")." 
@@ -360,7 +361,8 @@ class MatchspaddleController extends Controller
                   AND p2.id=m.idplayer2
                   AND p3.id=m.idplayer3
                   AND p4.id=m.idplayer4
-                  ORDER BY m.date DESC, m.id DESC";
+                  ORDER BY m.date DESC, m.id DESC
+                  LIMIT ".($page-1)*$limitpage.", ".$limitpage;              
     $stmt = $em->getConnection()->prepare($sql_m);
     $stmt->execute();
     $matches = $stmt->fetchAll();
