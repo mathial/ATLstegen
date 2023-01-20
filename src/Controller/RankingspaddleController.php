@@ -688,7 +688,11 @@ class RankingspaddleController extends AbstractController
 					if (!isset($detailsPlayer[$win["idPlayer".$iP]]["wins"]))
 						$detailsPlayer[$win["idPlayer".$iP]]["wins"]=0;
 					$detailsPlayer[$win["idPlayer".$iP]]["wins"]+=$win["tot"];
-					$detailsPlayer[$win["idPlayer".$iP]]["ties"]=0;
+
+					// has maybe already some ties for previous loop
+					if (!isset($detailsPlayer[$win["idPlayer".$iP]]["ties"])) 
+						$detailsPlayer[$win["idPlayer".$iP]]["ties"]=0;
+
 					$detailsPlayer[$win["idPlayer".$iP]]["defeats"]=0;
 
 					$arrTotal["wins"]+=$win["tot"];
@@ -708,8 +712,8 @@ class RankingspaddleController extends AbstractController
 
 				foreach ($ties1 as $tie) {
 					
-					if (!isset($detailsPlayer[$win["idPlayer".$iP]]["ties"]))
-						$detailsPlayer[$win["idPlayer".$iP]]["wins"]=0;
+					if (!isset($detailsPlayer[$tie["idPlayer".$iP]]["ties"]))
+						$detailsPlayer[$tie["idPlayer".$iP]]["ties"]=0;
 
 					$detailsPlayer[$tie["idPlayer".$iP]]["ties"]+=$tie["tot"];			
 
@@ -726,9 +730,8 @@ class RankingspaddleController extends AbstractController
 
 	  	}
 
-
 	  	for ($iP=3;$iP<=4;$iP++) {
-				// TIES P2
+				// TIES P3+p4
 				$sql = '
 		    	SELECT COUNT(*) AS tot, idPlayer'.$iP.'
 		    	FROM MatchsPaddle 
