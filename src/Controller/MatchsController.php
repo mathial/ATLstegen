@@ -257,6 +257,11 @@ class MatchsController extends Controller
     }
 
     $formBuilder
+    ->add('context', ChoiceType::class, array(
+      'label'    => 'CONTEXT (League ? A-series ? Sunday 21-22 ? etc)',
+      'choices' => array("Stege" => "Stege", "Stege (söndag 21-22)" => "Stege (söndag 21-22)", "A-serien" => "A-serien", "Sprinttennis tournament" => "Sprinttennis tournament", "Summer tournament 2022" => "Summer tournament 2022", "ATL Klubbmästerskap" => "ATL Klubbmästerskap", "Division League - Round#7" => "Division League - Round#7"),
+      'required'   => true,
+    ))
     ->add('score', TextType::class, array(
       'label'    => 'Score',
       'required' => true,
@@ -269,11 +274,6 @@ class MatchsController extends Controller
     ->add('conditions', ChoiceType::class, array(
       'label'    => 'Conditions',
       'choices' => array("hard indoor" => "hard indoor", "clay outdoor" => "clay outdoor"),
-      'required'   => true,
-    ))
-    ->add('context', ChoiceType::class, array(
-      'label'    => 'Context',
-      'choices' => array("Stege" => "Stege", "Stege (söndag 21-22)" => "Stege (söndag 21-22)", "A-serien" => "A-serien", "Sprinttennis tournament" => "Sprinttennis tournament", "Summer tournament 2022" => "Summer tournament 2022", "ATL Klubbmästerskap" => "ATL Klubbmästerskap", "Division League - Round#7" => "Division League - Round#7"),
       'required'   => true,
     ))
     ;
