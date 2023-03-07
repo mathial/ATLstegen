@@ -262,14 +262,14 @@ class MatchsController extends Controller
       'choices' => array("Stege" => "Stege", "Stege (söndag 21-22)" => "Stege (söndag 21-22)", "A-serien" => "A-serien", "Sprinttennis tournament" => "Sprinttennis tournament", "Summer tournament 2022" => "Summer tournament 2022", "ATL Klubbmästerskap" => "ATL Klubbmästerskap", "Division League - Round#7" => "Division League - Round#7"),
       'required'   => true,
     ))
-    ->add('score', TextType::class, array(
-      'label'    => 'Score',
-      'required' => true,
-    ))
     ->add('tie', ChoiceType::class, array(
       'label'    => 'TIE ?',
       'choices' => array("no" => 0, "yes" => 1),
       'required'   => true,
+    ))
+    ->add('score', TextType::class, array(
+      'label'    => 'Score',
+      'required' => true,
     ))
     ->add('conditions', ChoiceType::class, array(
       'label'    => 'Conditions',

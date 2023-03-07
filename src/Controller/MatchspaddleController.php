@@ -142,14 +142,14 @@ class MatchspaddleController extends Controller
       'choices' => array("Stege" => "Stege", "Vinnarbana" => "Vinnarbana", "ATLs Padelstege" => "ATLs Padelstege", "PDL serier" => "PDL serier"),
       'required'   => true,
     ))
-    ->add('score', TextType::class, array(
-      'label'    => 'Score',
-      'required' => true,
-    ))
     ->add('tie', ChoiceType::class, array(
       'label'    => 'TIE ?',
       'choices' => array("no" => 0, "yes" => 1),
       'required'   => true,
+    ))
+    ->add('score', TextType::class, array(
+      'label'    => 'Score',
+      'required' => true,
     ))
     ->add('conditions', ChoiceType::class, array(
       'label'    => 'Conditions',
