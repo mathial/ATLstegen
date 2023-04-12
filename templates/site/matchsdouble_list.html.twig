@@ -45,7 +45,8 @@
           <td>{{ arrMEvol[match.id] }}</td>
           {% if is_granted('ROLE_ADMIN') %} 
             <td>{{ match.iduseradd.username }}</td>
-            <td><a href="{{ path('matchdouble_update', {'id':match.id}) }}">update</a></td>
+            <td><a href="{{ path('matchdouble_update', {'id':match.id}) }}">update</a>
+            <a href="{{ path('matchdouble_delete', {'id':match.id}) }}" onclick="return confirm('Are you sure that you want to delete match#' + {{match.id}} + '?')">delete</a></td>
           {% endif %}
         </tr>
         {% set ind = ind +1 %}
