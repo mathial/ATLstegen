@@ -363,11 +363,11 @@ class RankingsController extends AbstractController
 
 
 	/**
-   * @Route("/rankings/view", name="rankings_view", defaults={"id" = null, "AO" = 1})
-   * @Route("/rankings/view/{id}", name="rankings_view_id", defaults={"AO" = 1})
-   * @Route("/rankings/view/{id}/{AO}", name="rankings_view_id_ao")
+   * @Route("/rankings/view", name="rankings_view", defaults={"id" = null, "RI" = 0, "AO" = 1})
+   * @Route("/rankings/view/{id}", name="rankings_view_id", defaults={"RI" = 0, "AO" = 1})
+   * @Route("/rankings/view/{id}/{RI}/{AO}", name="rankings_view_id_ao")
    */
-  public function viewRanking($id=null, $AO=1, Request $request)
+  public function viewRanking($id=null, $RI=0, $AO=1, Request $request)
   {
   	$em = $this->getDoctrine()->getManager();
 
@@ -382,6 +382,7 @@ class RankingsController extends AbstractController
   	else $defaultId=$ranking->getId();
 
   	$activeOnly=$AO;
+  	$withRatingIndex=$RI;
 
 		$arrRank=array();
 		$rankings = $em->getRepository('App:Ranking')->findBy(array(), array('date' => 'DESC'));
@@ -397,6 +398,11 @@ class RankingsController extends AbstractController
 			'choices' => $arrRank,
 		  'required' => true,
 		  'data' => $defaultId,
+		))
+		->add('with_rating_index', CheckboxType::class, array(
+			'label' => "Show the average Rating Index (unique ratings over the past 6 months)",
+		   'required' => false,
+		   'data' => ($withRatingIndex==1 ? true : false)
 		))
 		->add('active_only', CheckboxType::class, array(
 			'label' => "Only active players.",
@@ -414,8 +420,9 @@ class RankingsController extends AbstractController
 
 	      $idRanking=$data['id_ranking'];
 	      $activeOnly=(isset($data['active_only']) && $data['active_only']!="" ? $data['active_only'] : 0);
+	      $withRatingIndex=(isset($data['with_rating_index']) && $data['with_rating_index']!="" ? $data['with_rating_index'] : 0);
 
-	      $url = $this->generateUrl('rankings_view_id_ao', array('id' => $idRanking, 'AO' => $activeOnly));
+	      $url = $this->generateUrl('rankings_view_id_ao', array('id' => $idRanking, 'RI' => $withRatingIndex, 'AO' => $activeOnly));
 	      return $this->redirect($url);
 		}	
 		/*elseif ($id<>null) {
@@ -426,6 +433,16 @@ class RankingsController extends AbstractController
   	}*/
 
 		$ranking_1 =  $em->getRepository('App:Ranking')->getRankingBefore($ranking->getDate()->format("Y-m-d"));
+
+		if ($withRatingIndex) {
+			$ratingIndexRt =  $em->getRepository('App:Ranking')->getRatingIndex(180);
+			$arrRatingIndex=array();
+			if (count($ratingIndexRt)>0) {
+				foreach ($ratingIndexRt as $rowRI) {
+					$arrRatingIndex[$rowRI["id"]]=$rowRI["avg_score"];
+				}
+			}
+		}
 
   	$detailsRankings=$em->getRepository('App:Rankingpos')->findBy(array('idranking' => $ranking));
   	$detailsPlayer=array();
@@ -440,8 +457,17 @@ class RankingsController extends AbstractController
 
   	if ($ranking && $detailsRankings) {
 
+
   		// SCORE EVOL
   		foreach ($detailsRankings as $det) {
+
+	  		// if ratingIndex activated, add the data if it exists
+	  		if ($withRatingIndex) {
+	  			if (isset($arrRatingIndex[$det->getIdplayer()->getId()])) 
+	  				$detailsPlayer[$det->getIdplayer()->getId()]["RI"]=$arrRatingIndex[$det->getIdplayer()->getId()];
+	  			else
+	  				$detailsPlayer[$det->getIdplayer()->getId()]["RI"]="-";
+	  		}
 
   			$detailsRankings_1=$em->getRepository('App:Rankingpos')->findOneBy(array('idranking' => $ranking_1, "idplayer" => $det->getIdplayer()));
   			if ($detailsRankings_1) {
@@ -451,26 +477,26 @@ class RankingsController extends AbstractController
   				$evol=$det->getScore() - $det->getIdplayer()->getInitialRatingTennis();
   			}
 
-			if ($evol>0) $detailsPlayer[$det->getIdplayer()->getId()]["evol"]="+".number_format($evol, 0);
-			else $detailsPlayer[$det->getIdplayer()->getId()]["evol"]=number_format($evol, 0);
+				if ($evol>0) $detailsPlayer[$det->getIdplayer()->getId()]["evol"]="+".number_format($evol, 0);
+				else $detailsPlayer[$det->getIdplayer()->getId()]["evol"]=number_format($evol, 0);
 
-			$arrTotal["evolscore"]+=$evol;
-			$arrTotal["score"]+=$det->getScore();
+				$arrTotal["evolscore"]+=$evol;
+				$arrTotal["score"]+=$det->getScore();
 
 
-			$sql_best = 'SELECT MAX(score) AS score FROM RankingPos RP, Ranking R WHERE 
-						R.id=RP.idRanking
-						AND date<="'.$ranking->getDate()->format("Y-m-d").'" 
-						AND idPlayer='.$det->getIdplayer()->getId();
-		    $stmt = $em->getConnection()->prepare($sql_best);
-		    $stmt->execute();
-		    $best = $stmt->fetchAll();
-		    if (isset($best[0])) $best=$best[0]["score"];
-		    else $best=0;
+				$sql_best = 'SELECT MAX(score) AS score FROM RankingPos RP, Ranking R WHERE 
+							R.id=RP.idRanking
+							AND date<="'.$ranking->getDate()->format("Y-m-d").'" 
+							AND idPlayer='.$det->getIdplayer()->getId();
+			    $stmt = $em->getConnection()->prepare($sql_best);
+			    $stmt->execute();
+			    $best = $stmt->fetchAll();
+			    if (isset($best[0])) $best=$best[0]["score"];
+			    else $best=0;
 
-			// best rankings
-			$detailsPlayer[$det->getIdplayer()->getId()]["best"]=$best;
-			//getBestRating($det->getIdplayer()->getId(), $ranking->getDate()->format("Y-m-d"));
+				// best rankings
+				$detailsPlayer[$det->getIdplayer()->getId()]["best"]=$best;
+				//getBestRating($det->getIdplayer()->getId(), $ranking->getDate()->format("Y-m-d"));
   			
   		}	
 
@@ -590,6 +616,7 @@ class RankingsController extends AbstractController
 	    'detailsRankings' => $detailsRankings,
 	    'detailsPlayer' => $detailsPlayer,
 	    'activeOnly' => $activeOnly,
+	    'withRatingIndex' => $withRatingIndex,
 	    'arrTotal' => $arrTotal,
 	  ]);
 	}

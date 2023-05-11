@@ -38,4 +38,31 @@ class RankingRepository extends ServiceEntityRepository {
 
     return $query;
   }
+
+  // get a sorted list of players with their rating index calculated this way ;
+  // average of the unique last rating in the rankings over the past X days
+  public function getRatingIndex($nbDays) {
+
+
+    $em = $this->getEntityManager();
+    $sql = '
+      SELECT P.id, P.nameShort, AVG(DISTINCT RP.score) as avg_score 
+      FROM `Ranking` R, RankingPos RP, Player P 
+      WHERE R.id=RP.idRanking AND RP.idPlayer=P.id 
+      and R.date>=DATE_SUB(now(), INTERVAL '.$nbDays.' DAY)
+      GROUP BY P.id
+      ORDER BY avg_score DESC
+        ';
+
+
+    $stmt = $em->getConnection()->prepare($sql);
+    $stmt->execute();
+    $rt = $stmt->fetchAll();
+   echo count($rt)." ratingIndex;";
+
+    return $rt;
+
+
+
+  }
 }

@@ -20,6 +20,9 @@
         <tr>
           <th>#</th>
           <th>Player</th>
+          {% if withRatingIndex==1 %}
+          <th>RI-6m</th>
+          {% endif %}
           <th>Rating</th>
           <th>Evol</th>
           <th>W</th>
@@ -41,6 +44,9 @@
             {% endif %}
               <td>{{ rank }}</td>
               <td><a href="{{ path('player_view', {'id':det.idplayer.id}) }}">{{ det.idplayer.nameshort }}</a></td>
+              {% if withRatingIndex==1 %}
+              <td>{{ detailsPlayer[det.idplayer.id]["RI"]|number_format(0, '.', ' ') }}</td>
+              {% endif %}
               <td><b>
                 {% if detailsPlayer[det.idplayer.id]["best"]|number_format(0, '.', ' ') == det.score|number_format(0, '.', ' ') %}<span style="color:#FF1493">{% endif %}
                 {{ det.score|number_format(0, '.', ' ') }}
