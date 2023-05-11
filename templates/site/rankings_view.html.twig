@@ -66,6 +66,9 @@
           <tr>
             <th></th>
             <th></th>
+            {% if withRatingIndex==1 %}
+            <th></th>
+            {% endif %}
             <th>{{ arrTotal["score"]|number_format(0, '.', ' ') }}</th>
             <th>{{ arrTotal["evolscore"]|number_format(0, '.', ' ') }}</th>
             <th>{{ arrTotal["wins"] }}</th>
