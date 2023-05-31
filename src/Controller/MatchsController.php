@@ -259,7 +259,7 @@ class MatchsController extends Controller
     $formBuilder
     ->add('context', ChoiceType::class, array(
       'label'    => 'CONTEXT (League ? A-series ? Sunday 21-22 ? etc)',
-      'choices' => array("Stege" => "Stege", "Stege (söndag 21-22)" => "Stege (söndag 21-22)", "Division League - Round#8" => "Division League - Round#8", "A-serien" => "A-serien", "Sprinttennis tournament" => "Sprinttennis tournament", "Summer tournament 2022" => "Summer tournament 2022", "ATL Klubbmästerskap" => "ATL Klubbmästerskap"),
+      'choices' => array("Stege" => "Stege", "Stege (söndag 21-22)" => "Stege (söndag 21-22)", "Division League - Round#8" => "Division League - Round#8", "A-serien" => "A-serien", "Sprinttennis tournament" => "Sprinttennis tournament", "Summer tournament 2023 (june)" => "Summer tournament 2023 (june)", "ATL Klubbmästerskap" => "ATL Klubbmästerskap"),
       'required'   => true,
     ))
     ->add('tie', ChoiceType::class, array(
