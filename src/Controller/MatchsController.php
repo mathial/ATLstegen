@@ -1018,9 +1018,9 @@ class MatchsController extends Controller
     else {
       $context="Summer tournament ".$year;
     }
-    $dql   = 'SELECT m FROM App:Matchs m WHERE m.context = :context ORDER BY m.date DESC';
+    $dql   = 'SELECT m FROM App:Matchs m WHERE m.context LIKE :context ORDER BY m.date DESC';
     $query = $em->createQuery($dql)
-            ->setParameter('context', $context);;
+            ->setParameter('context', $context."%");;
 
     $paginator  = $this->get('knp_paginator');
 
