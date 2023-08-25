@@ -205,7 +205,7 @@ class MatchsdoubleController extends Controller
 
 
 
-        $headers ='From: contact@luckylosertennis.com'."\r\n";
+        $headers ='From: '.$_SERVER['EMAIL_ADMIN']."\r\n";
         $headers .= 'MIME-Version: 1.0' . "\r\n";
         $headers .= 'Content-type: text/html; charset=UTF-8' . "\r\n";
         // $headers .='Content-Type: text/html; charset="iso-8859-1"'."\r\n";
