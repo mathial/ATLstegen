@@ -29,8 +29,8 @@ class RankingposRepository extends ServiceEntityRepository {
 
 
     $stmt = $em->getConnection()->prepare($sql);
-    $stmt->execute(['idRanking' => $idRanking]);
-    $RP = $stmt->fetchAll();
+    $exec = $stmt->execute(['idRanking' => $idRanking]);
+    $RP = $exec->fetchAll();
 
     return $RP;
 

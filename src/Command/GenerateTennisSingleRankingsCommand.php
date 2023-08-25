@@ -51,7 +51,7 @@ class GenerateTennisSingleRankingsCommand extends Command
         $em = $this->container->get('doctrine')->getManager();
 
         // get the last ranking
-        $ranking = $em->getRepository('App:Ranking')->getLastRanking();
+        $ranking = $em->getRepository('App\Entity\Ranking')->getLastRanking();
         $output->writeln("Last ranking id is ".$ranking->getId());
 
 

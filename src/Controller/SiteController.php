@@ -18,10 +18,10 @@ class SiteController extends AbstractController
 
         // TENNIS
 
-        $ranking = $em->getRepository('App:Ranking')->getLastRanking();
-        $ranking_1 =  $em->getRepository('App:Ranking')->getRankingBefore($ranking->getDate()->format("Y-m-d"));
+        $ranking = $em->getRepository('App\Entity\Ranking')->getLastRanking();
+        $ranking_1 =  $em->getRepository('App\Entity\Ranking')->getRankingBefore($ranking->getDate()->format("Y-m-d"));
 
-        $detailsRankings=$em->getRepository('App:Rankingpos')->findBy(array('idranking' => $ranking));
+        $detailsRankings=$em->getRepository('App\Entity\Rankingpos')->findBy(array('idranking' => $ranking));
         $tabEvol=array();
         $tabEvolDetails=array();
 
@@ -30,7 +30,7 @@ class SiteController extends AbstractController
             // SCORE EVOL
             foreach ($detailsRankings as $det) {
 
-                $detailsRankings_1=$em->getRepository('App:Rankingpos')->findOneBy(array('idranking' => $ranking_1, "idplayer" => $det->getIdplayer()));
+                $detailsRankings_1=$em->getRepository('App\Entity\Rankingpos')->findOneBy(array('idranking' => $ranking_1, "idplayer" => $det->getIdplayer()));
 
                 if ($detailsRankings_1) {
                     $evol = $det->getScore() - $detailsRankings_1->getScore();
@@ -112,8 +112,8 @@ class SiteController extends AbstractController
         ;
 
         $stmt = $em->getConnection()->prepare($sql);
-        $stmt->execute(['minMatchsPlayed' => $minMatchsPlayed, 'nbDays' => $nbDays]);
-        $players = $stmt->fetchAll();
+        $exec = $stmt->execute(['minMatchsPlayed' => $minMatchsPlayed, 'nbDays' => $nbDays]);
+        $players = $exec->fetchAll();
 
         $arrRecapPlayers=array();
 
@@ -128,8 +128,8 @@ class SiteController extends AbstractController
                     AND date >= DATE(NOW()) - INTERVAL :nbDays DAY';
 
             $stmt = $em->getConnection()->prepare($sql);
-            $stmt->execute(['idPlayer' => $player["idPlayer"], 'nbDays' => $nbDays]);
-            $matchs = $stmt->fetchAll();
+            $exec = $stmt->execute(['idPlayer' => $player["idPlayer"], 'nbDays' => $nbDays]);
+            $matchs = $exec->fetchAll();
             
             foreach ($matchs as $match) {
                 if ($match["tie"]==1) $arrRecapPlayers[$player["idPlayer"]]["T"]++;
@@ -152,7 +152,7 @@ class SiteController extends AbstractController
 
             $rt[$idP]["score"]=$p;
 
-            $player = $em->getRepository('App:Player')->findOneBy(array("id" => $idP));
+            $player = $em->getRepository('App\Entity\Player')->findOneBy(array("id" => $idP));
 
             $rt[$idP]["player"]=$player;
 

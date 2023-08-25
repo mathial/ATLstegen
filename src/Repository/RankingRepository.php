@@ -56,9 +56,9 @@ class RankingRepository extends ServiceEntityRepository {
 
 
     $stmt = $em->getConnection()->prepare($sql);
-    $stmt->execute();
-    $rt = $stmt->fetchAll();
-   echo count($rt)." ratingIndex;";
+    $exec = $stmt->execute();
+    $rt = $exec->fetchAll();
+   //echo count($rt)." ratingIndex;";
 
     return $rt;
 

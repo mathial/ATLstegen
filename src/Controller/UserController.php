@@ -34,7 +34,7 @@ class UserController extends Controller
   {
     $em = $this->getDoctrine()->getManager();
 
-    $listUsers = $em->getRepository('App:User')->findBy(array(), array('username' => 'ASC'));
+    $listUsers = $em->getRepository('App\Entity\User')->findBy(array(), array('username' => 'ASC'));
 
     return $this->render('site/user_list.html.twig', array("listUsers" => $listUsers
     ));
@@ -156,7 +156,7 @@ class UserController extends Controller
   public function updateUserAction($id, Request $request) {
 
     $em = $this->getDoctrine()->getManager();
-    $user = $em->getRepository('App:User')->findOneBy(['id' => $id]);
+    $user = $em->getRepository('App\Entity\User')->findOneBy(['id' => $id]);
 
     $form=$this->getFormUser($user, "edit");
 
@@ -201,7 +201,7 @@ class UserController extends Controller
   public function changePasswordAction(Request $request) {
 
     $em = $this->getDoctrine()->getManager();
-    //$user = $em->getRepository('App:User')->findOneBy(['id' => $id]);
+    //$user = $em->getRepository('App\Entity\User')->findOneBy(['id' => $id]);
     $user = $this->get('security.token_storage')->getToken()->getUser();
 
     $formBuilder = $this->createFormBuilder($user);

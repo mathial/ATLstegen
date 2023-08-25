@@ -48,8 +48,8 @@ class PlayerRepository extends EntityRepository {
         LIMIT 0,1
         ';
     $stmt = $em->getConnection()->prepare($sql);
-    $stmt->execute(['idPlayer' => $id]);
-    $lastR = $stmt->fetchAll();
+    $exec = $stmt->execute(['idPlayer' => $id]);
+    $lastR = $exec->fetchAll();
 
     $rt=array();
 

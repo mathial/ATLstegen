@@ -247,7 +247,7 @@ class MatchsdoubleController extends Controller
   public function edit($id, Request $request) {
 
     $em = $this->getDoctrine()->getManager();
-    $match = $em->getRepository('App:Matchsdouble')->findOneBy(['id' => $id]);
+    $match = $em->getRepository('App\Entity\Matchsdouble')->findOneBy(['id' => $id]);
 
     $form=$this->getFormMatch($match, "edit");
 
@@ -285,7 +285,7 @@ class MatchsdoubleController extends Controller
     if ($this->getUser()!== NULL && in_array('ROLE_ADMIN', $this->getUser()->getRoles(), true)) {
 
         $em = $this->getDoctrine()->getManager();
-        $match = $em->getRepository('App:Matchsdouble')->findOneBy(['id' => $id]);
+        $match = $em->getRepository('App\Entity\Matchsdouble')->findOneBy(['id' => $id]);
 
         $em->remove($match);
         $em->flush();
@@ -321,7 +321,7 @@ class MatchsdoubleController extends Controller
       }
     }
 
-    $listTotMatchs = $em->getRepository('App:Matchsdouble')->getMatchsPerPage($page, $maxpage, $filter);
+    $listTotMatchs = $em->getRepository('App\Entity\Matchsdouble')->getMatchsPerPage($page, $maxpage, $filter);
 
     $dql   = "SELECT m FROM App:Matchsdouble m ".$where." ORDER BY m.date DESC, m.id DESC";
     $query = $em->createQuery($dql);
@@ -364,8 +364,8 @@ class MatchsdoubleController extends Controller
                   LIMIT ".($page-1)*$limitpage.", ".$limitpage;
                   
     $stmt = $em->getConnection()->prepare($sql_m);
-    $stmt->execute();
-    $matches = $stmt->fetchAll();
+    $exec = $stmt->execute();
+    $matches = $exec->fetchAll();
 
     $arrMEvol=array();
 
@@ -377,8 +377,8 @@ class MatchsdoubleController extends Controller
       // get the closest ranking
       $sql_rank = 'SELECT id FROM RankingDouble WHERE date<="'.$mat["date"].'" ORDER BY date DESC LIMIT 0,1';
       $stmt = $em->getConnection()->prepare($sql_rank);
-      $stmt->execute();
-      $rank = $stmt->fetchAll();
+      $exec = $stmt->execute();
+      $rank = $exec->fetchAll();
       if (isset($rank[0])) $rankId=$rank[0]["id"];
       
       
@@ -393,26 +393,26 @@ class MatchsdoubleController extends Controller
         
         $sql_rank = 'SELECT score FROM RankingPosDouble WHERE idRankingDouble="'.$rankId.'" AND idPlayer='.$mat["p1id"];
         $stmt = $em->getConnection()->prepare($sql_rank);
-        $stmt->execute();
-        $rank = $stmt->fetchAll();
+        $exec = $stmt->execute();
+        $rank = $exec->fetchAll();
         if (isset($rank[0])) $rating_player1=$rank[0]["score"];
 
         $sql_rank = 'SELECT score FROM RankingPosDouble WHERE idRankingDouble="'.$rankId.'" AND idPlayer='.$mat["p2id"];
         $stmt = $em->getConnection()->prepare($sql_rank);
-        $stmt->execute();
-        $rank = $stmt->fetchAll();
+        $exec = $stmt->execute();
+        $rank = $exec->fetchAll();
         if (isset($rank[0])) $rating_player2=$rank[0]["score"];
 
         $sql_rank = 'SELECT score FROM RankingPosDouble WHERE idRankingDouble="'.$rankId.'" AND idPlayer='.$mat["p3id"];
         $stmt = $em->getConnection()->prepare($sql_rank);
-        $stmt->execute();
-        $rank = $stmt->fetchAll();
+        $exec = $stmt->execute();
+        $rank = $exec->fetchAll();
         if (isset($rank[0])) $rating_player3=$rank[0]["score"];
 
         $sql_rank = 'SELECT score FROM RankingPosDouble WHERE idRankingDouble="'.$rankId.'" AND idPlayer='.$mat["p4id"];
         $stmt = $em->getConnection()->prepare($sql_rank);
-        $stmt->execute();
-        $rank = $stmt->fetchAll();
+        $exec = $stmt->execute();
+        $rank = $exec->fetchAll();
         if (isset($rank[0])) $rating_player4=$rank[0]["score"];
         
 

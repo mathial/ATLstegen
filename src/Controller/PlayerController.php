@@ -36,10 +36,10 @@ class PlayerController extends Controller
   {
     $em = $this->getDoctrine()->getManager();
 
-    $player = $em->getRepository('App:Player')->findOneBy(array('id'=>$id));
-    $lastRTS = $em->getRepository('App:Player')->getLastRanking($id);
-    $lastRTD = $em->getRepository('App:Player')->getLastRanking($id, "Double");
-    $lastRP = $em->getRepository('App:Player')->getLastRanking($id, "Paddle");
+    $player = $em->getRepository('App\Entity\Player')->findOneBy(array('id'=>$id));
+    $lastRTS = $em->getRepository('App\Entity\Player')->getLastRanking($id);
+    $lastRTD = $em->getRepository('App\Entity\Player')->getLastRanking($id, "Double");
+    $lastRP = $em->getRepository('App\Entity\Player')->getLastRanking($id, "Paddle");
 
 
     $arrHistoryM=array();
@@ -79,7 +79,7 @@ class PlayerController extends Controller
         ';
       $stmt = $em->getConnection()->prepare($sql);
       $stmt->execute(['idPlayer' => $id]);
-      $opponents = $stmt->fetchAll();
+      $opponents = $exec->fetchAll();
 
       $nbMTot=count($opponents);
 
@@ -132,7 +132,7 @@ class PlayerController extends Controller
       // }
 
       foreach ($arrStatsMatchs as $idP => $data) {
-        $dataPlayer = $em->getRepository('App:Player')->findOneBy(array('id'=>$idP));
+        $dataPlayer = $em->getRepository('App\Entity\Player')->findOneBy(array('id'=>$idP));
 
         $arrStatsOpponentsDetails[$idP]["name"]=$dataPlayer->getNameShort();
         $arrStatsOpponentsDetails[$idP]["id"]=$idP;
@@ -157,7 +157,7 @@ class PlayerController extends Controller
         ';
       $stmt = $em->getConnection()->prepare($sql);
       $stmt->execute(['idPlayer' => $id]);
-      $opponents = $stmt->fetchAll();
+      $opponents = $exec->fetchAll();
 
       $nbMTotPaddle=count($opponents);
 
@@ -192,7 +192,7 @@ class PlayerController extends Controller
       }
 
       foreach ($arrStatsMatchs as $idP => $data) {
-        $dataPlayer = $em->getRepository('App:Player')->findOneBy(array('id'=>$idP));
+        $dataPlayer = $em->getRepository('App\Entity\Player')->findOneBy(array('id'=>$idP));
 
         $arrStatsOpponentsDetailsPaddle[$idP]["name"]=$dataPlayer->getNameLong();
         $arrStatsOpponentsDetailsPaddle[$idP]["id"]=$idP;
@@ -238,12 +238,12 @@ class PlayerController extends Controller
   {
     $em = $this->getDoctrine()->getManager();
 
-    $player = $em->getRepository('App:Player')->findOneBy(array('id'=>$id));
-    $lastR = $em->getRepository('App:Player')->getLastRanking($id);
+    $player = $em->getRepository('App\Entity\Player')->findOneBy(array('id'=>$id));
+    $lastR = $em->getRepository('App\Entity\Player')->getLastRanking($id);
 
     $where="WHERE (m.idplayer1= ".$id." OR m.idplayer2= ".$id.")";
     $maxpage=5000;
-    $listTotMatchs = $em->getRepository('App:Matchs')->getMatchsPerPageByPlayer($page, $maxpage, $id);
+    $listTotMatchs = $em->getRepository('App\Entity\Matchs')->getMatchsPerPageByPlayer($page, $maxpage, $id);
 
     $dql   = "SELECT m FROM App:Matchs m ".$where." ORDER BY m.date DESC";
     $query = $em->createQuery($dql);
@@ -282,7 +282,7 @@ class PlayerController extends Controller
                   ORDER BY m.date DESC";
     $stmt = $em->getConnection()->prepare($sql_m);
     $stmt->execute();
-    $matches = $stmt->fetchAll();
+    $matches = $exec->fetchAll();
 
     $arrMEvol=array();
 
@@ -294,7 +294,7 @@ class PlayerController extends Controller
       $sql_rank = 'SELECT id FROM Ranking WHERE date<="'.$mat["date"].'" ORDER BY date DESC LIMIT 0,1';
       $stmt = $em->getConnection()->prepare($sql_rank);
       $stmt->execute();
-      $rank = $stmt->fetchAll();
+      $rank = $exec->fetchAll();
       if (isset($rank[0])) $rankId=$rank[0]["id"];
       
       $rating_player1=$mat["p1IR"];
@@ -305,13 +305,13 @@ class PlayerController extends Controller
         $sql_rank = 'SELECT score FROM RankingPos WHERE idRanking="'.$rankId.'" AND idPlayer='.$mat["p1id"];
         $stmt = $em->getConnection()->prepare($sql_rank);
         $stmt->execute();
-        $rank = $stmt->fetchAll();
+        $rank = $exec->fetchAll();
         if (isset($rank[0])) $rating_player1=$rank[0]["score"];
 
         $sql_rank = 'SELECT score FROM RankingPos WHERE idRanking="'.$rankId.'" AND idPlayer='.$mat["p2id"];
         $stmt = $em->getConnection()->prepare($sql_rank);
         $stmt->execute();
-        $rank = $stmt->fetchAll();
+        $rank = $exec->fetchAll();
         if (isset($rank[0])) $rating_player2=$rank[0]["score"];
 
       }
@@ -404,12 +404,12 @@ class PlayerController extends Controller
   {
     $em = $this->getDoctrine()->getManager();
 
-    $player = $em->getRepository('App:Player')->findOneBy(array('id'=>$id));
-    $lastR = $em->getRepository('App:Player')->getLastRanking($id, "Paddle");
+    $player = $em->getRepository('App\Entity\Player')->findOneBy(array('id'=>$id));
+    $lastR = $em->getRepository('App\Entity\Player')->getLastRanking($id, "Paddle");
 
     $where="WHERE (m.idplayer1= ".$id." OR m.idplayer2= ".$id." OR m.idplayer3= ".$id." OR m.idplayer4= ".$id.")";
     $maxpage=5000;
-    $listTotMatchs = $em->getRepository('App:Matchspaddle')->getMatchsPerPageByPlayer($page, $maxpage, $id);
+    $listTotMatchs = $em->getRepository('App\Entity\Matchspaddle')->getMatchsPerPageByPlayer($page, $maxpage, $id);
 
     $dql   = "SELECT m FROM App:Matchspaddle m ".$where." ORDER BY m.date DESC";
     $query = $em->createQuery($dql);
@@ -450,7 +450,7 @@ class PlayerController extends Controller
                   ORDER BY m.date DESC";
     $stmt = $em->getConnection()->prepare($sql_m);
     $stmt->execute();
-    $matches = $stmt->fetchAll();
+    $matches = $exec->fetchAll();
 
     $arrMEvol=array();
 
@@ -462,7 +462,7 @@ class PlayerController extends Controller
       $sql_rank = 'SELECT id FROM RankingPaddle WHERE date<"'.$mat["date"].'" ORDER BY date DESC LIMIT 0,1';
       $stmt = $em->getConnection()->prepare($sql_rank);
       $stmt->execute();
-      $rank = $stmt->fetchAll();
+      $rank = $exec->fetchAll();
       if (isset($rank[0])) $rankId=$rank[0]["id"];
       
       $rating_player1=$mat["p1IR"];
@@ -476,25 +476,25 @@ class PlayerController extends Controller
         $sql_rank = 'SELECT score FROM RankingPosPaddle WHERE idRankingPaddle="'.$rankId.'" AND idPlayer='.$mat["p1id"];
         $stmt = $em->getConnection()->prepare($sql_rank);
         $stmt->execute();
-        $rank = $stmt->fetchAll();
+        $rank = $exec->fetchAll();
         if (isset($rank[0])) $rating_player1=$rank[0]["score"];
 
         $sql_rank = 'SELECT score FROM RankingPosPaddle WHERE idRankingPaddle="'.$rankId.'" AND idPlayer='.$mat["p2id"];
         $stmt = $em->getConnection()->prepare($sql_rank);
         $stmt->execute();
-        $rank = $stmt->fetchAll();
+        $rank = $exec->fetchAll();
         if (isset($rank[0])) $rating_player2=$rank[0]["score"];
 
         $sql_rank = 'SELECT score FROM RankingPosPaddle WHERE idRankingPaddle="'.$rankId.'" AND idPlayer='.$mat["p3id"];
         $stmt = $em->getConnection()->prepare($sql_rank);
         $stmt->execute();
-        $rank = $stmt->fetchAll();
+        $rank = $exec->fetchAll();
         if (isset($rank[0])) $rating_player3=$rank[0]["score"];
 
         $sql_rank = 'SELECT score FROM RankingPosPaddle WHERE idRankingPaddle="'.$rankId.'" AND idPlayer='.$mat["p4id"];
         $stmt = $em->getConnection()->prepare($sql_rank);
         $stmt->execute();
-        $rank = $stmt->fetchAll();
+        $rank = $exec->fetchAll();
         if (isset($rank[0])) $rating_player4=$rank[0]["score"];
 
       }
@@ -631,12 +631,12 @@ class PlayerController extends Controller
   {
     $em = $this->getDoctrine()->getManager();
 
-    $player = $em->getRepository('App:Player')->findOneBy(array('id'=>$id));
-    $lastR = $em->getRepository('App:Player')->getLastRanking($id, "Double");
+    $player = $em->getRepository('App\Entity\Player')->findOneBy(array('id'=>$id));
+    $lastR = $em->getRepository('App\Entity\Player')->getLastRanking($id, "Double");
 
     $where="WHERE (m.idplayer1= ".$id." OR m.idplayer2= ".$id." OR m.idplayer3= ".$id." OR m.idplayer4= ".$id.")";
     $maxpage=5000;
-    $listTotMatchs = $em->getRepository('App:Matchsdouble')->getMatchsPerPageByPlayer($page, $maxpage, $id);
+    $listTotMatchs = $em->getRepository('App\Entity\Matchsdouble')->getMatchsPerPageByPlayer($page, $maxpage, $id);
 
     $dql   = "SELECT m FROM App:Matchsdouble m ".$where." ORDER BY m.date DESC";
     $query = $em->createQuery($dql);
@@ -677,7 +677,7 @@ class PlayerController extends Controller
                   ORDER BY m.date DESC";
     $stmt = $em->getConnection()->prepare($sql_m);
     $stmt->execute();
-    $matches = $stmt->fetchAll();
+    $matches = $exec->fetchAll();
 
     $arrMEvol=array();
 
@@ -689,7 +689,7 @@ class PlayerController extends Controller
       $sql_rank = 'SELECT id FROM RankingDouble WHERE date<"'.$mat["date"].'" ORDER BY date DESC LIMIT 0,1';
       $stmt = $em->getConnection()->prepare($sql_rank);
       $stmt->execute();
-      $rank = $stmt->fetchAll();
+      $rank = $exec->fetchAll();
       if (isset($rank[0])) $rankId=$rank[0]["id"];
       
       $rating_player1=$mat["p1IR"];
@@ -703,25 +703,25 @@ class PlayerController extends Controller
         $sql_rank = 'SELECT score FROM RankingPosDouble WHERE idRankingDouble="'.$rankId.'" AND idPlayer='.$mat["p1id"];
         $stmt = $em->getConnection()->prepare($sql_rank);
         $stmt->execute();
-        $rank = $stmt->fetchAll();
+        $rank = $exec->fetchAll();
         if (isset($rank[0])) $rating_player1=$rank[0]["score"];
 
         $sql_rank = 'SELECT score FROM RankingPosDouble WHERE idRankingDouble="'.$rankId.'" AND idPlayer='.$mat["p2id"];
         $stmt = $em->getConnection()->prepare($sql_rank);
         $stmt->execute();
-        $rank = $stmt->fetchAll();
+        $rank = $exec->fetchAll();
         if (isset($rank[0])) $rating_player2=$rank[0]["score"];
 
         $sql_rank = 'SELECT score FROM RankingPosDouble WHERE idRankingDouble="'.$rankId.'" AND idPlayer='.$mat["p3id"];
         $stmt = $em->getConnection()->prepare($sql_rank);
         $stmt->execute();
-        $rank = $stmt->fetchAll();
+        $rank = $exec->fetchAll();
         if (isset($rank[0])) $rating_player3=$rank[0]["score"];
 
         $sql_rank = 'SELECT score FROM RankingPosDouble WHERE idRankingDouble="'.$rankId.'" AND idPlayer='.$mat["p4id"];
         $stmt = $em->getConnection()->prepare($sql_rank);
         $stmt->execute();
-        $rank = $stmt->fetchAll();
+        $rank = $exec->fetchAll();
         if (isset($rank[0])) $rating_player4=$rank[0]["score"];
 
       }
@@ -857,13 +857,13 @@ class PlayerController extends Controller
 
     $arrDate=array();
 
-    $player = $em->getRepository('App:Player')->findOneBy(array('id'=>$id));
-    $lastR = $em->getRepository('App:Player')->getLastRanking($id);
+    $player = $em->getRepository('App\Entity\Player')->findOneBy(array('id'=>$id));
+    $lastR = $em->getRepository('App\Entity\Player')->getLastRanking($id);
 
     $maxVal=0;
     $minVal=2000;
 
-    $rankingScores = $em->getRepository('App:Rankingpos')->findBy(array('idplayer'=>$id), array('idranking' => 'ASC'));
+    $rankingScores = $em->getRepository('App\Entity\Rankingpos')->findBy(array('idplayer'=>$id), array('idranking' => 'ASC'));
 
     $arrRS=array();
 
@@ -893,9 +893,9 @@ class PlayerController extends Controller
 
     // EVOL RANKING DOUBLE 
     
-    $lastRDouble = $em->getRepository('App:Player')->getLastRanking($id, "Double");
+    $lastRDouble = $em->getRepository('App\Entity\Player')->getLastRanking($id, "Double");
 
-    $rankingScoresDouble = $em->getRepository('App:Rankingposdouble')->findBy(array('idplayer'=>$id), array('idrankingdouble' => 'ASC'));
+    $rankingScoresDouble = $em->getRepository('App\Entity\Rankingposdouble')->findBy(array('idplayer'=>$id), array('idrankingdouble' => 'ASC'));
 
     $arrRSDouble=array();
 
@@ -926,9 +926,9 @@ class PlayerController extends Controller
 
     // EVOL RANKING PADEL 
 
-    $lastRPaddle = $em->getRepository('App:Player')->getLastRanking($id, "Paddle");
+    $lastRPaddle = $em->getRepository('App\Entity\Player')->getLastRanking($id, "Paddle");
 
-    $rankingScoresPadel = $em->getRepository('App:Rankingpospaddle')->findBy(array('idplayer'=>$id), array('idrankingpaddle' => 'ASC'));
+    $rankingScoresPadel = $em->getRepository('App\Entity\Rankingpospaddle')->findBy(array('idplayer'=>$id), array('idrankingpaddle' => 'ASC'));
 
     $arrRSPadel=array();
 
@@ -1012,7 +1012,7 @@ class PlayerController extends Controller
       }
     }
 
-    $listTotPlayers = $em->getRepository('App:Player')->getPlayersPerPage($page, $maxpage, $filter);
+    $listTotPlayers = $em->getRepository('App\Entity\Player')->getPlayersPerPage($page, $maxpage, $filter);
 
     $dql   = "SELECT p FROM App:Player p ".$where." ORDER BY p.namelong";
     $query = $em->createQuery($dql);
@@ -1211,7 +1211,7 @@ class PlayerController extends Controller
   public function updatePlayerAction($id, Request $request) {
 
     $em = $this->getDoctrine()->getManager();
-    $player = $em->getRepository('App:Player')->findOneBy(['id' => $id]);
+    $player = $em->getRepository('App\Entity\Player')->findOneBy(['id' => $id]);
 
     $form=$this->getFormPlayer($player, "edit");
 
@@ -1248,13 +1248,13 @@ class PlayerController extends Controller
   /*public function getBestRating ($id, $date) {
 
     $em = $this->getDoctrine()->getManager();
-    $player = $em->getRepository('App:Player')->findOneBy(['id' => $id]);
+    $player = $em->getRepository('App\Entity\Player')->findOneBy(['id' => $id]);
 
      // get the closest ranking
     $sql_best = 'SELECT MAX(score) FROM RankingPos WHERE date<="'.$date.'" AND idPlayer='.$id;
     $stmt = $em->getConnection()->prepare($sql_best);
     $stmt->execute();
-    $best = $stmt->fetchAll();
+    $best = $exec->fetchAll();
     if (isset($best[0])) $best=$best[0]["score"];
     else $best=0;
 

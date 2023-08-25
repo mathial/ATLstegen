@@ -41,7 +41,7 @@ class RankingspaddleController extends AbstractController
 
 
     if ($based_ranking!="init") {
-    	$rankingpaddle = $em->getRepository('App:Rankingpaddle')->findOneBy(array("id" => $based_ranking));
+    	$rankingpaddle = $em->getRepository('App\Entity\Rankingpaddle')->findOneBy(array("id" => $based_ranking));
 
     	if($generate_ranking==1) {
 
@@ -50,8 +50,8 @@ class RankingspaddleController extends AbstractController
 			    SELECT * FROM RankingPaddle WHERE date = :date
 			    ';
 			  $stmt = $em->getConnection()->prepare($sql);
-				$stmt->execute(['date' => $date_from->format("Y-m-d")]);
-				if ($rankingExist = $stmt->fetchAll()) {
+				$exec = $stmt->execute(['date' => $date_from->format("Y-m-d")]);
+				if ($rankingExist = $exec->fetchAll()) {
 
 					// delete all the pos 
 					$sql = '
@@ -92,43 +92,43 @@ class RankingspaddleController extends AbstractController
 	    SELECT DISTINCT idPlayer1 FROM MatchsPaddle WHERE date <= :date
 	    ';
 		$stmt = $em->getConnection()->prepare($sql);
-		$stmt->execute(['date' => $date_from->format("Y-m-d")]);
-		$players1 = $stmt->fetchAll();
+		$exec = $stmt->execute(['date' => $date_from->format("Y-m-d")]);
+		$players1 = $exec->fetchAll();
 		
 		$sql = '
 	    SELECT DISTINCT idPlayer2 FROM MatchsPaddle WHERE date <= :date
 	    ';
 		$stmt = $em->getConnection()->prepare($sql);
-		$stmt->execute(['date' => $date_from->format("Y-m-d")]);
-		$players2 = $stmt->fetchAll();
+		$exec = $stmt->execute(['date' => $date_from->format("Y-m-d")]);
+		$players2 = $exec->fetchAll();
 
 		$sql = '
 	    SELECT DISTINCT idPlayer3 FROM MatchsPaddle WHERE date <= :date
 	    ';
 		$stmt = $em->getConnection()->prepare($sql);
-		$stmt->execute(['date' => $date_from->format("Y-m-d")]);
-		$players3 = $stmt->fetchAll();
+		$exec = $stmt->execute(['date' => $date_from->format("Y-m-d")]);
+		$players3 = $exec->fetchAll();
 
 		$sql = '
 	    SELECT DISTINCT idPlayer4 FROM MatchsPaddle WHERE date <= :date
 	    ';
 		$stmt = $em->getConnection()->prepare($sql);
-		$stmt->execute(['date' => $date_from->format("Y-m-d")]);
-		$players4 = $stmt->fetchAll();
+		$exec = $stmt->execute(['date' => $date_from->format("Y-m-d")]);
+		$players4 = $exec->fetchAll();
 		
 		
 	  if ($based_ranking!="init") {
 	  	$sql = ' SELECT id, idPlayer1, idPlayer2, idPlayer3, idPlayer4, tie FROM MatchsPaddle WHERE date < :date AND date>= :date_based ';
 	  	$stmt = $em->getConnection()->prepare($sql);
-			$stmt->execute(['date' => $date_from->format("Y-m-d"), 'date_based' => $rankingpaddle->getDate()->format("Y-m-d")]);
+			$exec = $stmt->execute(['date' => $date_from->format("Y-m-d"), 'date_based' => $rankingpaddle->getDate()->format("Y-m-d")]);
 	  }
 	  else {
 	  	$sql = 'SELECT id, idPlayer1, idPlayer2, idPlayer3, idPlayer4, tie FROM MatchsPaddle WHERE date < :date';
 	  	$stmt = $em->getConnection()->prepare($sql);
-			$stmt->execute(['date' => $date_from->format("Y-m-d")]);
+			$exec = $stmt->execute(['date' => $date_from->format("Y-m-d")]);
 	  }
 		
-		$matchs = $stmt->fetchAll();
+		$matchs = $exec->fetchAll();
 
 		$arrPlayers=array();
 		//$arrPlayersDisplay=array();
@@ -150,7 +150,7 @@ class RankingspaddleController extends AbstractController
 		$elo = new EloRatingSystem(100, 50);
 
 		foreach($arrPlayers as $pId) {
-			$player = $em->getRepository('App:Player')->findOneBy(array("id" => $pId));
+			$player = $em->getRepository('App\Entity\Player')->findOneBy(array("id" => $pId));
 			$arrResults["playersDisplay"][$pId]=$player->getNameshort();
 
 			// get the ranking expected
@@ -158,7 +158,7 @@ class RankingspaddleController extends AbstractController
 				$basedRate[$pId]=$player->getInitialRatingPaddle();
 			}
 			else {
-				$rankPos = $em->getRepository('App:Rankingpospaddle')->findOneBy(array("idrankingpaddle" => $based_ranking, "idplayer" => $player->getId()));
+				$rankPos = $em->getRepository('App\Entity\Rankingpospaddle')->findOneBy(array("idrankingpaddle" => $based_ranking, "idplayer" => $player->getId()));
 				if ($rankPos) {
 					$basedRate[$pId] = $rankPos->getScore();
 				}
@@ -228,7 +228,7 @@ class RankingspaddleController extends AbstractController
 
 	    if ($generate_ranking==1) {
 	    	$rankingpaddle_pos = new Rankingpospaddle();
-	    	$player = $em->getRepository('App:Player')->findOneBy(array("id" => $expl_rank[0]));
+	    	$player = $em->getRepository('App\Entity\Player')->findOneBy(array("id" => $expl_rank[0]));
 	    	
 	    	$rankingpaddle_pos->setIdrankingpaddle($rankingpaddle);
 	    	$rankingpaddle_pos->setIdplayer($player);
@@ -244,7 +244,7 @@ class RankingspaddleController extends AbstractController
 		if ($generate_ranking==1) {
 
 			foreach($matchs as $m) {
-				$match = $em->getRepository('App:Matchspaddle')->findOneBy(array("id" => $m["id"]));
+				$match = $em->getRepository('App\Entity\Matchspaddle')->findOneBy(array("id" => $m["id"]));
 				$match->setIdrankingpaddle($rankingpaddle->getId());
 				$em->persist($match);
 			}
@@ -274,7 +274,7 @@ class RankingspaddleController extends AbstractController
 		$em = $this->getDoctrine()->getManager();
 
 		$arrRank=array();
-		$rankings = $em->getRepository('App:Rankingpaddle')->findBy(array(), array('date' => 'DESC'));
+		$rankings = $em->getRepository('App\Entity\Rankingpaddle')->findBy(array(), array('date' => 'DESC'));
 		foreach ($rankings as $rank) {
 			$arrRank[$rank->getDate()->format("Y-m-d")] = $rank->getId();
 		}
@@ -319,13 +319,13 @@ class RankingspaddleController extends AbstractController
       $based_ranking=$data['based_ranking'];
 
       if ($based_ranking!="init") {
-	      $rankingBase = $em->getRepository('App:Rankingpaddle')->findOneBy(array('id' => $based_ranking));
+	      $rankingBase = $em->getRepository('App\Entity\Rankingpaddle')->findOneBy(array('id' => $based_ranking));
 	      $based_ranking_date = $rankingBase->getDate()->format("Y-m-d");
       }
 
       /*
       if ($based_ranking!="init") {
-      	$rankingpaddle = $em->getRepository('App:Rankingpaddle')->findOneBy(array("id" => $based_ranking));
+      	$rankingpaddle = $em->getRepository('App\Entity\Rankingpaddle')->findOneBy(array("id" => $based_ranking));
 
       	if($generate_ranking==1) {
 
@@ -334,7 +334,7 @@ class RankingspaddleController extends AbstractController
 				    SELECT * FROM RankingPaddle WHERE date = :date
 				    ';
 				  $stmt = $em->getConnection()->prepare($sql);
-					$stmt->execute(['date' => $date_from->format("Y-m-d")]);
+					$exec = $stmt->execute(['date' => $date_from->format("Y-m-d")]);
 					if ($rankingExist = $stmt->fetchAll()) {
 
 						// delete all the pos 
@@ -368,43 +368,43 @@ class RankingspaddleController extends AbstractController
 		    SELECT DISTINCT idPlayer1 FROM MatchsPaddle WHERE date <= :date
 		    ';
 			$stmt = $em->getConnection()->prepare($sql);
-			$stmt->execute(['date' => $date_from->format("Y-m-d")]);
-			$players1 = $stmt->fetchAll();
+			$exec = $stmt->execute(['date' => $date_from->format("Y-m-d")]);
+			$players1 = $exec->fetchAll();
 			
 			$sql = '
 		    SELECT DISTINCT idPlayer2 FROM MatchsPaddle WHERE date <= :date
 		    ';
 			$stmt = $em->getConnection()->prepare($sql);
-			$stmt->execute(['date' => $date_from->format("Y-m-d")]);
-			$players2 = $stmt->fetchAll();
+			$exec = $stmt->execute(['date' => $date_from->format("Y-m-d")]);
+			$players2 = $exec->fetchAll();
 
 			$sql = '
 		    SELECT DISTINCT idPlayer3 FROM MatchsPaddle WHERE date <= :date
 		    ';
 			$stmt = $em->getConnection()->prepare($sql);
-			$stmt->execute(['date' => $date_from->format("Y-m-d")]);
-			$players3 = $stmt->fetchAll();
+			$exec = $stmt->execute(['date' => $date_from->format("Y-m-d")]);
+			$players3 = $exec->fetchAll();
 
 			$sql = '
 		    SELECT DISTINCT idPlayer4 FROM MatchsPaddle WHERE date <= :date
 		    ';
 			$stmt = $em->getConnection()->prepare($sql);
-			$stmt->execute(['date' => $date_from->format("Y-m-d")]);
-			$players4 = $stmt->fetchAll();
+			$exec = $stmt->execute(['date' => $date_from->format("Y-m-d")]);
+			$players4 = $exec->fetchAll();
 			
 			
 		  if ($based_ranking!="init") {
 		  	$sql = ' SELECT id, idPlayer1, idPlayer2, idPlayer3, idPlayer4, tie FROM MatchsPaddle WHERE date < :date AND date>= :date_based ';
 		  	$stmt = $em->getConnection()->prepare($sql);
-				$stmt->execute(['date' => $date_from->format("Y-m-d"), 'date_based' => $rankingpaddle->getDate()->format("Y-m-d")]);
+				$exec = $stmt->execute(['date' => $date_from->format("Y-m-d"), 'date_based' => $rankingpaddle->getDate()->format("Y-m-d")]);
 		  }
 		  else {
 		  	$sql = 'SELECT id, idPlayer1, idPlayer2, idPlayer3, idPlayer4, tie FROM MatchsPaddle WHERE date < :date';
 		  	$stmt = $em->getConnection()->prepare($sql);
-				$stmt->execute(['date' => $date_from->format("Y-m-d")]);
+				$exec = $stmt->execute(['date' => $date_from->format("Y-m-d")]);
 		  }
 			
-			$matchs = $stmt->fetchAll();
+			$matchs = $exec->fetchAll();
 
 			$arrPlayers=array();
 			$arrPlayersDisplay=array();
@@ -425,7 +425,7 @@ class RankingspaddleController extends AbstractController
 			$elo = new EloRatingSystem(100, 50);
 
 			foreach($arrPlayers as $pId) {
-				$player = $em->getRepository('App:Player')->findOneBy(array("id" => $pId));
+				$player = $em->getRepository('App\Entity\Player')->findOneBy(array("id" => $pId));
 				$arrPlayersDisplay[$pId]=$player->getNameshort();
 
 				// get the ranking expected
@@ -433,7 +433,7 @@ class RankingspaddleController extends AbstractController
 					$basedRate[$pId]=$player->getInitialRatingPaddle();
 				}
 				else {
-					$rankPos = $em->getRepository('App:Rankingpospaddle')->findOneBy(array("idrankingpaddle" => $based_ranking, "idplayer" => $player->getId()));
+					$rankPos = $em->getRepository('App\Entity\Rankingpospaddle')->findOneBy(array("idrankingpaddle" => $based_ranking, "idplayer" => $player->getId()));
 					if ($rankPos) {
 						$basedRate[$pId] = $rankPos->getScore();
 					}
@@ -498,7 +498,7 @@ class RankingspaddleController extends AbstractController
 
 		    if ($generate_ranking==1) {
 		    	$rankingpaddle_pos = new Rankingpospaddle();
-		    	$player = $em->getRepository('App:Player')->findOneBy(array("id" => $expl_rank[0]));
+		    	$player = $em->getRepository('App\Entity\Player')->findOneBy(array("id" => $expl_rank[0]));
 		    	
 		    	$rankingpaddle_pos->setIdrankingpaddle($rankingpaddle);
 		    	$rankingpaddle_pos->setIdplayer($player);
@@ -514,7 +514,7 @@ class RankingspaddleController extends AbstractController
 			if ($generate_ranking==1) {
 
 				foreach($matchs as $m) {
-					$match = $em->getRepository('App:Matchspaddle')->findOneBy(array("id" => $m["id"]));
+					$match = $em->getRepository('App\Entity\Matchspaddle')->findOneBy(array("id" => $m["id"]));
 					$match->setIdrankingpaddle($rankingpaddle->getId());
 					$em->persist($match);
 				}
@@ -534,7 +534,7 @@ class RankingspaddleController extends AbstractController
 
 			// check if there are matches without any ranking linked
 
-      $matchesWithoutRankings = $em->getRepository('App:Matchspaddle')->getMatchesWithoutRankings($based_ranking_date);
+      $matchesWithoutRankings = $em->getRepository('App\Entity\Matchspaddle')->getMatchesWithoutRankings($based_ranking_date);
 
       foreach($matchesWithoutRankings as $matW) {
       	$matchesWithoutRankingsFinal[]=array(
@@ -570,10 +570,10 @@ class RankingspaddleController extends AbstractController
   	$em = $this->getDoctrine()->getManager();
 
   	if ($id<>null) {
-			$ranking = $em->getRepository('App:Rankingpaddle')->findOneBy(array('id' => $id));
+			$ranking = $em->getRepository('App\Entity\Rankingpaddle')->findOneBy(array('id' => $id));
 		}
   	else {
-  		$ranking = $em->getRepository('App:Rankingpaddle')->getLastRanking();
+  		$ranking = $em->getRepository('App\Entity\Rankingpaddle')->getLastRanking();
   	}
 
   	if ($id<>null) $defaultId=$id;
@@ -581,7 +581,7 @@ class RankingspaddleController extends AbstractController
 
   	$activeOnly=$AO;
 		$arrRank=array();
-		$rankings = $em->getRepository('App:Rankingpaddle')->findBy(array(), array('date' => 'DESC'));
+		$rankings = $em->getRepository('App\Entity\Rankingpaddle')->findBy(array(), array('date' => 'DESC'));
 		foreach ($rankings as $rank) {
 			$arrRank[$rank->getDate()->format("Y-m-d")] = $rank->getId();
 		}
@@ -616,15 +616,15 @@ class RankingspaddleController extends AbstractController
       return $this->redirect($url);
 		}	
 		/*elseif ($id<>null) {
-			$ranking = $em->getRepository('App:Rankingpaddle')->findOneBy(array('id' => $id));
+			$ranking = $em->getRepository('App\Entity\Rankingpaddle')->findOneBy(array('id' => $id));
 		}
   	else {
-  		$ranking = $em->getRepository('App:Rankingpaddle')->getLastRanking();
+  		$ranking = $em->getRepository('App\Entity\Rankingpaddle')->getLastRanking();
   	}*/
 
-		$ranking_1 =  $em->getRepository('App:Rankingpaddle')->getRankingBefore($ranking->getDate()->format("Y-m-d"));
+		$ranking_1 =  $em->getRepository('App\Entity\Rankingpaddle')->getRankingBefore($ranking->getDate()->format("Y-m-d"));
 
-  	$detailsRankings=$em->getRepository('App:Rankingpospaddle')->findBy(array('idrankingpaddle' => $ranking));
+  	$detailsRankings=$em->getRepository('App\Entity\Rankingpospaddle')->findBy(array('idrankingpaddle' => $ranking));
 
   	$detailsPlayer=array();
 		$arrTotal=array();
@@ -641,7 +641,7 @@ class RankingspaddleController extends AbstractController
   		// SCORE EVOL
   		foreach ($detailsRankings as $det) {
 
-  			$detailsRankings_1=$em->getRepository('App:Rankingpospaddle')->findOneBy(array('idrankingpaddle' => $ranking_1, "idplayer" => $det->getIdplayer()));
+  			$detailsRankings_1=$em->getRepository('App\Entity\Rankingpospaddle')->findOneBy(array('idrankingpaddle' => $ranking_1, "idplayer" => $det->getIdplayer()));
   			if ($detailsRankings_1) {
   				$evol = $det->getScore() - $detailsRankings_1->getScore();
   			}
@@ -661,8 +661,8 @@ class RankingspaddleController extends AbstractController
 							AND date<="'.$ranking->getDate()->format("Y-m-d").'" 
 							AND idPlayer='.$det->getIdplayer()->getId();
 			    $stmt = $em->getConnection()->prepare($sql_best);
-			    $stmt->execute();
-			    $best = $stmt->fetchAll();
+			    $exec = $stmt->execute();
+			    $best = $exec->fetchAll();
 			    if (isset($best[0])) $best=$best[0]["score"];
 			    else $best=0;
 
@@ -681,8 +681,8 @@ class RankingspaddleController extends AbstractController
 		    	GROUP BY idPlayer'.$iP.' 
 			    ';
 				$stmt = $em->getConnection()->prepare($sql);
-				$stmt->execute(['date' => $ranking->getDate()->format("Y-m-d")]);
-				$wins = $stmt->fetchAll();
+				$exec = $stmt->execute(['date' => $ranking->getDate()->format("Y-m-d")]);
+				$wins = $exec->fetchAll();
 
 				foreach ($wins as $win) {
 					if (!isset($detailsPlayer[$win["idPlayer".$iP]]["wins"]))
@@ -707,8 +707,8 @@ class RankingspaddleController extends AbstractController
 		    	GROUP BY idPlayer'.$iP.' 
 			    ';
 				$stmt = $em->getConnection()->prepare($sql);
-				$stmt->execute(['date' => $ranking->getDate()->format("Y-m-d")]);
-				$ties1 = $stmt->fetchAll();
+				$exec = $stmt->execute(['date' => $ranking->getDate()->format("Y-m-d")]);
+				$ties1 = $exec->fetchAll();
 
 				foreach ($ties1 as $tie) {
 					
@@ -739,8 +739,8 @@ class RankingspaddleController extends AbstractController
 		    	GROUP BY idPlayer'.$iP.' 
 			    ';
 				$stmt = $em->getConnection()->prepare($sql);
-				$stmt->execute(['date' => $ranking->getDate()->format("Y-m-d")]);
-				$ties1 = $stmt->fetchAll();
+				$exec = $stmt->execute(['date' => $ranking->getDate()->format("Y-m-d")]);
+				$ties1 = $exec->fetchAll();
 
 				foreach ($ties1 as $tie) {
 					
@@ -768,8 +768,8 @@ class RankingspaddleController extends AbstractController
 		    	GROUP BY idPlayer'.$iP.'
 			    ';
 				$stmt = $em->getConnection()->prepare($sql);
-				$stmt->execute(['date' => $ranking->getDate()->format("Y-m-d")]);
-				$defeats = $stmt->fetchAll();
+				$exec = $stmt->execute(['date' => $ranking->getDate()->format("Y-m-d")]);
+				$defeats = $exec->fetchAll();
 
 				foreach ($defeats as $defeat) {
 
