@@ -78,7 +78,7 @@ class PlayerController extends Controller
         ORDER BY idplayer1, idplayer2
         ';
       $stmt = $em->getConnection()->prepare($sql);
-      $stmt->execute(['idPlayer' => $id]);
+      $exec = $stmt->execute(['idPlayer' => $id]);
       $opponents = $exec->fetchAll();
 
       $nbMTot=count($opponents);
@@ -281,7 +281,7 @@ class PlayerController extends Controller
                   AND p2.id=m.idplayer2
                   ORDER BY m.date DESC";
     $stmt = $em->getConnection()->prepare($sql_m);
-    $stmt->execute();
+    $exec = $stmt->execute();
     $matches = $exec->fetchAll();
 
     $arrMEvol=array();
@@ -293,7 +293,7 @@ class PlayerController extends Controller
       // get the closest ranking
       $sql_rank = 'SELECT id FROM Ranking WHERE date<="'.$mat["date"].'" ORDER BY date DESC LIMIT 0,1';
       $stmt = $em->getConnection()->prepare($sql_rank);
-      $stmt->execute();
+      $exec = $stmt->execute();
       $rank = $exec->fetchAll();
       if (isset($rank[0])) $rankId=$rank[0]["id"];
       
@@ -304,13 +304,13 @@ class PlayerController extends Controller
       if ($rankId!="") {
         $sql_rank = 'SELECT score FROM RankingPos WHERE idRanking="'.$rankId.'" AND idPlayer='.$mat["p1id"];
         $stmt = $em->getConnection()->prepare($sql_rank);
-        $stmt->execute();
+        $exec = $stmt->execute();
         $rank = $exec->fetchAll();
         if (isset($rank[0])) $rating_player1=$rank[0]["score"];
 
         $sql_rank = 'SELECT score FROM RankingPos WHERE idRanking="'.$rankId.'" AND idPlayer='.$mat["p2id"];
         $stmt = $em->getConnection()->prepare($sql_rank);
-        $stmt->execute();
+        $exec = $stmt->execute();
         $rank = $exec->fetchAll();
         if (isset($rank[0])) $rating_player2=$rank[0]["score"];
 
@@ -449,7 +449,7 @@ class PlayerController extends Controller
                   AND p4.id=m.idplayer4
                   ORDER BY m.date DESC";
     $stmt = $em->getConnection()->prepare($sql_m);
-    $stmt->execute();
+    $exec = $stmt->execute();
     $matches = $exec->fetchAll();
 
     $arrMEvol=array();
@@ -461,7 +461,7 @@ class PlayerController extends Controller
       // get the closest ranking
       $sql_rank = 'SELECT id FROM RankingPaddle WHERE date<"'.$mat["date"].'" ORDER BY date DESC LIMIT 0,1';
       $stmt = $em->getConnection()->prepare($sql_rank);
-      $stmt->execute();
+      $exec = $stmt->execute();
       $rank = $exec->fetchAll();
       if (isset($rank[0])) $rankId=$rank[0]["id"];
       
@@ -475,25 +475,25 @@ class PlayerController extends Controller
       if ($rankId!="") {
         $sql_rank = 'SELECT score FROM RankingPosPaddle WHERE idRankingPaddle="'.$rankId.'" AND idPlayer='.$mat["p1id"];
         $stmt = $em->getConnection()->prepare($sql_rank);
-        $stmt->execute();
+        $exec = $stmt->execute();
         $rank = $exec->fetchAll();
         if (isset($rank[0])) $rating_player1=$rank[0]["score"];
 
         $sql_rank = 'SELECT score FROM RankingPosPaddle WHERE idRankingPaddle="'.$rankId.'" AND idPlayer='.$mat["p2id"];
         $stmt = $em->getConnection()->prepare($sql_rank);
-        $stmt->execute();
+        $exec = $stmt->execute();
         $rank = $exec->fetchAll();
         if (isset($rank[0])) $rating_player2=$rank[0]["score"];
 
         $sql_rank = 'SELECT score FROM RankingPosPaddle WHERE idRankingPaddle="'.$rankId.'" AND idPlayer='.$mat["p3id"];
         $stmt = $em->getConnection()->prepare($sql_rank);
-        $stmt->execute();
+        $exec = $stmt->execute();
         $rank = $exec->fetchAll();
         if (isset($rank[0])) $rating_player3=$rank[0]["score"];
 
         $sql_rank = 'SELECT score FROM RankingPosPaddle WHERE idRankingPaddle="'.$rankId.'" AND idPlayer='.$mat["p4id"];
         $stmt = $em->getConnection()->prepare($sql_rank);
-        $stmt->execute();
+        $exec = $stmt->execute();
         $rank = $exec->fetchAll();
         if (isset($rank[0])) $rating_player4=$rank[0]["score"];
 
@@ -676,7 +676,7 @@ class PlayerController extends Controller
                   AND p4.id=m.idplayer4
                   ORDER BY m.date DESC";
     $stmt = $em->getConnection()->prepare($sql_m);
-    $stmt->execute();
+    $exec = $stmt->execute();
     $matches = $exec->fetchAll();
 
     $arrMEvol=array();
@@ -688,7 +688,7 @@ class PlayerController extends Controller
       // get the closest ranking
       $sql_rank = 'SELECT id FROM RankingDouble WHERE date<"'.$mat["date"].'" ORDER BY date DESC LIMIT 0,1';
       $stmt = $em->getConnection()->prepare($sql_rank);
-      $stmt->execute();
+      $exec = $stmt->execute();
       $rank = $exec->fetchAll();
       if (isset($rank[0])) $rankId=$rank[0]["id"];
       
@@ -702,25 +702,25 @@ class PlayerController extends Controller
       if ($rankId!="") {
         $sql_rank = 'SELECT score FROM RankingPosDouble WHERE idRankingDouble="'.$rankId.'" AND idPlayer='.$mat["p1id"];
         $stmt = $em->getConnection()->prepare($sql_rank);
-        $stmt->execute();
+        $exec = $stmt->execute();
         $rank = $exec->fetchAll();
         if (isset($rank[0])) $rating_player1=$rank[0]["score"];
 
         $sql_rank = 'SELECT score FROM RankingPosDouble WHERE idRankingDouble="'.$rankId.'" AND idPlayer='.$mat["p2id"];
         $stmt = $em->getConnection()->prepare($sql_rank);
-        $stmt->execute();
+        $exec = $stmt->execute();
         $rank = $exec->fetchAll();
         if (isset($rank[0])) $rating_player2=$rank[0]["score"];
 
         $sql_rank = 'SELECT score FROM RankingPosDouble WHERE idRankingDouble="'.$rankId.'" AND idPlayer='.$mat["p3id"];
         $stmt = $em->getConnection()->prepare($sql_rank);
-        $stmt->execute();
+        $exec = $stmt->execute();
         $rank = $exec->fetchAll();
         if (isset($rank[0])) $rating_player3=$rank[0]["score"];
 
         $sql_rank = 'SELECT score FROM RankingPosDouble WHERE idRankingDouble="'.$rankId.'" AND idPlayer='.$mat["p4id"];
         $stmt = $em->getConnection()->prepare($sql_rank);
-        $stmt->execute();
+        $exec = $stmt->execute();
         $rank = $exec->fetchAll();
         if (isset($rank[0])) $rating_player4=$rank[0]["score"];
 
