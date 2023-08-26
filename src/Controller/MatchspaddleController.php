@@ -21,6 +21,11 @@ use App\Entity\Player;
 use App\Entity\EloRatingSystem;
 use App\Entity\EloCompetitor;
 
+//email
+use Symfony\Component\Mailer\Transport;
+use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mime\Email;
+
 class MatchspaddleController extends Controller
 {
     /**
@@ -203,26 +208,36 @@ class MatchspaddleController extends Controller
         $em->flush();
         $request->getSession()->getFlashBag()->add('success', 'Match created.');
 
+        $emailSubject="[ATL-St.] padel - ".$user->getUsername();
 
+        $emailContent=''.$match->getIdplayer1()->getNameShort().'-'.$match->getIdplayer2()->getNameShort().' VS '. $match->getIdplayer3()->getNameShort().'-'.$match->getIdplayer4()->getNameShort() .' : '.$match->getScore();
+        $emailContent.=($match->getTie()==1 ? ' (TIE)' : "");
+        $emailContent.='<br>'.$match->getConditions().' - '.$match->getContext();
 
-        $headers ='From: '.$_SERVER['EMAIL_ADMIN']."\r\n";
-        $headers .= 'MIME-Version: 1.0' . "\r\n";
-        $headers .= 'Content-type: text/html; charset=UTF-8' . "\r\n";
-        // $headers .='Content-Type: text/html; charset="iso-8859-1"'."\r\n";
-        $headers .='Content-Transfer-Encoding: 8bit'."\r\n";
+        // Create a Transport object
+        $transport = Transport::fromDsn($_SERVER['MAILER_DSN']);
+        // Create a Mailer object
+        $mailer = new Mailer($transport); 
+        // Create an Email object
+        $email = (new Email());
+        // Set the "From address"
+        $email->from($_SERVER['EMAIL_ADMIN']);
+        // Set the "From address"
+        $email->to('mathieu@isomail.org');
+        $email->cc($_SERVER['EMAIL_ADMIN']);
+        // Set a "subject"
+        $email->subject($emailSubject);
+        // Set the plain-text "Body"
+        $email->html($emailContent);
 
-        // $email_contenu = utf8_decode("et là tu les vois les accéééééénts ?");
-
-        $contenu=''.$match->getIdplayer1()->getNameShort().'-'.$match->getIdplayer2()->getNameShort().' VS '. $match->getIdplayer3()->getNameShort().'-'.$match->getIdplayer4()->getNameShort() .' : '.$match->getScore();
-        $contenu.=($match->getTie()==1 ? ' (TIE)' : "");
-        $contenu.='<br>'.$match->getConditions().' - '.$match->getContext();
-
-        if (mail($_SERVER['EMAIL_ADMIN'], "[ATL-St.] padel - ".$user->getUsername()." (".$match->getDate()->format('Y-m-d').")", $contenu, $headers)) {}
-        else {
-          $request->getSession()->getFlashBag()->add('error', 'Error sending email to '.$_SERVER['EMAIL_ADMIN']);
+        try {
+          $mailer->send($email);
+        } catch (Exception $e) {
+            // some error prevented the email sending; display an
+            // error message or try to resend the message
+            $request->getSession()->getFlashBag()->add('error', 'Error sending email to '.$_SERVER['EMAIL_ADMIN']);
 
         }
-
 
       }
     }

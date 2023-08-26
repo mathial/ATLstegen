@@ -21,7 +21,6 @@ use App\Entity\Player;
 use App\Entity\EloRatingSystem;
 use App\Entity\EloCompetitor;
 
-
 //email
 use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mailer\Mailer;
@@ -378,7 +377,6 @@ class MatchsController extends Controller
         //$email->embed(fopen('/path/to/mailor.jpg', 'r'), 'nature');
         // Send the message
 
-        //print_r($mailer->send($email));exit();
 
         try {
           $mailer->send($email);
