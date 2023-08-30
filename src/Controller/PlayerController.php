@@ -1310,7 +1310,8 @@ class PlayerController extends Controller
       
       return $this->render('site/player_profile_form.html.twig', array(
         'form' => $form->createView(),
-        'form_title' => "Update my profile"
+        'form_title' => "Update my profile",
+        'email_admin' => $_SERVER['EMAIL_ADMIN']
       ));
 
     }
