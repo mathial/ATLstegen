@@ -1161,7 +1161,7 @@ class MatchsController extends Controller
         'date' => $date,
       ));
 
-      if (count($matches)!=0) $msg='<span class="alert alert-danger"><b>WARNING</b> ! A match involving the same 2 players at the same date already exists in the database ! Please double check <a target="_blank" href="'.$this->generateUrl('matchs_list', array('maxpage' => 50, 'page' => 1)).'">the matches list</a> to avoid a duplicate.</span>'; 
+      if (count($matches)!=0) $msg='<span class="alert-danger"><b>WARNING</b> ! A match involving the same 2 players at the same date already exists in the database ! Please double check <a target="_blank" href="'.$this->generateUrl('matchs_list', array('maxpage' => 50, 'page' => 1)).'">the matches list</a> to avoid a duplicate.</span>'; 
 
       ;
       return new JsonResponse($msg);
