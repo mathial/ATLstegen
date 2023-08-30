@@ -15,6 +15,7 @@ use Doctrine\ORM\EntityRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 use App\Entity\Matchs;
 use App\Entity\Player;
@@ -176,7 +177,7 @@ class MatchsController extends Controller
             else $arrRt[1]=number_format($evol, 1);
           }
           
-          $arrMEvol[$mat["id"]]=$arrRt[1];
+          $arrMEvol[$mat["id"]]=(isset($arrRt[1]) ? $arrRt[1] : "err");
         }
       
       }
@@ -347,12 +348,14 @@ class MatchsController extends Controller
 
         }
         */
-        $emailSubject="[ATL-St.] tennis single - ".$user->getUsername();
 
-        $emailContent=''.$match->getIdplayer1()->getNameShort().' VS '.$match->getIdplayer2()->getNameShort().' : '.$match->getScore();
+        $emailSubject="[ATL-St.-T] ".$user->getUsername()." added a new match";
+
+        $emailContent='<b>Recap:</b><br>'.$match->getIdplayer1()->getNameShort().' VS '.$match->getIdplayer2()->getNameShort().' : <b>'.$match->getScore()."</b>";
         $emailContent.=($match->getTie()==1 ? ' (TIE)' : "");
-        $emailContent.='<br>'.$match->getConditions().' - '.$match->getContext();
-
+        $emailContent.='<br><i>Conditions:</i> '.$match->getConditions().'<br>';
+        $emailContent.='<i>Context:</i> '.$match->getContext();
+        $emailContent.='<br><a href="'.$this->generateUrl('matchs_list', ['maxpage' => 50, 'page' => 1], UrlGeneratorInterface::ABSOLUTE_URL).'">Check the matchs list</a><br><br>';
 
         // Create a Transport object
         $transport = Transport::fromDsn($_SERVER['MAILER_DSN']);
@@ -363,8 +366,23 @@ class MatchsController extends Controller
         // Set the "From address"
         $email->from($_SERVER['EMAIL_ADMIN']);
         // Set the "From address"
-        $email->to('mathieu@isomail.org');
-        $email->cc($_SERVER['EMAIL_ADMIN']);
+        $email->to($_SERVER['EMAIL_ADMIN']);
+
+        // find the email address of the other players
+        $okDest=false;
+        if ($match->getIdplayer1()->getEmail()!="" && $match->getIdplayer1()->getEmail()!= null) {
+          $email->cc($match->getIdplayer1()->getEmail());
+          $okDest=true;
+        }
+        if ($match->getIdplayer2()->getEmail()!="" && $match->getIdplayer2()->getEmail()!= null){
+          $email->Addcc($match->getIdplayer2()->getEmail());
+          $okDest=true;
+        }
+
+        if (!$okDest) {
+          $email->cc('mathieu@isomail.org');
+        }
+        //$email->cc($_SERVER['EMAIL_ADMIN']);
         // Set a "subject"
         $email->subject($emailSubject);
         // Set the plain-text "Body"

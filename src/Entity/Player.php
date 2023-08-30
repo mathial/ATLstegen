@@ -179,7 +179,7 @@ class Player
 
         return $this;
     }
-
+    
     public function getAvatar(): ?string
     {
         return $this->avatar;

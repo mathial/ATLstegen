@@ -1261,4 +1261,61 @@ class PlayerController extends Controller
     return $best;
 
   }*/
+
+
+  /**
+   * @Route(
+   * "/player/myprofile", 
+   * name="player_profile_edit")
+   */
+  public function editMyProfile(Request $request) {
+
+    $user = $this->get('security.token_storage')->getToken()->getUser();
+
+    if (!isset($user)) {
+      $request->getSession()->getFlashBag()->add('error', 'User not logged in');
+      return 0;
+    }
+    else {
+      $em = $this->getDoctrine()->getManager();
+
+      $player=$user->getIdplayer();
+
+      $formBuilder = $this->createFormBuilder($player);
+
+      $formBuilder
+      ->add('email', EmailType::class, array(
+        'label'    => 'Email',
+        'required' => false,
+      ));
+      $formBuilder
+      ->add('update', SubmitType::class, array('label' => 'Update'))
+      ;
+
+      $form = $formBuilder->getForm();
+
+      if ($request->isMethod('POST')) {
+
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+
+          $em->persist($user);
+          $em->flush();
+          $request->getSession()->getFlashBag()->add('success', 'Profile updated.');
+
+        }
+      }
+
+      
+      return $this->render('site/player_profile_form.html.twig', array(
+        'form' => $form->createView(),
+        'form_title' => "Update my profile"
+      ));
+
+    }
+
+    
+  }
+
 }
