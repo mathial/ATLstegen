@@ -9,6 +9,7 @@ use \Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use \Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use \Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use \Symfony\Component\Form\Extension\Core\Type\DateType;
+use \Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Doctrine\ORM\EntityRepository;
 
@@ -294,9 +295,6 @@ class MatchsController extends Controller
       ->add("Create", SubmitType::class);
     }
 
-    
-    
-
     $form = $formBuilder->getForm();
 
     return $form;
@@ -328,6 +326,7 @@ class MatchsController extends Controller
         $em->persist($match);
         $em->flush();
         $request->getSession()->getFlashBag()->add('success', 'Match created.');
+        $request->getSession()->getFlashBag()->add('error', 'test error.');
 
         /* OLD EMAIL VERSION
         $headers ='From: '.$_SERVER['EMAIL_ADMIN']."\r\n";
@@ -398,7 +397,8 @@ class MatchsController extends Controller
 
         try {
           $mailer->send($email);
-        } catch (Exception $e) {
+
+        } catch (RuntimeException $e) {
             // some error prevented the email sending; display an
             // error message or try to resend the message
             $request->getSession()->getFlashBag()->add('error', 'Error sending email to '.$_SERVER['EMAIL_ADMIN']);
@@ -410,7 +410,8 @@ class MatchsController extends Controller
     return $this->render('site/matchs_form.html.twig', array(
       'form' => $form->createView(),
       'form_title' => "New match",
-      'type_match' => "Tennis SINGLE"
+      'type_match' => "Tennis SINGLE",
+      'check_duplicate' => true
     ));
     
   }
@@ -447,7 +448,8 @@ class MatchsController extends Controller
     return $this->render('site/matchs_form.html.twig', array(
       'form' => $form->createView(),
       'form_title' => "Update match",
-      'type_match' => "Tennis SINGLE"
+      'type_match' => "Tennis SINGLE",
+      'check_duplicate' => false
     ));
     
   }
@@ -1133,4 +1135,39 @@ class MatchsController extends Controller
   }
 
 
+
+  /**
+   * @Route(
+   * "/matchs/checkduplicate/", 
+   * methods="POST",
+   * name="matchs_checkduplicate"
+   * )
+  */
+  public function checkDuplicate(Request $request) {
+    $msg="";
+
+    if ($request->isMethod('POST')) {
+
+      $idJ1 = $request->get('idJ1');
+      $idJ2 = $request->get('idJ2');
+      //$date = date("Y-m-d H:i:s", strtotime($request->get('date')));
+      $date= new \DateTime($request->get('date'));
+
+      $em = $this->getDoctrine()->getManager();
+
+      $matches = $em->getRepository('App\Entity\Matchs')->findBy(array(
+        'idplayer1' => $idJ1,
+        'idplayer2' => $idJ2,
+        'date' => $date,
+      ));
+
+      if (count($matches)!=0) $msg='<span class="alert alert-danger"><b>WARNING</b> ! A match involving the same 2 players at the same date already exists in the database ! Please double check <a target="_blank" href="'.$this->generateUrl('matchs_list', array('maxpage' => 50, 'page' => 1)).'">the matches list</a> to avoid a duplicate.</span>'; 
+
+      ;
+      return new JsonResponse($msg);
+    }
+    else {
+      return new JsonResponse("error");
+    }
+  }
 }

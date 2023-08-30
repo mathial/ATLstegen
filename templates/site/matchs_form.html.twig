@@ -10,4 +10,49 @@
       {{ form(form) }}
     </div>
 
+    {% if (check_duplicate) %}
+
+      <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+      <script>
+
+      function checkDuplicateAjaxCall() {
+
+        $('#rtCheckDuplicate').html('...');
+
+        var idJ1=$('#form_idplayer1').val();
+        var idJ2=$('#form_idplayer2').val();
+        var date=$('#form_date').val();
+
+        var url = "{{ path("matchs_checkduplicate") }}";
+
+        $.ajax({
+          type:'POST',
+          url: url,
+          data: {idJ1:idJ1, idJ2: idJ2, date: date},  
+          success: function(response) {
+            $('#rtCheckDuplicate').html(response);
+          },
+          error: function(response) {
+            $('#rtCheckDuplicate').html("ERROR: couldn't check the duplicates");
+          },
+        });
+      }
+      $('#form_idplayer1').change(function() {
+        checkDuplicateAjaxCall();
+      });
+      $('#form_idplayer2').change(function() {
+        checkDuplicateAjaxCall();
+      });
+      $('#form_date').change(function() {
+        checkDuplicateAjaxCall();
+      });
+
+      </script>
+
+      <div id="rtCheckDuplicate"><i>To avoid duplicates, please check the <a target="_blank" href="{{ path('matchs_list', {'maxpage':50, 'page':1}) }}">matches list</a> before !</i></div>
+
+    {%  endif %}
+
+
+
   {% endblock %}
