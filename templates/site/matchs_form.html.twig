@@ -6,6 +6,11 @@
 
     <h3>Form {{ form_title }} {{ type_match }}</h3>
 
+    {% if (check_duplicate) %}
+      <p><i>To avoid duplicates, please check the <a target="_blank" href="{{ path('matchs_list', {'maxpage':50, 'page':1}) }}">matches list</a> before !</i></p>
+    {%  endif %}
+
+
     <div class="form">
       {{ form(form) }}
     </div>
@@ -49,7 +54,7 @@
 
       </script>
 
-      <div id="rtCheckDuplicate"><i>To avoid duplicates, please check the <a target="_blank" href="{{ path('matchs_list', {'maxpage':50, 'page':1}) }}">matches list</a> before !</i></div>
+      <div id="rtCheckDuplicate"></div>
 
     {%  endif %}
 
