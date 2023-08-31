@@ -309,7 +309,7 @@ class MatchsController extends Controller
   public function new(Request $request)
   {
     if ($this->getUser()!== NULL) {
-    
+
       $em = $this->getDoctrine()->getManager();
       
       $match = new Matchs();
@@ -350,7 +350,7 @@ class MatchsController extends Controller
           }
           */
 
-          $emailSubject="[ATL-St.-T] ".$user->getUsername()." added a new match";
+          $emailSubject="[ATL-St.-Ts] ".$user->getUsername()." added a new match";
 
           $emailContent='<b>Recap:</b><br>'.$match->getIdplayer1()->getNameShort().' VS '.$match->getIdplayer2()->getNameShort().' : <b>'.$match->getScore()."</b>";
           $emailContent.=($match->getTie()==1 ? ' (TIE)' : "");
@@ -372,11 +372,11 @@ class MatchsController extends Controller
           // find the email address of the other players
           $okDest=false;
           if ($match->getIdplayer1()->getEmail()!="" && $match->getIdplayer1()->getEmail()!= null) {
-            $email->cc($match->getIdplayer1()->getEmail());
+            $email->addBcc($match->getIdplayer1()->getEmail());
             $okDest=true;
           }
           if ($match->getIdplayer2()->getEmail()!="" && $match->getIdplayer2()->getEmail()!= null){
-            $email->Addcc($match->getIdplayer2()->getEmail());
+            $email->addBcc($match->getIdplayer2()->getEmail());
             $okDest=true;
           }
 
