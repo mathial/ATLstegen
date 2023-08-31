@@ -191,7 +191,7 @@ class MatchsdoubleController extends Controller
   {
 
     if ($this->getUser()!== NULL) {
-      
+
       $em = $this->getDoctrine()->getManager();
       
       $match = new Matchsdouble();
@@ -249,7 +249,8 @@ class MatchsdoubleController extends Controller
       return $this->render('site/matchs_form.html.twig', array(
         'form' => $form->createView(),
         'form_title' => "New match",
-        'type_match' => "Tennis DOUBLE"
+        'type_match' => "Tennis DOUBLE",
+        'check_duplicate' => false
       ));
     }
 

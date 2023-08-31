@@ -224,6 +224,30 @@ class MatchspaddleController extends Controller
           $email = (new Email());
           // Set the "From address"
           $email->from($_SERVER['EMAIL_ADMIN']);
+
+          // find the email address of the other players
+          $okDest=false;
+          if ($match->getIdplayer1()->getEmail()!="" && $match->getIdplayer1()->getEmail()!= null) {
+            $email->cc($match->getIdplayer1()->getEmail());
+            $okDest=true;
+          }
+          if ($match->getIdplayer2()->getEmail()!="" && $match->getIdplayer2()->getEmail()!= null){
+            $email->Addcc($match->getIdplayer2()->getEmail());
+            $okDest=true;
+          }
+          if ($match->getIdplayer3()->getEmail()!="" && $match->getIdplayer3()->getEmail()!= null){
+            $email->Addcc($match->getIdplayer3()->getEmail());
+            $okDest=true;
+          }
+          if ($match->getIdplayer4()->getEmail()!="" && $match->getIdplayer4()->getEmail()!= null){
+            $email->Addcc($match->getIdplayer4()->getEmail());
+            $okDest=true;
+          }
+
+          if (!$okDest) {
+            $email->cc('mathieu@isomail.org');
+          }
+
           // Set the "From address"
           $email->to('mathieu@isomail.org');
           $email->cc($_SERVER['EMAIL_ADMIN']);
@@ -247,7 +271,8 @@ class MatchspaddleController extends Controller
       return $this->render('site/matchs_form.html.twig', array(
         'form' => $form->createView(),
         'form_title' => "New match",
-        'type_match' => "Padel"
+        'type_match' => "Padel",
+        'check_duplicate' => false
       ));
 
     }
