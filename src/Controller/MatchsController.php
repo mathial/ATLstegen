@@ -328,7 +328,6 @@ class MatchsController extends Controller
           $em->persist($match);
           $em->flush();
           $request->getSession()->getFlashBag()->add('success', 'Match created.');
-          $request->getSession()->getFlashBag()->add('error', 'test error.');
 
           /* OLD EMAIL VERSION
           $headers ='From: '.$_SERVER['EMAIL_ADMIN']."\r\n";
