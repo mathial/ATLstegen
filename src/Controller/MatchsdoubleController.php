@@ -189,66 +189,75 @@ class MatchsdoubleController extends Controller
    */
   public function new(Request $request)
   {
-    $em = $this->getDoctrine()->getManager();
-    
-    $match = new Matchsdouble();
-    
-    $form = $this->getFormMatch($match, "add");
 
-    if ($request->isMethod('POST')) {
+    if ($this->getUser()!== NULL) {
+      
+      $em = $this->getDoctrine()->getManager();
+      
+      $match = new Matchsdouble();
+      
+      $form = $this->getFormMatch($match, "add");
 
-      $form->handleRequest($request);
+      if ($request->isMethod('POST')) {
 
-      if ($form->isValid()) {
+        $form->handleRequest($request);
 
-        $user = $this->get('security.token_storage')->getToken()->getUser();
-        $match->setIduseradd($user);
+        if ($form->isValid()) {
 
-        $em->persist($match);
-        $em->flush();
-        $request->getSession()->getFlashBag()->add('success', 'Match created.');
+          $user = $this->get('security.token_storage')->getToken()->getUser();
+          $match->setIduseradd($user);
 
-        $emailSubject="[ATL-St.] tennis double - ".$user->getUsername();
+          $em->persist($match);
+          $em->flush();
+          $request->getSession()->getFlashBag()->add('success', 'Match created.');
 
-        $emailContent=''.$match->getIdplayer1()->getNameShort().'-'.$match->getIdplayer2()->getNameShort().' VS '. $match->getIdplayer3()->getNameShort().'-'.$match->getIdplayer4()->getNameShort() .' : '.$match->getScore();
-        $emailContent.=($match->getTie()==1 ? ' (TIE)' : "");
-        $emailContent.='<br>'.$match->getConditions().' - '.$match->getContext();
+          $emailSubject="[ATL-St.] tennis double - ".$user->getUsername();
+
+          $emailContent=''.$match->getIdplayer1()->getNameShort().'-'.$match->getIdplayer2()->getNameShort().' VS '. $match->getIdplayer3()->getNameShort().'-'.$match->getIdplayer4()->getNameShort() .' : '.$match->getScore();
+          $emailContent.=($match->getTie()==1 ? ' (TIE)' : "");
+          $emailContent.='<br>'.$match->getConditions().' - '.$match->getContext();
 
 
-        // Create a Transport object
-        $transport = Transport::fromDsn($_SERVER['MAILER_DSN']);
-        // Create a Mailer object
-        $mailer = new Mailer($transport); 
-        // Create an Email object
-        $email = (new Email());
-        // Set the "From address"
-        $email->from($_SERVER['EMAIL_ADMIN']);
-        // Set the "From address"
-        $email->to('mathieu@isomail.org');
-        $email->cc($_SERVER['EMAIL_ADMIN']);
-        // Set a "subject"
-        $email->subject($emailSubject);
-        // Set the plain-text "Body"
-        $email->html($emailContent);
+          // Create a Transport object
+          $transport = Transport::fromDsn($_SERVER['MAILER_DSN']);
+          // Create a Mailer object
+          $mailer = new Mailer($transport); 
+          // Create an Email object
+          $email = (new Email());
+          // Set the "From address"
+          $email->from($_SERVER['EMAIL_ADMIN']);
+          // Set the "From address"
+          $email->to('mathieu@isomail.org');
+          $email->cc($_SERVER['EMAIL_ADMIN']);
+          // Set a "subject"
+          $email->subject($emailSubject);
+          // Set the plain-text "Body"
+          $email->html($emailContent);
 
-        try {
-          $mailer->send($email);
-        } catch (Exception $e) {
-            // some error prevented the email sending; display an
-            // error message or try to resend the message
-            $request->getSession()->getFlashBag()->add('error', 'Error sending email to '.$_SERVER['EMAIL_ADMIN']);
+          try {
+            $mailer->send($email);
+          } catch (Exception $e) {
+              // some error prevented the email sending; display an
+              // error message or try to resend the message
+              $request->getSession()->getFlashBag()->add('error', 'Error sending email to '.$_SERVER['EMAIL_ADMIN']);
+
+          }
 
         }
-
       }
+
+      return $this->render('site/matchs_form.html.twig', array(
+        'form' => $form->createView(),
+        'form_title' => "New match",
+        'type_match' => "Tennis DOUBLE"
+      ));
     }
 
-    return $this->render('site/matchs_form.html.twig', array(
-      'form' => $form->createView(),
-      'form_title' => "New match",
-      'type_match' => "Tennis DOUBLE"
-    ));
-    
+    else {
+      $request->getSession()->getFlashBag()->add('error', 'You must log in again to add a match (logged out after long inactivity ?)');
+
+      return $this->redirectToRoute('homepage');
+    }    
   }
 
 
@@ -262,30 +271,37 @@ class MatchsdoubleController extends Controller
    */
   public function edit($id, Request $request) {
 
-    $em = $this->getDoctrine()->getManager();
-    $match = $em->getRepository('App\Entity\Matchsdouble')->findOneBy(['id' => $id]);
+    if ($this->getUser()!== NULL && in_array('ROLE_ADMIN', $this->getUser()->getRoles(), true)) {
 
-    $form=$this->getFormMatch($match, "edit");
+      $em = $this->getDoctrine()->getManager();
+      $match = $em->getRepository('App\Entity\Matchsdouble')->findOneBy(['id' => $id]);
 
-    if ($request->isMethod('POST')) {
+      $form=$this->getFormMatch($match, "edit");
 
-      $form->handleRequest($request);
+      if ($request->isMethod('POST')) {
 
-      if ($form->isValid()) {
+        $form->handleRequest($request);
 
-        $em->persist($match);
-        $em->flush();
-        $request->getSession()->getFlashBag()->add('success', 'Match updated.');
+        if ($form->isValid()) {
 
+          $em->persist($match);
+          $em->flush();
+          $request->getSession()->getFlashBag()->add('success', 'Match updated.');
+
+        }
       }
-    }
 
-    return $this->render('site/matchs_form.html.twig', array(
-      'form' => $form->createView(),
-      'form_title' => "Update match",
-      'type_match' => "Tennis DOUBLE"
-    ));
-    
+      return $this->render('site/matchs_form.html.twig', array(
+        'form' => $form->createView(),
+        'form_title' => "Update match",
+        'type_match' => "Tennis DOUBLE"
+      ));
+    }
+    else {
+      $request->getSession()->getFlashBag()->add('error', 'Only for ADMINS.');
+
+      return $this->redirectToRoute('homepage');
+    }
   }
 
   /**

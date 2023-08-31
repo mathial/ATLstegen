@@ -308,111 +308,122 @@ class MatchsController extends Controller
    */
   public function new(Request $request)
   {
-    $em = $this->getDoctrine()->getManager();
+    if ($this->getUser()!== NULL) {
     
-    $match = new Matchs();
-    
-    $form = $this->getFormMatch($match, "add");
+      $em = $this->getDoctrine()->getManager();
+      
+      $match = new Matchs();
+      
+      $form = $this->getFormMatch($match, "add");
 
-    if ($request->isMethod('POST')) {
+      if ($request->isMethod('POST')) {
 
-      $form->handleRequest($request);
+        $form->handleRequest($request);
 
-      if ($form->isValid()) {
+        if ($form->isValid()) {
 
-        $user = $this->get('security.token_storage')->getToken()->getUser();
-        $match->setIduseradd($user);
+          $user = $this->get('security.token_storage')->getToken()->getUser();
+          $match->setIduseradd($user);
 
-        $em->persist($match);
-        $em->flush();
-        $request->getSession()->getFlashBag()->add('success', 'Match created.');
-        $request->getSession()->getFlashBag()->add('error', 'test error.');
+          $em->persist($match);
+          $em->flush();
+          $request->getSession()->getFlashBag()->add('success', 'Match created.');
+          $request->getSession()->getFlashBag()->add('error', 'test error.');
 
-        /* OLD EMAIL VERSION
-        $headers ='From: '.$_SERVER['EMAIL_ADMIN']."\r\n";
-        $headers .= 'MIME-Version: 1.0' . "\r\n";
-        $headers .= 'Content-type: text/html; charset=UTF-8' . "\r\n";
-        // $headers .='Content-Type: text/html; charset="iso-8859-1"'."\r\n";
-        $headers .='Content-Transfer-Encoding: 8bit'."\r\n";
+          /* OLD EMAIL VERSION
+          $headers ='From: '.$_SERVER['EMAIL_ADMIN']."\r\n";
+          $headers .= 'MIME-Version: 1.0' . "\r\n";
+          $headers .= 'Content-type: text/html; charset=UTF-8' . "\r\n";
+          // $headers .='Content-Type: text/html; charset="iso-8859-1"'."\r\n";
+          $headers .='Content-Transfer-Encoding: 8bit'."\r\n";
 
-        // $email_contenu = utf8_decode("et là tu les vois les accéééééénts ?");
+          // $email_contenu = utf8_decode("et là tu les vois les accéééééénts ?");
 
-        $contenu=''.$match->getIdplayer1()->getNameShort().' VS '.$match->getIdplayer2()->getNameShort().' : '.$match->getScore();
-        $contenu.=($match->getTie()==1 ? ' (TIE)' : "");
-        $contenu.='<br>'.$match->getConditions().' - '.$match->getContext();
+          $contenu=''.$match->getIdplayer1()->getNameShort().' VS '.$match->getIdplayer2()->getNameShort().' : '.$match->getScore();
+          $contenu.=($match->getTie()==1 ? ' (TIE)' : "");
+          $contenu.='<br>'.$match->getConditions().' - '.$match->getContext();
 
-        if (mail($_SERVER['EMAIL_ADMIN'], "[ATL-St.] tennis single - ".$user->getUsername()." (".$match->getDate()->format('Y-m-d').")", $contenu, $headers)) {}
-        else {
-          $request->getSession()->getFlashBag()->add('error', 'Error sending email to '.$_SERVER['EMAIL_ADMIN']);
-
-        }
-        */
-
-        $emailSubject="[ATL-St.-T] ".$user->getUsername()." added a new match";
-
-        $emailContent='<b>Recap:</b><br>'.$match->getIdplayer1()->getNameShort().' VS '.$match->getIdplayer2()->getNameShort().' : <b>'.$match->getScore()."</b>";
-        $emailContent.=($match->getTie()==1 ? ' (TIE)' : "");
-        $emailContent.='<br><i>Conditions:</i> '.$match->getConditions().'<br>';
-        $emailContent.='<i>Context:</i> '.$match->getContext();
-        $emailContent.='<br><a href="'.$this->generateUrl('matchs_list', ['maxpage' => 50, 'page' => 1], UrlGeneratorInterface::ABSOLUTE_URL).'">Check the matchs list</a><br><br>';
-
-        // Create a Transport object
-        $transport = Transport::fromDsn($_SERVER['MAILER_DSN']);
-        // Create a Mailer object
-        $mailer = new Mailer($transport); 
-        // Create an Email object
-        $email = (new Email());
-        // Set the "From address"
-        $email->from($_SERVER['EMAIL_ADMIN']);
-        // Set the "From address"
-        $email->to($_SERVER['EMAIL_ADMIN']);
-
-        // find the email address of the other players
-        $okDest=false;
-        if ($match->getIdplayer1()->getEmail()!="" && $match->getIdplayer1()->getEmail()!= null) {
-          $email->cc($match->getIdplayer1()->getEmail());
-          $okDest=true;
-        }
-        if ($match->getIdplayer2()->getEmail()!="" && $match->getIdplayer2()->getEmail()!= null){
-          $email->Addcc($match->getIdplayer2()->getEmail());
-          $okDest=true;
-        }
-
-        if (!$okDest) {
-          $email->cc('mathieu@isomail.org');
-        }
-        //$email->cc($_SERVER['EMAIL_ADMIN']);
-        // Set a "subject"
-        $email->subject($emailSubject);
-        // Set the plain-text "Body"
-        $email->html($emailContent);
-        // Set HTML "Body"
-        //$email->html('This is the HTML version of the message.<br>Example of inline image:<br><img src="cid:nature" width="200" height="200"><br>Thanks,<br>Admin');
-        // Add an "Attachment"
-        //$email->attachFromPath('/path/to/example.txt');
-        // Add an "Image"
-        //$email->embed(fopen('/path/to/mailor.jpg', 'r'), 'nature');
-        // Send the message
-
-
-        try {
-          $mailer->send($email);
-
-        } catch (RuntimeException $e) {
-            // some error prevented the email sending; display an
-            // error message or try to resend the message
+          if (mail($_SERVER['EMAIL_ADMIN'], "[ATL-St.] tennis single - ".$user->getUsername()." (".$match->getDate()->format('Y-m-d').")", $contenu, $headers)) {}
+          else {
             $request->getSession()->getFlashBag()->add('error', 'Error sending email to '.$_SERVER['EMAIL_ADMIN']);
 
+          }
+          */
+
+          $emailSubject="[ATL-St.-T] ".$user->getUsername()." added a new match";
+
+          $emailContent='<b>Recap:</b><br>'.$match->getIdplayer1()->getNameShort().' VS '.$match->getIdplayer2()->getNameShort().' : <b>'.$match->getScore()."</b>";
+          $emailContent.=($match->getTie()==1 ? ' (TIE)' : "");
+          $emailContent.='<br><i>Conditions:</i> '.$match->getConditions().'<br>';
+          $emailContent.='<i>Context:</i> '.$match->getContext();
+          $emailContent.='<br><a href="'.$this->generateUrl('matchs_list', ['maxpage' => 50, 'page' => 1], UrlGeneratorInterface::ABSOLUTE_URL).'">Check the matchs list</a><br><br>';
+
+          // Create a Transport object
+          $transport = Transport::fromDsn($_SERVER['MAILER_DSN']);
+          // Create a Mailer object
+          $mailer = new Mailer($transport); 
+          // Create an Email object
+          $email = (new Email());
+          // Set the "From address"
+          $email->from($_SERVER['EMAIL_ADMIN']);
+          // Set the "From address"
+          $email->to($_SERVER['EMAIL_ADMIN']);
+
+          // find the email address of the other players
+          $okDest=false;
+          if ($match->getIdplayer1()->getEmail()!="" && $match->getIdplayer1()->getEmail()!= null) {
+            $email->cc($match->getIdplayer1()->getEmail());
+            $okDest=true;
+          }
+          if ($match->getIdplayer2()->getEmail()!="" && $match->getIdplayer2()->getEmail()!= null){
+            $email->Addcc($match->getIdplayer2()->getEmail());
+            $okDest=true;
+          }
+
+          if (!$okDest) {
+            $email->cc('mathieu@isomail.org');
+          }
+          //$email->cc($_SERVER['EMAIL_ADMIN']);
+          // Set a "subject"
+          $email->subject($emailSubject);
+          // Set the plain-text "Body"
+          $email->html($emailContent);
+          // Set HTML "Body"
+          //$email->html('This is the HTML version of the message.<br>Example of inline image:<br><img src="cid:nature" width="200" height="200"><br>Thanks,<br>Admin');
+          // Add an "Attachment"
+          //$email->attachFromPath('/path/to/example.txt');
+          // Add an "Image"
+          //$email->embed(fopen('/path/to/mailor.jpg', 'r'), 'nature');
+          // Send the message
+
+
+          try {
+            $mailer->send($email);
+
+          } catch (RuntimeException $e) {
+              // some error prevented the email sending; display an
+              // error message or try to resend the message
+              $request->getSession()->getFlashBag()->add('error', 'Error sending email to '.$_SERVER['EMAIL_ADMIN']);
+
+          }
         }
       }
+
+      return $this->render('site/matchs_form.html.twig', array(
+        'form' => $form->createView(),
+        'form_title' => "New match",
+        'type_match' => "Tennis SINGLE",
+        'check_duplicate' => true
+      ));
+
     }
 
-    return $this->render('site/matchs_form.html.twig', array(
-      'form' => $form->createView(),
-      'form_title' => "New match",
-      'type_match' => "Tennis SINGLE",
-      'check_duplicate' => true
-    ));
+    else {
+      $request->getSession()->getFlashBag()->add('error', 'You must log in again to add a match (logged out after long inactivity ?)');
+
+      return $this->redirectToRoute('homepage');
+    }
+
     
   }
 
@@ -427,31 +438,38 @@ class MatchsController extends Controller
    */
   public function edit($id, Request $request) {
 
-    $em = $this->getDoctrine()->getManager();
-    $match = $em->getRepository('App\Entity\Matchs')->findOneBy(['id' => $id]);
+    if ($this->getUser()!== NULL && in_array('ROLE_ADMIN', $this->getUser()->getRoles(), true)) {
 
-    $form=$this->getFormMatch($match, "edit");
+      $em = $this->getDoctrine()->getManager();
+      $match = $em->getRepository('App\Entity\Matchs')->findOneBy(['id' => $id]);
 
-    if ($request->isMethod('POST')) {
+      $form=$this->getFormMatch($match, "edit");
 
-      $form->handleRequest($request);
+      if ($request->isMethod('POST')) {
 
-      if ($form->isValid()) {
+        $form->handleRequest($request);
 
-        $em->persist($match);
-        $em->flush();
-        $request->getSession()->getFlashBag()->add('success', 'Match updated.');
+        if ($form->isValid()) {
 
+          $em->persist($match);
+          $em->flush();
+          $request->getSession()->getFlashBag()->add('success', 'Match updated.');
+
+        }
       }
-    }
 
-    return $this->render('site/matchs_form.html.twig', array(
-      'form' => $form->createView(),
-      'form_title' => "Update match",
-      'type_match' => "Tennis SINGLE",
-      'check_duplicate' => false
-    ));
-    
+      return $this->render('site/matchs_form.html.twig', array(
+        'form' => $form->createView(),
+        'form_title' => "Update match",
+        'type_match' => "Tennis SINGLE",
+        'check_duplicate' => false
+      ));
+    }
+    else {
+      $request->getSession()->getFlashBag()->add('error', 'Only for ADMINS.');
+
+      return $this->redirectToRoute('homepage');
+    }
   }
 
   /**
