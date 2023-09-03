@@ -215,6 +215,7 @@ class MatchspaddleController extends Controller
 
           $emailContent='<b>Recap:</b><br>'.$match->getIdplayer1()->getNameShort().'-'.$match->getIdplayer2()->getNameShort().' VS '. $match->getIdplayer3()->getNameShort().'-'.$match->getIdplayer4()->getNameShort().' : <b>'.$match->getScore()."</b>";
           $emailContent.=($match->getTie()==1 ? ' (TIE)' : "");
+          $emailContent.='<br><i>Date:</i> '.$match->getDate()->format('Y-m-d');
           $emailContent.='<br><i>Conditions:</i> '.$match->getConditions().'<br>';
           $emailContent.='<i>Context:</i> '.$match->getContext();
           $emailContent.='<br><a href="'.$this->generateUrl('matchspadel_list', ['maxpage' => 50, 'page' => 1], UrlGeneratorInterface::ABSOLUTE_URL).'">Check the matchs list</a><br><br>';

@@ -353,6 +353,7 @@ class MatchsController extends Controller
 
           $emailContent='<b>Recap:</b><br>'.$match->getIdplayer1()->getNameShort().' VS '.$match->getIdplayer2()->getNameShort().' : <b>'.$match->getScore()."</b>";
           $emailContent.=($match->getTie()==1 ? ' (TIE)' : "");
+          $emailContent.='<br><i>Date:</i> '.$match->getDate()->format('Y-m-d');
           $emailContent.='<br><i>Conditions:</i> '.$match->getConditions().'<br>';
           $emailContent.='<i>Context:</i> '.$match->getContext();
           $emailContent.='<br><a href="'.$this->generateUrl('matchs_list', ['maxpage' => 50, 'page' => 1], UrlGeneratorInterface::ABSOLUTE_URL).'">Check the matchs list</a><br><br>';
