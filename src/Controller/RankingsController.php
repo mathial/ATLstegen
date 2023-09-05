@@ -67,11 +67,12 @@ class RankingsController extends AbstractController
 			    ';
 					$stmt = $em->getConnection()->prepare($sql);
 					$nbDeletes = $stmt->execute(['idR' => $rankingExist[0]["id"]]);
-					if ($nbDeletes>0) {
+
+					if ($nbDeletes->rowCount()>0) {
 						//$request->getSession()->getFlashBag()->add('info',  $stmt->rowCount().' RankingPos deleted ('.$date_from->format("Y-m-d").' // id#'.$rankingExist[0]["id"].').');
 						$arrResults["messages"][]=[
 							'type' => 'info',
-							'msg' => $stmt->rowCount().' RankingPos deleted ('.$date_from->format("Y-m-d").' // id#'.$rankingExist[0]["id"].').'
+							'msg' => $nbDeletes->rowCount().' RankingPos deleted ('.$date_from->format("Y-m-d").' // id#'.$rankingExist[0]["id"].').'
 						];
 
 					}
@@ -82,7 +83,7 @@ class RankingsController extends AbstractController
 			    ';
 					$stmt = $em->getConnection()->prepare($sql);
 					$nbDeletes = $stmt->execute(['idR' => $rankingExist[0]["id"]]);
-					if ($nbDeletes>0) {
+					if ($nbDeletes->rowCount()>0) {
 						//$request->getSession()->getFlashBag()->add('info', 'Ranking deleted ('.$date_from->format("Y-m-d").' // id#'.$rankingExist[0]["id"].').');
 						$arrResults["messages"][]=[
 							'type' => 'info',
