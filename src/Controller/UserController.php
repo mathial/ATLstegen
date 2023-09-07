@@ -148,6 +148,53 @@ class UserController extends Controller
 
   /**
    * @Route(
+   * "/users/update/{id}", 
+   * name="user_update", 
+   * requirements={
+   *   "id"="\d+" 
+   * })
+   */
+  public function updateUserAction($id, Request $request) {
+
+    $em = $this->getDoctrine()->getManager();
+    $user = $em->getRepository('App\Entity\User')->findOneBy(['id' => $id]);
+
+    $form=$this->getFormUser($user, "edit");
+
+    if ($request->isMethod('POST')) {
+
+      $form->handleRequest($request);
+
+      if ($form->isValid()) {
+
+        $user->setPassword(password_hash($form->get('password')->getData(), PASSWORD_DEFAULT));
+
+        try {
+          // $rolesString=implode(",", $form->get('roles')->getData());
+          // $user->setRoles($rolesString);
+
+          $em->persist($user);
+          $em->flush();
+          $request->getSession()->getFlashBag()->add('success', 'User updated.');
+
+        } 
+        catch(UniqueConstraintViolationException $e) {
+          $form->get('username')->addError(new  \Symfony\Component\Form\FormError(
+            "This username already exists in the database"
+          ));
+
+        }
+      }
+    }
+
+    return $this->render('site/user_form.html.twig', array(
+      'form' => $form->createView(),
+      'form_title' => 'Update user'
+    ));
+  }
+  
+  /**
+   * @Route(
    * "/users/changepassword", 
    * name="change_password")
    */
