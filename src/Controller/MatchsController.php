@@ -399,6 +399,7 @@ class MatchsController extends Controller
 
           try {
             $mailer->send($email);
+            $request->getSession()->getFlashBag()->add('success', 'Notification emails sent. Check your spam folder if did not receive it!');
 
           } catch (RuntimeException $e) {
               // some error prevented the email sending; display an
