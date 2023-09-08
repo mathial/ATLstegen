@@ -175,7 +175,7 @@
         {% if app.session.flashbag.peek('success') | length > 0 %} 
           <div class="alert alert-success">
             {% for message in app.session.flashbag.get('success') %}
-              <p>Message flash Info : {{ message }}</p>
+              <p>[INFO] : {{ message }}</p>
             {% endfor %}
           </div>
         {% endif %}
@@ -183,7 +183,7 @@
         {% if app.session.flashbag.peek('info') | length > 0 %} 
           <div class="alert alert-info">
             {% for message in app.session.flashbag.get('info') %}
-              <p>Message flash Notice : {{ message }}</p>
+              <p>[NOTICE] : {{ message }}</p>
             {% endfor %}
           </div>
         {% endif %}
@@ -191,7 +191,7 @@
         {% if app.session.flashbag.peek('error') | length > 0 %} 
           <div class="alert alert-danger">
             {% for message in app.session.flashbag.get('error') %}
-              <p>Message flash Error : {{ message }}</p>
+              <p>[ERROR] : {{ message }}</p>
             {% endfor %}
           </div>
         {% endif %}
