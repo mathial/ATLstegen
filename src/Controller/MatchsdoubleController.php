@@ -149,7 +149,7 @@ class MatchsdoubleController extends Controller
       'required'   => true,
     ))
     ->add('tie', ChoiceType::class, array(
-      'label'    => 'TIE ?',
+      'label'    => 'Tie ?',
       'choices' => array("no" => 0, "yes" => 1),
       'required'   => true,
     ))
