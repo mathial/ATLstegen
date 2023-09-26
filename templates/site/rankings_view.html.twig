@@ -19,8 +19,8 @@
         <table class="table">
         <tr>
           <th>#</th>
-          <th>Player</th>
           {% if withRatingIndex==1 %}
+          <th>Player</th>
           <th>RI-6m</th>
           {% endif %}
           <th>Rating</th>
@@ -43,7 +43,7 @@
             <tr class="inactive-player">
             {% endif %}
               <td>{{ rank }}</td>
-              <td><a href="{{ path('player_view', {'id':det.idplayer.id}) }}">{{ det.idplayer.nameshort }}</a></td>
+              <td><a href="{{ path('player_view', {'id':det.idplayer.id}) }}">{{ det.idplayer.nameshort }}</a> {% if det.idplayer.id in arrRabbits %} <img src="{{ asset('img/rabbit.png') }}" class="rabbit-ranking">{% endif %}</td>
               {% if withRatingIndex==1 %}
               <td>{{ detailsPlayer[det.idplayer.id]["RI"]|number_format(0, '.', ' ') }}</td>
               {% endif %}

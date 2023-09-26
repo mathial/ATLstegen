@@ -455,6 +455,7 @@ class RankingsController extends AbstractController
   	$arrTotal["defeats"]=0;
   	$arrTotal["ties"]=0;
   	$arrTotal["total"]=0;
+  	$arrRabbits=array();
 
   	if ($ranking && $detailsRankings) {
 
@@ -503,107 +504,114 @@ class RankingsController extends AbstractController
 
 
   		// WINS
-		$sql = '
-    	SELECT COUNT(*) AS tot, idPlayer1 
-    	FROM Matchs 
-    	WHERE tie=0 AND date<:date
-    	GROUP BY idPlayer1 
-	    ';
-		$stmt = $em->getConnection()->prepare($sql);
-		$exec = $stmt->execute(['date' => $ranking->getDate()->format("Y-m-d")]);
-		$wins = $exec->fetchAll();
+			$sql = '
+	    	SELECT COUNT(*) AS tot, idPlayer1 
+	    	FROM Matchs 
+	    	WHERE tie=0 AND date<:date
+	    	GROUP BY idPlayer1 
+		    ';
+			$stmt = $em->getConnection()->prepare($sql);
+			$exec = $stmt->execute(['date' => $ranking->getDate()->format("Y-m-d")]);
+			$wins = $exec->fetchAll();
 
-		foreach ($wins as $win) {
+			foreach ($wins as $win) {
 
-			$detailsPlayer[$win["idPlayer1"]]["wins"]=$win["tot"];
-			$detailsPlayer[$win["idPlayer1"]]["ties"]=0;
-			$detailsPlayer[$win["idPlayer1"]]["defeats"]=0;
+				$detailsPlayer[$win["idPlayer1"]]["wins"]=$win["tot"];
+				$detailsPlayer[$win["idPlayer1"]]["ties"]=0;
+				$detailsPlayer[$win["idPlayer1"]]["defeats"]=0;
 
-			$arrTotal["wins"]+=$win["tot"];
+				$arrTotal["wins"]+=$win["tot"];
 
-		}
-
-		// TIES P1
-		$sql = '
-    	SELECT COUNT(*) AS tot, idPlayer1 
-    	FROM Matchs 
-    	WHERE tie=1 AND date<:date
-    	GROUP BY idPlayer1 
-	    ';
-		$stmt = $em->getConnection()->prepare($sql);
-		$exec = $stmt->execute(['date' => $ranking->getDate()->format("Y-m-d")]);
-		$ties1 = $exec->fetchAll();
-
-		foreach ($ties1 as $tie) {
-			
-			$detailsPlayer[$tie["idPlayer1"]]["ties"]=$tie["tot"];			
-
-			if (!isset($detailsPlayer[$tie["idPlayer1"]]["wins"])) {
-				$detailsPlayer[$tie["idPlayer1"]]["wins"]=0;
-			}
-			if (!isset($detailsPlayer[$tie["idPlayer1"]]["defeats"])) {
-				$detailsPlayer[$tie["idPlayer1"]]["defeats"]=0;
 			}
 
-			$arrTotal["ties"]+=$tie["tot"];
+			// TIES P1
+			$sql = '
+	    	SELECT COUNT(*) AS tot, idPlayer1 
+	    	FROM Matchs 
+	    	WHERE tie=1 AND date<:date
+	    	GROUP BY idPlayer1 
+		    ';
+			$stmt = $em->getConnection()->prepare($sql);
+			$exec = $stmt->execute(['date' => $ranking->getDate()->format("Y-m-d")]);
+			$ties1 = $exec->fetchAll();
 
-		}
+			foreach ($ties1 as $tie) {
+				
+				$detailsPlayer[$tie["idPlayer1"]]["ties"]=$tie["tot"];			
 
-		// TIES P2
-		$sql = '
-    	SELECT COUNT(*) AS tot, idPlayer2
-    	FROM Matchs 
-    	WHERE tie=1 AND date<:date
-    	GROUP BY idPlayer2 
-	    ';
-		$stmt = $em->getConnection()->prepare($sql);
-		$exec = $stmt->execute(['date' => $ranking->getDate()->format("Y-m-d")]);
-		$ties1 = $exec->fetchAll();
+				if (!isset($detailsPlayer[$tie["idPlayer1"]]["wins"])) {
+					$detailsPlayer[$tie["idPlayer1"]]["wins"]=0;
+				}
+				if (!isset($detailsPlayer[$tie["idPlayer1"]]["defeats"])) {
+					$detailsPlayer[$tie["idPlayer1"]]["defeats"]=0;
+				}
 
-		foreach ($ties1 as $tie) {
-			
-			if (!isset($detailsPlayer[$tie["idPlayer2"]]["ties"])) {
-				$detailsPlayer[$tie["idPlayer2"]]["ties"]=$tie["tot"];			
-			}
-			else $detailsPlayer[$tie["idPlayer2"]]["ties"]+=$tie["tot"];
+				$arrTotal["ties"]+=$tie["tot"];
 
-			if (!isset($detailsPlayer[$tie["idPlayer2"]]["wins"])) {
-				$detailsPlayer[$tie["idPlayer2"]]["wins"]=0;
-			}
-			if (!isset($detailsPlayer[$tie["idPlayer2"]]["defeats"])) {
-				$detailsPlayer[$tie["idPlayer2"]]["defeats"]=0;
 			}
 
-			$arrTotal["ties"]+=$tie["tot"];
+			// TIES P2
+			$sql = '
+	    	SELECT COUNT(*) AS tot, idPlayer2
+	    	FROM Matchs 
+	    	WHERE tie=1 AND date<:date
+	    	GROUP BY idPlayer2 
+		    ';
+			$stmt = $em->getConnection()->prepare($sql);
+			$exec = $stmt->execute(['date' => $ranking->getDate()->format("Y-m-d")]);
+			$ties1 = $exec->fetchAll();
 
-		}
+			foreach ($ties1 as $tie) {
+				
+				if (!isset($detailsPlayer[$tie["idPlayer2"]]["ties"])) {
+					$detailsPlayer[$tie["idPlayer2"]]["ties"]=$tie["tot"];			
+				}
+				else $detailsPlayer[$tie["idPlayer2"]]["ties"]+=$tie["tot"];
 
-		// DEFEATS
-		$sql = '
-    	SELECT COUNT(*) AS tot, idPlayer2 
-    	FROM Matchs 
-    	WHERE tie=0 AND date<:date
-    	GROUP BY idPlayer2
-	    ';
-		$stmt = $em->getConnection()->prepare($sql);
-		$exec = $stmt->execute(['date' => $ranking->getDate()->format("Y-m-d")]);
-		$defeats = $exec->fetchAll();
+				if (!isset($detailsPlayer[$tie["idPlayer2"]]["wins"])) {
+					$detailsPlayer[$tie["idPlayer2"]]["wins"]=0;
+				}
+				if (!isset($detailsPlayer[$tie["idPlayer2"]]["defeats"])) {
+					$detailsPlayer[$tie["idPlayer2"]]["defeats"]=0;
+				}
 
-		foreach ($defeats as $defeat) {
-			$detailsPlayer[$defeat["idPlayer2"]]["defeats"]=$defeat["tot"];
-			if (!isset($detailsPlayer[$defeat["idPlayer2"]]["wins"])) {
-				$detailsPlayer[$defeat["idPlayer2"]]["wins"]=0;
+				$arrTotal["ties"]+=$tie["tot"];
+
 			}
-			if (!isset($detailsPlayer[$defeat["idPlayer2"]]["ties"])) {
-				$detailsPlayer[$defeat["idPlayer2"]]["ties"]=0;
+
+			// DEFEATS
+			$sql = '
+	    	SELECT COUNT(*) AS tot, idPlayer2 
+	    	FROM Matchs 
+	    	WHERE tie=0 AND date<:date
+	    	GROUP BY idPlayer2
+		    ';
+			$stmt = $em->getConnection()->prepare($sql);
+			$exec = $stmt->execute(['date' => $ranking->getDate()->format("Y-m-d")]);
+			$defeats = $exec->fetchAll();
+
+			foreach ($defeats as $defeat) {
+				$detailsPlayer[$defeat["idPlayer2"]]["defeats"]=$defeat["tot"];
+				if (!isset($detailsPlayer[$defeat["idPlayer2"]]["wins"])) {
+					$detailsPlayer[$defeat["idPlayer2"]]["wins"]=0;
+				}
+				if (!isset($detailsPlayer[$defeat["idPlayer2"]]["ties"])) {
+					$detailsPlayer[$defeat["idPlayer2"]]["ties"]=0;
+				}
+
+				$arrTotal["defeats"]+=$defeat["tot"];
+
 			}
 
-			$arrTotal["defeats"]+=$defeat["tot"];
+			$arrTotal["total"]=$arrTotal["wins"]+$arrTotal["ties"]+$arrTotal["defeats"];
 
-		}
 
-		$arrTotal["total"]=$arrTotal["wins"]+$arrTotal["ties"]+$arrTotal["defeats"];
+	  	$rabbits=$em->getRepository('App\Entity\Rabbit')->findBy(array("isover" =>false), array('id' => 'DESC'));
+	  	foreach($rabbits as $rabbit){
+	  		$arrRabbits[]=$rabbit->getIdplayerlast()->getId();
+	  	}
 
+print_r($arrRabbits);
 	  }
 	  else {
 	  	$request->getSession()->getFlashBag()->add('error', 'Error selecting rankings ('.$id.')');
@@ -619,6 +627,7 @@ class RankingsController extends AbstractController
 	    'activeOnly' => $activeOnly,
 	    'withRatingIndex' => $withRatingIndex,
 	    'arrTotal' => $arrTotal,
+	    'arrRabbits' => $arrRabbits,
 	  ]);
 	}
 

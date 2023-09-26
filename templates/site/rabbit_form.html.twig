@@ -1,0 +1,13 @@
+{% form_theme form 'bootstrap/bootstrap_4_layout.html.twig' %}
+
+  {% extends "common/layout.html.twig" %}
+
+  {% block body %}
+
+    <h3>Form {{form_title}}</h3>
+
+    <div class="form">
+      {{ form(form) }}
+    </div>
+
+  {% endblock %}

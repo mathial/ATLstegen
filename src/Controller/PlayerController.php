@@ -1079,14 +1079,14 @@ class PlayerController extends Controller
       },
       'choice_label' => 'name',
     ))
-    ->add('initialRatingTennis', TextType::class, array(
+    ->add('initialRatingTennis', IntegerType::class, array(
       'required'   => true,
     ))
-    ->add('initialRatingPaddle', TextType::class, array(
+    ->add('initialRatingPaddle', IntegerType::class, array(
       'label'    => 'Initial Rating Padel',
       'required'   => true,
     ))
-    ->add('initialRatingDouble', TextType::class, array(
+    ->add('initialRatingDouble', IntegerType::class, array(
       'required'   => true,
     ))
     // ->add('username', TextType::class, array(
