@@ -223,7 +223,8 @@ class MatchsController extends Controller
         $em->flush();
         $request->getSession()->getFlashBag()->add('success', 'Match edited with pts evol #'.$mat["id"]." (".$evol."pts)");
 
-
+        if ($arrMEvol[$mat["id"]]>0) $arrMEvol[$mat["id"]]="+".$arrMEvol[$mat["id"]];
+        
         /*
         $rankId="";
 
