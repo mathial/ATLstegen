@@ -30,15 +30,102 @@ use Symfony\Component\Mime\Email;
 
 class MatchsController extends Controller
 {
-    /**
-     * @Route("/matchs", name="matchs")
-     */
-    public function index()
-    {
-        return $this->render('matchs/index.html.twig', [
-            'controller_name' => 'MatchsController',
-        ]);
+
+  public function calculateEvol($idMatch) {
+
+    $em = $this->getDoctrine()->getManager();
+    $mat = $em->getRepository('App\Entity\Matchs')->findOneBy(['id' => $idMatch]);
+
+    $rankId="";
+    $evol="";
+
+    // get the closest ranking
+    $sql_rank = 'SELECT id FROM Ranking WHERE date<="'.$mat->getDate()->format('Y-m-d').'" ORDER BY date DESC LIMIT 0,1';
+    $stmt = $em->getConnection()->prepare($sql_rank);
+    $exec = $stmt->execute();
+    $rank = $exec->fetchAll();
+    if (isset($rank[0])) $rankId=$rank[0]["id"];
+    
+    $rating_player1=$mat->getIdplayer1()->getInitialratingtennis();
+    $rating_player2=$mat->getIdplayer2()->getInitialratingtennis();
+    $arrMEvol[$mat->getId()]=0;
+
+    
+    if ($rankId!="") {
+      $sql_rank = 'SELECT score FROM RankingPos WHERE idRanking="'.$rankId.'" AND idPlayer='.$mat->getIdplayer1()->getId();
+      $stmt = $em->getConnection()->prepare($sql_rank);
+      $exec = $stmt->execute();
+      $rank = $exec->fetchAll();
+      if (isset($rank[0])) $rating_player1=$rank[0]["score"];
+
+      $sql_rank = 'SELECT score FROM RankingPos WHERE idRanking="'.$rankId.'" AND idPlayer='.$mat->getIdplayer2()->getId();
+      $stmt = $em->getConnection()->prepare($sql_rank);
+      $exec = $stmt->execute();
+      $rank = $exec->fetchAll();
+      if (isset($rank[0])) $rating_player2=$rank[0]["score"];
+
     }
+
+    if ($mat->getTie()==0) $result=1;
+    else $result=0;
+
+    if (isset($rating_player1) && is_numeric($rating_player1) && isset($rating_player2) && is_numeric($rating_player2)) {
+
+      $competitors = array(
+        array('id' => 1, 'name' => "Player 1", 'skill' => 100, 'rating' => $rating_player1, 'active' => 1),
+        array('id' => 2, 'name' => "Player 2", 'skill' => 100, 'rating' => $rating_player2, 'active' => 1),
+      );
+      //  initialize the ranking system and add the competitors
+      $elo = new EloRatingSystem(100, 50);
+      foreach ($competitors as $competitor) {
+        $elo->addCompetitor(new EloCompetitor($competitor['id'], $competitor['name'], $competitor['rating']));
+      }
+
+      if ($result==1) {
+        $elo->addResult(1,2);
+        $match = "Player 1 defeats Player 2";
+        $result="player1";
+      }
+      else {
+        $elo->addResult(1,2, true);
+        $match = "TIE Player 1 - Player 2";
+        $result="draw";
+      }
+
+      $elo->updateRatings();
+
+      $tabRank = $elo->getRankings();
+
+      foreach ($tabRank as $idP => $val) {
+
+
+        $exp=explode("#", $idP);
+        if ($exp[0]==1) {
+          $evol=$val-$rating_player1;
+          if ($evol>0) $arrRt[1]="+".number_format($evol, 1);
+          else $arrRt[1]=number_format($evol, 1);
+        }
+        
+      }
+    }
+
+
+
+    return $evol;
+
+
+
+  }
+
+  /**
+   * @Route("/matchs", name="matchs")
+   */
+  public function index()
+  {
+      return $this->render('matchs/index.html.twig', [
+          'controller_name' => 'MatchsController',
+      ]);
+  }
 
   /**
    * @Route(
@@ -93,7 +180,7 @@ class MatchsController extends Controller
 
     // for each match, we calculate the points evolution
     // only for the matches displayed (LIMIT !!)
-    $sql_m   = 'SELECT m.id, m.date, m.tie, p1.id AS p1id, p2.id AS p2id, p1.initialRatingTennis AS p1IR, p2.initialRatingTennis AS p2IR 
+    $sql_m   = 'SELECT m.id, m.date, m.tie, p1.id AS p1id, p2.id AS p2id, p1.initialRatingTennis AS p1IR, p2.initialRatingTennis AS p2IR, m.ptsEvol 
                   FROM Matchs m, Player p1, Player p2
                   '.($where!="" ? $where : " WHERE 1 ")." 
                   AND p1.id=m.idplayer1
@@ -110,78 +197,121 @@ class MatchsController extends Controller
 
     foreach ($matches as $mat) {
 
-      $rankId="";
+      if ($mat["ptsEvol"]!="" && $mat["ptsEvol"] != null) {
+        //echo "pts evol already known for match ".$mat["id"]."\n";
 
-      // get the closest ranking
-      $sql_rank = 'SELECT id FROM Ranking WHERE date<="'.$mat["date"].'" ORDER BY date DESC LIMIT 0,1';
-      $stmt = $em->getConnection()->prepare($sql_rank);
-      $exec = $stmt->execute();
-      $rank = $exec->fetchAll();
-      if (isset($rank[0])) $rankId=$rank[0]["id"];
-      
-      $rating_player1=$mat["p1IR"];
-      $rating_player2=$mat["p2IR"];
-      $arrMEvol[$mat["id"]]=0;
+        if ($mat["ptsEvol"]>0) $arrMEvol[$mat["id"]]="+".number_format($mat["ptsEvol"], 1);
+        else $arrMEvol[$mat["id"]]=number_format($mat["ptsEvol"], 1);
 
-      
-      if ($rankId!="") {
-        $sql_rank = 'SELECT score FROM RankingPos WHERE idRanking="'.$rankId.'" AND idPlayer='.$mat["p1id"];
-        $stmt = $em->getConnection()->prepare($sql_rank);
-        $exec = $stmt->execute();
-        $rank = $exec->fetchAll();
-        if (isset($rank[0])) $rating_player1=$rank[0]["score"];
 
-        $sql_rank = 'SELECT score FROM RankingPos WHERE idRanking="'.$rankId.'" AND idPlayer='.$mat["p2id"];
-        $stmt = $em->getConnection()->prepare($sql_rank);
-        $exec = $stmt->execute();
-        $rank = $exec->fetchAll();
-        if (isset($rank[0])) $rating_player2=$rank[0]["score"];
+        //echo "function calculateEvol :".$this->calculateEvol($mat["id"])."<br>";
+        //echo "stored evol :".$arrMEvol[$mat["id"]]."<br>";
 
+        if (number_format($this->calculateEvol($mat["id"]), 1)!=$arrMEvol[$mat["id"]]) echo "ERROR!".$mat["id"]." : ".$this->calculateEvol($mat["id"])."/".$arrMEvol[$mat["id"]]."<br>";
       }
+      else {
 
-      if ($mat["tie"]==0) $result=1;
-      else $result=0;
 
-      if (isset($rating_player1) && is_numeric($rating_player1) && isset($rating_player2) && is_numeric($rating_player2)) {
+        $evol=number_format($this->calculateEvol($mat["id"]), 1);
 
-        $competitors = array(
-          array('id' => 1, 'name' => "Player 1", 'skill' => 100, 'rating' => $rating_player1, 'active' => 1),
-          array('id' => 2, 'name' => "Player 2", 'skill' => 100, 'rating' => $rating_player2, 'active' => 1),
-        );
-        //  initialize the ranking system and add the competitors
-        $elo = new EloRatingSystem(100, 50);
-        foreach ($competitors as $competitor) {
-          $elo->addCompetitor(new EloCompetitor($competitor['id'], $competitor['name'], $competitor['rating']));
+        $arrMEvol[$mat["id"]]=$evol;
+
+        // temporary stores in db the result, now that the field has been added
+        $matchToEdit = $em->getRepository('App\Entity\Matchs')->findOneBy(['id' => $mat["id"]]);
+        $matchToEdit->setPtsevol($evol);
+        $em->persist($matchToEdit);
+        $em->flush();
+        $request->getSession()->getFlashBag()->add('success', 'Match edited with pts evol #'.$mat["id"]." (".$evol."pts)");
+
+
+        /*
+        $rankId="";
+
+        // get the closest ranking
+        $sql_rank = 'SELECT id FROM Ranking WHERE date<="'.$mat["date"].'" ORDER BY date DESC LIMIT 0,1';
+        $stmt = $em->getConnection()->prepare($sql_rank);
+        $exec = $stmt->execute();
+        $rank = $exec->fetchAll();
+        if (isset($rank[0])) $rankId=$rank[0]["id"];
+        
+        $rating_player1=$mat["p1IR"];
+        $rating_player2=$mat["p2IR"];
+        $arrMEvol[$mat["id"]]=0;
+
+        
+        if ($rankId!="") {
+          $sql_rank = 'SELECT score FROM RankingPos WHERE idRanking="'.$rankId.'" AND idPlayer='.$mat["p1id"];
+          $stmt = $em->getConnection()->prepare($sql_rank);
+          $exec = $stmt->execute();
+          $rank = $exec->fetchAll();
+          if (isset($rank[0])) $rating_player1=$rank[0]["score"];
+
+          $sql_rank = 'SELECT score FROM RankingPos WHERE idRanking="'.$rankId.'" AND idPlayer='.$mat["p2id"];
+          $stmt = $em->getConnection()->prepare($sql_rank);
+          $exec = $stmt->execute();
+          $rank = $exec->fetchAll();
+          if (isset($rank[0])) $rating_player2=$rank[0]["score"];
+
         }
 
-        if ($result==1) {
-          $elo->addResult(1,2);
-          $match = "Player 1 defeats Player 2";
-          $result="player1";
-        }
-        else {
-          $elo->addResult(1,2, true);
-          $match = "TIE Player 1 - Player 2";
-          $result="draw";
-        }
+        if ($mat["tie"]==0) $result=1;
+        else $result=0;
 
-        $elo->updateRatings();
+        if (isset($rating_player1) && is_numeric($rating_player1) && isset($rating_player2) && is_numeric($rating_player2)) {
 
-        $tabRank = $elo->getRankings();
-
-        foreach ($tabRank as $idP => $val) {
-
-          $exp=explode("#", $idP);
-          if ($exp[0]==1) {
-            $evol=$val-$rating_player1;
-            if ($evol>0) $arrRt[1]="+".number_format($evol, 1);
-            else $arrRt[1]=number_format($evol, 1);
+          $competitors = array(
+            array('id' => 1, 'name' => "Player 1", 'skill' => 100, 'rating' => $rating_player1, 'active' => 1),
+            array('id' => 2, 'name' => "Player 2", 'skill' => 100, 'rating' => $rating_player2, 'active' => 1),
+          );
+          //  initialize the ranking system and add the competitors
+          $elo = new EloRatingSystem(100, 50);
+          foreach ($competitors as $competitor) {
+            $elo->addCompetitor(new EloCompetitor($competitor['id'], $competitor['name'], $competitor['rating']));
           }
-          
-          $arrMEvol[$mat["id"]]=(isset($arrRt[1]) ? $arrRt[1] : "err");
+
+          if ($result==1) {
+            $elo->addResult(1,2);
+            $match = "Player 1 defeats Player 2";
+            $result="player1";
+          }
+          else {
+            $elo->addResult(1,2, true);
+            $match = "TIE Player 1 - Player 2";
+            $result="draw";
+          }
+
+          $elo->updateRatings();
+
+          $tabRank = $elo->getRankings();
+
+          $evol=0;
+          foreach ($tabRank as $idP => $val) {
+
+
+            $exp=explode("#", $idP);
+            if ($exp[0]==1) {
+              $evol=$val-$rating_player1;
+              if ($evol>0) $arrRt[1]="+".number_format($evol, 1);
+              else $arrRt[1]=number_format($evol, 1);
+            }
+            
+            $arrMEvol[$mat["id"]]=(isset($arrRt[1]) ? $arrRt[1] : "err");
+
+            // temporary stores in db the result, now that the field has been added
+            $matchToEdit = $em->getRepository('App\Entity\Matchs')->findOneBy(['id' => $mat["id"]]);
+            $matchToEdit->setPtsevol($evol);
+            $em->persist($matchToEdit);
+            $em->flush();
+            $request->getSession()->getFlashBag()->add('success', 'Match edited with pts evol #'.$mat["id"]." (".$evol."pts)");
+
+          }
+        
         }
-      
+
+        */
+
       }
+      
 
     }
 

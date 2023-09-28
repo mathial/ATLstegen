@@ -72,7 +72,14 @@ class Matchs
      * })
      */
     private $iduseradd = '4';
-    
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="ptsEvol", type="float", precision=10, scale=0, nullable=false)
+     */
+    private $ptsevol = '0';
+        
     /**
      * @var \Player
      *
@@ -202,6 +209,18 @@ class Matchs
     public function setIdplayer2(?Player $idplayer2): self
     {
         $this->idplayer2 = $idplayer2;
+
+        return $this;
+    }
+
+    public function getPtsevol(): ?float
+    {
+        return $this->ptsevol;
+    }
+
+    public function setPtsevol(float $ptsevol): self
+    {
+        $this->ptsevol = $ptsevol;
 
         return $this;
     }
