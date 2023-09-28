@@ -611,7 +611,7 @@ class RankingsController extends AbstractController
 	  		$arrRabbits[]=$rabbit->getIdplayerlast()->getId();
 	  	}
 
-print_r($arrRabbits);
+//print_r($arrRabbits);
 	  }
 	  else {
 	  	$request->getSession()->getFlashBag()->add('error', 'Error selecting rankings ('.$id.')');
