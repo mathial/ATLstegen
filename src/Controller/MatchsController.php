@@ -212,9 +212,9 @@ class MatchsController extends Controller
       else {
 
 
-        $evol=number_format($this->calculateEvol($mat["id"]), 1);
+        $evol=$this->calculateEvol($mat["id"]);
 
-        $arrMEvol[$mat["id"]]=$evol;
+        $arrMEvol[$mat["id"]]=number_format($evol, 1);
 
         // temporary stores in db the result, now that the field has been added
         $matchToEdit = $em->getRepository('App\Entity\Matchs')->findOneBy(['id' => $mat["id"]]);
@@ -224,7 +224,7 @@ class MatchsController extends Controller
         $request->getSession()->getFlashBag()->add('success', 'Match edited with pts evol #'.$mat["id"]." (".$evol."pts)");
 
         if ($arrMEvol[$mat["id"]]>0) $arrMEvol[$mat["id"]]="+".$arrMEvol[$mat["id"]];
-        
+
         /*
         $rankId="";
 
