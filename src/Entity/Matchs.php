@@ -79,7 +79,17 @@ class Matchs
      * @ORM\Column(name="ptsEvol", type="float", precision=10, scale=0, nullable=false)
      */
     private $ptsevol = '0';
-        
+
+    /**
+     * @var \Rabbit|null
+     *
+     * @ORM\ManyToOne(targetEntity="Rabbit")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="idRabbit", referencedColumnName="id")
+     * })
+     */
+    private $idrabbit;
+
     /**
      * @var \Player
      *
@@ -221,6 +231,18 @@ class Matchs
     public function setPtsevol(float $ptsevol): self
     {
         $this->ptsevol = $ptsevol;
+
+        return $this;
+    }
+
+    public function getIdrabbit(): ?Rabbit
+    {
+        return $this->idrabbit;
+    }
+
+    public function setIdrabbit(?Rabbit $idrabbit): self
+    {
+        $this->idrabbit = $idrabbit;
 
         return $this;
     }

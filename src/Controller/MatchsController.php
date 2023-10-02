@@ -1320,4 +1320,5 @@ class MatchsController extends Controller
       return new JsonResponse("error");
     }
   }
+
 }

@@ -90,7 +90,7 @@
             </li>
 
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">The LEAGUE <span class="caret"></span></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">The League <span class="caret"></span></a>
               <ul class="dropdown-menu">
                 <li><a href="https://docs.google.com/spreadsheets/d/193o7RsolU8e86oEfyByBpFHkiM3Tb4ttLdaS_vpBpyk/edit#gid=534418329" target="_blank">RESULTS (GDoc)</a></li>
                 <li><a href="{{ path('division_league') }}">Infos</a></li>
@@ -108,7 +108,14 @@
             </li>
 
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Summer tournament <span class="caret"></span></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">NEW Rabbits chase <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="{{ path('rabbit_list') }}">List rabbits</a></li>
+              </ul>
+            </li>
+
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Summer tournaments <span class="caret"></span></a>
               <ul class="dropdown-menu">
                 <li><a href="{{ path('summer_tournaments') }}">2023 Tournaments !</a></li>
                 <li><a href="{{ path('matchs_list_longtournament', {'year':2023, 'maxpage':150, 'page':1}) }}">2023 matches</a> </li>
@@ -120,7 +127,6 @@
                 <li><a href="{{ path('matchs_list_longtournament', {'year':2021, 'maxpage':100, 'page':1}) }}">[2021] Matches</a> </li>
               </ul>
             </li>
-
 
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">PADEL <span class="caret"></span></a>
@@ -161,7 +167,6 @@
                 <li><a href="{{ path('sunday_contest') }}">Sunday 21-22 contest</a></li>
                 <li role="separator" class="divider"></li>
                 <li><a href="{{ path('rabbit_new') }}">Generate new rabbit</a></li>
-                <li><a href="{{ path('rabbit_list') }}">List rabbits</a></li>
               </ul>
             </li>
             {% endif %}

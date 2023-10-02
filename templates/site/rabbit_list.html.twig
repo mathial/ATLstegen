@@ -12,7 +12,9 @@
         <th>1st player</th>
         <th>last player</th>
         <th>nbPts</th>
+        {% if is_granted('ROLE_ADMIN') %} 
         <th>action</th>
+        {% endif %}
       </tr>
       {% for rabbit in listRabbits %}
 
@@ -22,7 +24,9 @@
           <td><a href="{{ path('player_view', {'id':rabbit.idplayerfirst.id}) }}">{{ rabbit.idplayerfirst.nameshort }}</a></td>
           <td><a href="{{ path('player_view', {'id':rabbit.idplayerlast.id}) }}">{{ rabbit.idplayerlast.nameshort }}</a></td>
           <td>{{ rabbit.nbpts }}</td>
+          {% if is_granted('ROLE_ADMIN') %} 
           <td><a href="{{ path('rabbit_update', {'id':rabbit.id}) }}">update</a></td>
+          {% endif %}
         </tr>
       {% endfor %}
     </table>

@@ -14,6 +14,7 @@
         <th>Score</th>
         <th>{{ knp_pagination_sortable(listMatchs, 'Context', 'm.context') }}</th>
         <th>{{ knp_pagination_sortable(listMatchs, 'Conditions', 'm.conditions') }}</th>
+        <th>Pts evol</th>
       </tr>
 
       {% for match in listMatchs %}
@@ -30,7 +31,8 @@
           <td>{{ match.score }}</td>
           <td>{{ match.context }}</td>
           <td class="cond-{{ match.conditions|replace({' ': ''}) }}">{{ match.conditions }}</td>
-        </tr>
+          <td>{% if match.ptsEvol >0  %}+{% endif %}
+          {{ match.ptsEvol | round(1, 'floor') }}</td>        </tr>
       {% endfor %}
     </table>
   </div>
