@@ -8,6 +8,7 @@
 
 .winner-player{
 	background-color: #FFFFE0;
+	border: 0.5px dashed !important;
 }
 
 .inactive-player{
