@@ -206,4 +206,6 @@ class RabbitController extends Controller
     ));
     
   }
+
+
 }

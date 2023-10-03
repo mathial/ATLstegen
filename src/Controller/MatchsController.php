@@ -22,6 +22,7 @@ use App\Entity\Matchs;
 use App\Entity\Player;
 use App\Entity\EloRatingSystem;
 use App\Entity\EloCompetitor;
+use App\Entity\Rabbit;
 
 //email
 use Symfony\Component\Mailer\Transport;
@@ -417,6 +418,22 @@ class MatchsController extends Controller
     ;
 
     if ($mode=="edit") {
+
+      // edit mode : possibility to add a rabbit !
+      $formBuilder
+      ->add('idrabbit', EntityType::class, array(
+        'label'   => 'Rabbit ! (optional)',
+        'class' => Rabbit::class,
+        'query_builder' => function (EntityRepository $er) {
+          return $er->createQueryBuilder('r')
+              ->where('r.isover = 0')
+              ->orderBy('r.namerabbit', 'ASC');
+        },
+        'choice_label' => 'namerabbit',
+        'empty_data' => null,
+        'required'   => false
+      ));
+
       $formBuilder
       ->add('update', SubmitType::class, array('label' => 'Update'))
       ;
