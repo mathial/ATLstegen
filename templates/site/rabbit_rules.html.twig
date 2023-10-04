@@ -1,0 +1,15 @@
+{% extends "common/layout.html.twig" %}
+
+{% block body %}
+
+  <h1>Chase and keep the rabbits !</h3>
+
+  <p><a href="{{ path('rabbit_list') }}">List of the running rabbits</a></p>
+  <p><a href="{{ path('rabbit_all_matches', {'maxpage':100, 'page':1}) }}">All the rabbit-matches</a></p>
+
+  <p><img style="width:900px" src="{{ asset('img/keeptherabbit_rules.png') }}"></p>
+
+  
+
+{% endblock %}
+

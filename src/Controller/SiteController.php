@@ -249,5 +249,15 @@ class SiteController extends AbstractController
             'controller_name' => 'SiteController',
         ]);
     }
+
+    /**
+     * @Route("/chase-the-rabbits", name="rabbit_rules")
+     */
+    public function tennisChaseTheRabbit()
+    {
+        return $this->render('site/rabbit_rules.html.twig', [
+            'controller_name' => 'SiteController',
+        ]);
+    }
 }
 
