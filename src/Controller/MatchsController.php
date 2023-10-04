@@ -1302,6 +1302,38 @@ class MatchsController extends Controller
   }
 
 
+  /**
+   * @Route(
+   * "/matchs/listAllRabbitMatches/{maxpage}/{page}", 
+   * name="rabbit_all_matches", 
+   * requirements={
+   *   "maxpage"="\d+", 
+   *   "page"="\d+" 
+   * })
+   */
+  public function listAllRabbitMatchs($maxpage, $page, Request $request)
+  {
+    $em = $this->getDoctrine()->getManager();
+
+    $dql   = 'SELECT m FROM App\Entity\Matchs m WHERE m.idrabbit is not null ORDER BY m.date DESC';
+    $query = $em->createQuery($dql);
+
+    $paginator  = $this->get('knp_paginator');
+
+    $listMatchs = $paginator->paginate(
+      $query, 
+      $request->query->getInt('page', 1),
+      $maxpage
+    );
+
+    return $this->render('site/matchs_list_rabbit.html.twig', array("listMatchs" => $listMatchs,
+      'idRabbit' => null
+    ));
+    
+  }
+
+
+
 
   /**
    * @Route(

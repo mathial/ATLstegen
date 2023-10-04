@@ -39,7 +39,7 @@
           <a href="{{ path('player_view', {'id':match.idplayer1.id}) }}">{{ match.idplayer1.nameshort }}</a></td>
           <td><a href="{{ path('player_view', {'id':match.idplayer2.id}) }}">{{ match.idplayer2.nameshort }}</a></td>
           <td>{{ match.score }}</td>
-          <td>{{ match.context }}</td>
+          <td>{{ match.context }} {% if match.idrabbit is not null %} <img src="{{ asset('img/rabbit.png') }}" class="rabbit-ranking">{% endif %}</td>
           <td class="cond-{{ match.conditions|replace({' ': ''}) }}">{{ match.conditions }}</td>
           <td>{{ arrMEvol[match.id] }}</td>
           {% if is_granted('ROLE_ADMIN') %} 
