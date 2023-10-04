@@ -9,6 +9,7 @@
       <tr>
         {# <th>{{ knp_pagination_sortable(listMatchs, '#', 'm.id') }}</th> #}
         <th>{{ knp_pagination_sortable(listMatchs, 'Date', 'm.date') }}</th>
+        <th>Rabbit</th>
         <th>Player1</th>
         <th>Player2</th>
         <th>Score</th>
@@ -21,6 +22,7 @@
         <tr>
           {# <td>{{ match.id }}</td> #}
           <td>{{ match.date|date("Y-m-d") }}</td>
+          <td>{{ match.idrabbit.namerabbit }}</td>
           {% if match.tie!=1 %}
             <td class="winner-player">
           {% else %}

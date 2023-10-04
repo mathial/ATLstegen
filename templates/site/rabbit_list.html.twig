@@ -9,9 +9,10 @@
       <tr>
         <th>#</th>
         <th>name</th>
-        <th>1st player</th>
-        <th>last player</th>
+        <th>1st owner</th>
+        <th>current owner</th>
         <th>nbPts</th>
+        <th>in game ?</th>
         {% if is_granted('ROLE_ADMIN') %} 
         <th>action</th>
         {% endif %}
@@ -22,8 +23,9 @@
           <td>{{ rabbit.id }}</td>
           <td>{{ rabbit.namerabbit }}</td>
           <td><a href="{{ path('player_view', {'id':rabbit.idplayerfirst.id}) }}">{{ rabbit.idplayerfirst.nameshort }}</a></td>
-          <td><a href="{{ path('player_view', {'id':rabbit.idplayerlast.id}) }}">{{ rabbit.idplayerlast.nameshort }}</a></td>
+          <td class="winner-player"><a href="{{ path('player_view', {'id':rabbit.idplayerlast.id}) }}">{{ rabbit.idplayerlast.nameshort }}</a></td>
           <td>{{ rabbit.nbpts }}</td>
+          <td>{% if rabbit.isover %}WON !{% else %}yes{% endif %}</td>
           {% if is_granted('ROLE_ADMIN') %} 
           <td><a href="{{ path('rabbit_update', {'id':rabbit.id}) }}">update</a></td>
           {% endif %}
