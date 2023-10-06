@@ -57,6 +57,7 @@
 	  <table class="table">
 	    <tr>
 	      <th>#</th>
+	      <th>Date</th>
 	      <th>Winner</th>
 	      <th>Player 2</th>
 	      <th>Score</th>
@@ -67,6 +68,7 @@
 			{% for id, mat in bestUpsets %}
 				<tr>
 					<td>{{ id+1 }}</td>
+	        <td>{{ mat.date }}</td>
 	        <td class="winner-player"><a href="{{ path('player_view', {'id':mat.p1.id}) }}">{{ mat.p1.nameshort }}</a></td>
 	        <td><a href="{{ path('player_view', {'id':mat.p2.id}) }}">{{ mat.p2.nameshort }}</a></td>
 	        <td>{{ mat.score }}</td>
