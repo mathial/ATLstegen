@@ -6,6 +6,17 @@
 
     <h3>Simulator</h3>
 
+    <p>Examples</p>
+    <ul>
+      <li>P1 is 95pts ahead P2 and wins : +5pts</li>
+      <li>P1 is 60pts ahead P2 and wins : +10pts</li>
+      <li>P1 is 18pts ahead P2 and wins : +20pts</li>
+      <li>Same ratings : +25pts for the winner</li>
+      <li>P1 is 18pts behind P2 and wins : +30pts</li>
+      <li>P1 is 60pts behind P2 and wins : +40pts</li>
+      <li>P1 is 95pts behind P2 and wins : +45pts</li>
+    </ul>
+
     <div class="form">
       {{ form(form) }}
     </div>
@@ -14,5 +25,14 @@
     	<p>Player 1's evolution: <b>{{ arrRt[1] }}</b></p>
     	<p>Player 2's evolution: <b>{{ arrRt[2] }}</b></p>
     {% endif %}
+
+    <br>
+
+    <p>We use the <a href="https://en.wikipedia.org/wiki/Elo_rating_system" target="_blank">Elo Rating System</a>, configured this way :</p>
+    <ul>
+      <li> scoreFactor = 100. => size of the scoring scale </li>
+      <li> kFactor = 50. => volatility/mobility of the scores. It means that you can win up to 50pts after every win.</li>
+    </ul>
+    <br>
 
   {% endblock %}
