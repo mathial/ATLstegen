@@ -95,6 +95,35 @@ class SiteController extends AbstractController
 
     }
 
+    private function getBestUpsets ($nbRows=20) {
+        $em = $this->getDoctrine()->getManager();
+
+        $matches = $em->getRepository('App\Entity\Matchs')->findBy(array(), array("ptsevol"=> "DESC"), $nbRows);
+
+        $rt=array();
+        foreach($matches as $mat) {
+            $line=array();
+
+            $line["p1"]=$mat->getIdplayer1();
+            $line["p2"]=$mat->getIdplayer2();
+//            $line["nameP1"]=$mat->getIdplayer1()->getNameshort();
+//            $line["nameP2"]=$mat->getIdplayer2()->getNameshort();
+            $line["date"]=$mat->getDate()->format("Y-m-d");
+            $line["score"]=$mat->getDate()->format("Y-m-d");
+            $line["context"]=$mat->getContext();
+            $line["conditions"]=$mat->getConditions();
+            $line["ptsEvol"]=$mat->getPtsevol();
+            $rt[]=$line;
+        }
+
+        return $rt;
+
+    }
+
+
+
+
+
     private function getBestSeries($minMatchsPlayed=5, $nbDays=60) {
 
         $em = $this->getDoctrine()->getManager();
@@ -177,6 +206,8 @@ class SiteController extends AbstractController
     {   
         $rtTopLast=$this->getTopLastTennisPerf();
 
+        $rtBestUpsets=$this->getBestUpsets(30);
+
         $rtSeries=$this->getBestSeries();
 
 //print_r($rtSeries);
@@ -185,6 +216,7 @@ class SiteController extends AbstractController
             'controller_name' => 'SiteController',
             'top3TennisPerf' => $rtTopLast["top"],
             'last3TennisPerf' => $rtTopLast["last"],
+            'bestUpsets' => $rtBestUpsets,
             'nbEvol' => $rtTopLast["nbEvol"],
             'rtSeries' => $rtSeries,
         ]);

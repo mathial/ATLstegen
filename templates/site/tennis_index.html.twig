@@ -51,6 +51,33 @@
 		</table>
 	</div>
 
+	<h3>Biggest upsets</h3>
+	<p>The maximum you can get from a match is 50pts. Check the <a href="{{ path('simulator') }}">simulator</a> for more details.</p>
+	<div class="table-responsive">
+	  <table class="table">
+	    <tr>
+	      <th>#</th>
+	      <th>Winner</th>
+	      <th>Player 2</th>
+	      <th>Score</th>
+	      <th>Context</th>
+	      <th>pts evol</th>
+	    </tr>
+
+			{% for id, mat in bestUpsets %}
+				<tr>
+					<td>{{ id+1 }}</td>
+	        <td class="winner-player"><a href="{{ path('player_view', {'id':mat.p1.id}) }}">{{ mat.p1.nameshort }}</a></td>
+	        <td><a href="{{ path('player_view', {'id':mat.p2.id}) }}">{{ mat.p2.nameshort }}</a></td>
+	        <td>{{ mat.score }}</td>
+	        <td>{{ mat.context }}</td>
+	        <td>{{ mat.ptsEvol|number_format(4) }}</td>
+				</tr>
+			{% endfor %}
+		</table>
+	</div>
+
+
 
 	<h3>Best series</h3>
 	<p><i>Players with at least 5 matchs played during the last 60 days</i></p>
