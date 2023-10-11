@@ -622,7 +622,8 @@ class RankingsController extends AbstractController
 	  		$arrRabbits[$rabbit->getIdplayerlast()->getId()]=$detailsPlayer[$rabbit->getIdplayerlast()->getId()]["actual"];
 	  	}
 	  	// sort the array by descending ratings to make sure we can track in the template
-	  	arsort($arrRabbits);
+	  	arsort($arrRabbitsId);
+	  	//arsort($arrRabbits);
 	  }
 	  else {
 	  	$request->getSession()->getFlashBag()->add('error', 'Error selecting rankings ('.$id.')');
