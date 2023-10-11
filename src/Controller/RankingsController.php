@@ -618,12 +618,17 @@ class RankingsController extends AbstractController
 	  	$rabbits=$em->getRepository('App\Entity\Rabbit')->findBy(array("isover" =>false), array('id' => 'DESC'));
 	  	foreach($rabbits as $rabbit){
 	  		//print_r($detailsPlayer[$rabbit->getIdplayerlast()->getId()]);
-	  		$arrRabbitsId[]=$rabbit->getIdplayerlast()->getId();
 	  		$arrRabbits[$rabbit->getIdplayerlast()->getId()]=$detailsPlayer[$rabbit->getIdplayerlast()->getId()]["actual"];
 	  	}
 	  	// sort the array by descending ratings to make sure we can track in the template
-	  	arsort($arrRabbitsId);
-	  	//arsort($arrRabbits);
+	  	arsort($arrRabbits);
+	  	// and then create the Id array, sorted as well
+	  	foreach ($arrRabbits as $rabId => $rabVal) {
+	  		$arrRabbitsId[]=$rabId;
+	
+	  	}
+	  	//print_r($arrRabbits);
+	  	//print_r($arrRabbitsId);
 	  }
 	  else {
 	  	$request->getSession()->getFlashBag()->add('error', 'Error selecting rankings ('.$id.')');
