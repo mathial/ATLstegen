@@ -364,11 +364,11 @@ class RankingsController extends AbstractController
 
 
 	/**
-   * @Route("/rankings/view", name="rankings_view", defaults={"id" = null, "RI" = 0, "AO" = 1})
+   * @Route("/rankings/view", name="rankings_view", defaults={"id" = null, "RI" = 0, "AO" = 1, "RR" = 0})
    * @Route("/rankings/view/{id}", name="rankings_view_id", defaults={"RI" = 0, "AO" = 1})
-   * @Route("/rankings/view/{id}/{RI}/{AO}", name="rankings_view_id_ao")
+   * @Route("/rankings/view/{id}/{RI}/{AO}/{RR}", name="rankings_view_id_ao")
    */
-  public function viewRanking($id=null, $RI=0, $AO=1, Request $request)
+  public function viewRanking($id=null, $RI=0, $AO=1, $RR=0, Request $request)
   {
   	$em = $this->getDoctrine()->getManager();
 
@@ -384,6 +384,7 @@ class RankingsController extends AbstractController
 
   	$activeOnly=$AO;
   	$withRatingIndex=$RI;
+  	$rabbitRange=$RR;
 
 		$arrRank=array();
 		$rankings = $em->getRepository('App\Entity\Ranking')->findBy(array(), array('date' => 'DESC'));
@@ -410,6 +411,11 @@ class RankingsController extends AbstractController
 		   'required' => false,
 		   'data' => ($activeOnly==1 ? true : false)
 		))
+		->add('rabbit_range', CheckboxType::class, array(
+			'label' => "With rabbit range (+/- 75pts to be allowed to challenge a rabbit holder).",
+		   'required' => false,
+		   'data' => ($rabbitRange==1 ? true : false)
+		))
 		->add("Select", SubmitType::class);
 
 		$form = $formBuilder->getForm();
@@ -422,8 +428,9 @@ class RankingsController extends AbstractController
 	      $idRanking=$data['id_ranking'];
 	      $activeOnly=(isset($data['active_only']) && $data['active_only']!="" ? $data['active_only'] : 0);
 	      $withRatingIndex=(isset($data['with_rating_index']) && $data['with_rating_index']!="" ? $data['with_rating_index'] : 0);
+	      $rabbitRange=(isset($data['rabbit_range']) && $data['rabbit_range']!="" ? $data['rabbit_range'] : 0);
 
-	      $url = $this->generateUrl('rankings_view_id_ao', array('id' => $idRanking, 'RI' => $withRatingIndex, 'AO' => $activeOnly));
+	      $url = $this->generateUrl('rankings_view_id_ao', array('id' => $idRanking, 'RI' => $withRatingIndex, 'AO' => $activeOnly, 'RR' => $rabbitRange));
 	      return $this->redirect($url);
 		}	
 		/*elseif ($id<>null) {
@@ -456,6 +463,7 @@ class RankingsController extends AbstractController
   	$arrTotal["ties"]=0;
   	$arrTotal["total"]=0;
   	$arrRabbits=array();
+  	$arrRabbitsId=array();
 
   	if ($ranking && $detailsRankings) {
 
@@ -498,6 +506,7 @@ class RankingsController extends AbstractController
 
 				// best rankings
 				$detailsPlayer[$det->getIdplayer()->getId()]["best"]=$best;
+				$detailsPlayer[$det->getIdplayer()->getId()]["actual"]=$det->getScore();
 				//getBestRating($det->getIdplayer()->getId(), $ranking->getDate()->format("Y-m-d"));
   			
   		}	
@@ -605,13 +614,15 @@ class RankingsController extends AbstractController
 
 			$arrTotal["total"]=$arrTotal["wins"]+$arrTotal["ties"]+$arrTotal["defeats"];
 
-
+			// ORDER BY 
 	  	$rabbits=$em->getRepository('App\Entity\Rabbit')->findBy(array("isover" =>false), array('id' => 'DESC'));
 	  	foreach($rabbits as $rabbit){
-	  		$arrRabbits[]=$rabbit->getIdplayerlast()->getId();
+	  		//print_r($detailsPlayer[$rabbit->getIdplayerlast()->getId()]);
+	  		$arrRabbitsId[]=$rabbit->getIdplayerlast()->getId();
+	  		$arrRabbits[$rabbit->getIdplayerlast()->getId()]=$detailsPlayer[$rabbit->getIdplayerlast()->getId()]["actual"];
 	  	}
-
-//print_r($arrRabbits);
+	  	// sort the array by descending ratings to make sure we can track in the template
+	  	arsort($arrRabbits);
 	  }
 	  else {
 	  	$request->getSession()->getFlashBag()->add('error', 'Error selecting rankings ('.$id.')');
@@ -626,8 +637,10 @@ class RankingsController extends AbstractController
 	    'detailsPlayer' => $detailsPlayer,
 	    'activeOnly' => $activeOnly,
 	    'withRatingIndex' => $withRatingIndex,
+	    'rabbitRange' => $rabbitRange,
 	    'arrTotal' => $arrTotal,
 	    'arrRabbits' => $arrRabbits,
+	    'arrRabbitsId' => $arrRabbitsId,
 	  ]);
 	}
 
