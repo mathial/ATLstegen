@@ -86,3 +86,12 @@ sudo apt install php8.2-xml
 ### COMMANDS ###
 
 php bin/console app:generate-tennis-single-rankings YYYY-MM-DD
+
+
+# DEV
+sudo apt-install mysql-server
+sudo apt-install phpmyadmin
+CREATE DATABASE atlstege;
+sudo mysql atlstege < 2024-02-26.atl-stege.sql 
+CREATE USER 'atlstegen'@'localhost' IDENTIFIED BY 'atlstegen';
+GRANT ALL PRIVILEGES ON atlstege.* TO 'atlstegen'@'localhost' WITH GRANT OPTION;

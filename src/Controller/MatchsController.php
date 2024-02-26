@@ -8,6 +8,7 @@ use \Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use \Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use \Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use \Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use \Symfony\Component\Form\Extension\Core\Type\NumberType;
 use \Symfony\Component\Form\Extension\Core\Type\DateType;
 use \Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -432,6 +433,9 @@ class MatchsController extends Controller
         'choice_label' => 'namerabbit',
         'empty_data' => null,
         'required'   => false
+      ))
+      ->add('ptsevol', NumberType::class, array(
+        'label'    => 'pts evol (if you set to 0, it will be recalculated on the next display of the matchs list page)',
       ));
 
       $formBuilder
