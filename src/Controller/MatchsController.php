@@ -413,6 +413,7 @@ class MatchsController extends Controller
       'required' => true,
     ))
     ->add('conditions', ChoiceType::class, array(
+      'placeholder' => 'Pick an item in the list!',
       'label'    => 'Conditions',
       'choices' => array("hard indoor" => "hard indoor", "clay outdoor" => "clay outdoor"),
       'required'   => true,

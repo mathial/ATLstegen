@@ -144,6 +144,7 @@ class MatchspaddleController extends Controller
 
     $formBuilder
     ->add('context', ChoiceType::class, array(
+      'placeholder' => 'Pick an item in the list!',
       'label'    => 'Context',
       'choices' => array("Stege" => "Stege", "Vinnarbana" => "Vinnarbana", "ATLs Padelstege" => "ATLs Padelstege", "PDL serier" => "PDL serier"),
       'required'   => true,
@@ -158,6 +159,7 @@ class MatchspaddleController extends Controller
       'required' => true,
     ))
     ->add('conditions', ChoiceType::class, array(
+      'placeholder' => 'Pick an item in the list!',
       'label'    => 'Conditions',
       'choices' => array("indoor" => "indoor", "outdoor" => "outdoor"),
       'required'   => true,
