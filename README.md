@@ -88,7 +88,7 @@ sudo apt install php8.2-xml
 php bin/console app:generate-tennis-single-rankings YYYY-MM-DD
 
 
-# DEV
+# DEV (local)
 sudo apt-install mysql-server
 sudo apt-install phpmyadmin
 CREATE DATABASE atlstege;
