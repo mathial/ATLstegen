@@ -400,7 +400,16 @@ class MatchsController extends Controller
     ->add('context', ChoiceType::class, array(
       'placeholder' => 'Pick an item in the list!',
       'label'    => 'CONTEXT (League ? A-series ? Sunday 21-22 ? etc)',
-      'choices' => array("Stege" => "Stege", "Stege (söndag 21-22)" => "Stege (söndag 21-22)", "Division League - Round#11" => "Division League - Round#11", "A-serien" => "A-serien", "Sprinttennis tournament" => "Sprinttennis tournament", "Summer tournament 2023 (august)" => "Summer tournament 2023 (august)", "ATL Klubbmästerskap" => "ATL Klubbmästerskap"),
+      'choices' => array(
+        "Stege" => "Stege", 
+        "Stege (söndag 21-22)" => "Stege (söndag 21-22)", 
+        "Division League - Round#11" => "Division League - Round#11", 
+        "A-serien" => "A-serien", 
+        /*"Summer tournament 2023 (august)" => "Summer tournament 2023 (august)", */
+        "ATL Klubbmästerskap" => "ATL Klubbmästerskap",
+        "Svenska Tennisligan" => "Svenska Tennisligan",
+        "Sprinttennis tournament" => "Sprinttennis tournament"
+      ),
       'required'   => true,
     ))
     ->add('tie', ChoiceType::class, array(
