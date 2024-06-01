@@ -121,7 +121,35 @@ class SiteController extends AbstractController
     }
 
 
+    private function getStackedContextTennisMatches() {
 
+        $em = $this->getDoctrine()->getManager();
+
+
+        $sql='
+        SELECT COUNT(*) as tot,
+            YEAR(date) as yearnum,
+            WEEK(date) as weeknum,
+            context
+        FROM Matchs
+        GROUP BY yearnum, weeknum, context
+        ORDER BY yearnum, weeknum, context
+        ';
+
+        $stmt = $em->getConnection()->prepare($sql);
+        $exec = $stmt->execute();
+        $stackedMatches = $exec->fetchAll();
+
+        $arrMatchesStacked=array();
+
+        foreach ($stackedMatches as $stM) {
+            print_r($stM);
+            if (!isset($arrMatchesStacked["yearnum"]))
+                $arrMatchesStacked["yearnum"]=array();
+            if (!isset($arrMatchesStacked["yearnum"]["weeknum"]))
+                $arrMatchesStacked["yearnum"]["weeknum"]=0;
+        }
+    }
 
 
     private function getBestSeries($minMatchsPlayed=5, $nbDays=60) {
@@ -248,6 +276,16 @@ class SiteController extends AbstractController
     public function tennisSummerTournaments()
     {
         return $this->render('site/summer_tournaments.html.twig', [
+            'controller_name' => 'SiteController',
+        ]);
+    }
+
+    /**
+     * @Route("/summer-tournament-2023", name="summer_longformat_tournament_2023")
+     */
+    public function tennisSummerTournament2023()
+    {
+        return $this->render('site/summer_tournaments_2023.html.twig', [
             'controller_name' => 'SiteController',
         ]);
     }

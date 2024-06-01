@@ -405,7 +405,7 @@ class MatchsController extends Controller
         "Stege (söndag 21-22)" => "Stege (söndag 21-22)", 
         "Division League - Round#12" => "Division League - Round#12", 
         "A-serien" => "A-serien", 
-        /*"Summer tournament 2023 (august)" => "Summer tournament 2023 (august)", */
+        "Summer tournament 2024 (june)" => "Summer tournament 2024 (june)", 
         "ATL Klubbmästerskap" => "ATL Klubbmästerskap",
         "Svenska Tennisligan" => "Svenska Tennisligan",
         "Sprinttennis tournament" => "Sprinttennis tournament"
