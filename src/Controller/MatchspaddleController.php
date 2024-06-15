@@ -51,6 +51,9 @@ class MatchspaddleController extends Controller
       'label'   => 'Date',
       'format' => 'yyyy-MM-dd',
       'widget' => 'single_text',
+      'attr' => [
+        'max' => date('Y-m-d')
+      ]
     ));
 
     // for the new matches, set the user idPlayer as default
