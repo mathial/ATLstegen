@@ -149,7 +149,11 @@ class MatchsdoubleController extends Controller
     ->add('context', ChoiceType::class, array(
       'placeholder' => 'Pick an item in the list!',
       'label'    => 'Context',
-      'choices' => array("Stege" => "Stege", "A-serien" => "A-serien", "Vinnarbana" => "Vinnarbana"),
+      'choices' => array(
+        "Stege" => "Stege", 
+        "A-serien (ATL)" => "A-serien", 
+        "Måndagstennis (LBTK)" => "LBTK-Måndagstennis", 
+        "Vinnarbana" => "Vinnarbana"),
       'required'   => true,
     ))
     ->add('tie', ChoiceType::class, array(
