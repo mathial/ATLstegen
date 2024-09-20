@@ -29,6 +29,7 @@
           <th>T</th>
           <th>D</th>
           <th>Total</th>
+          <th>Win ratio</th>
         </tr>
 
         {% set rank = 1 %}
@@ -67,6 +68,7 @@
               <td>{{ detailsPlayer[det.idplayer.id]["ties"] }}</td>
               <td>{{ detailsPlayer[det.idplayer.id]["defeats"] }}</td>
               <td>{{ detailsPlayer[det.idplayer.id]["wins"] + detailsPlayer[det.idplayer.id]["ties"] + detailsPlayer[det.idplayer.id]["defeats"] }}</td>
+              <td>{{ detailsPlayer[det.idplayer.id]["winratio"] }}</td>
             </tr>
 
             {% set rank = rank + 1 %}
@@ -86,6 +88,7 @@
             <th>{{ arrTotal["ties"] }}</th>
             <th>{{ arrTotal["defeats"] }}</th>
             <th>{{ arrTotal["total"] }}</th>
+            <th>{{ arrTotal["winratio"] }}</th>
           </tr>
         {% endif %}
 

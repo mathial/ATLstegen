@@ -824,7 +824,17 @@ class RankingsdoubleController extends AbstractController
 					$arrTotal["defeats"]+=$defeat["tot"];
 
 				}
+
 			}
+
+			// WIN RATIO
+			foreach($detailsPlayer as $idP => $dataDeatils) {
+				if ($detailsPlayer[$idP]["wins"]+$detailsPlayer[$idP]["defeats"] != 0)
+					$detailsPlayer[$idP]["winratio"]=number_format(100*($detailsPlayer[$idP]["wins"]/($detailsPlayer[$idP]["wins"]+$detailsPlayer[$idP]["defeats"])), 1)."%";
+				else $detailsPlayer[$idP]["winratio"]="-";
+			}
+			$arrTotal["winratio"]=number_format(100*($arrTotal["wins"]/($arrTotal["wins"]+$arrTotal["defeats"])), 1)."%";
+
 
 			$arrTotal["total"]=$arrTotal["wins"]+$arrTotal["ties"]+$arrTotal["defeats"];
 

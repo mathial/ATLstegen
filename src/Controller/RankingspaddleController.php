@@ -323,207 +323,6 @@ class RankingspaddleController extends AbstractController
 	      $based_ranking_date = $rankingBase->getDate()->format("Y-m-d");
       }
 
-      /*
-      if ($based_ranking!="init") {
-      	$rankingpaddle = $em->getRepository('App\Entity\Rankingpaddle')->findOneBy(array("id" => $based_ranking));
-
-      	if($generate_ranking==1) {
-
-					// check if a ranking exist at that date
-					$sql = '
-				    SELECT * FROM RankingPaddle WHERE date = :date
-				    ';
-				  $stmt = $em->getConnection()->prepare($sql);
-					$exec = $stmt->execute(['date' => $date_from->format("Y-m-d")]);
-					if ($rankingExist = $stmt->fetchAll()) {
-
-						// delete all the pos 
-						$sql = '
-				    DELETE FROM RankingPosPaddle WHERE idRanking = :idR
-				    ';
-						$stmt = $em->getConnection()->prepare($sql);
-						$nbDeletes = $stmt->execute(['idR' => $rankingExist[0]["id"]]);
-						if ($nbDeletes>0) {
-							$request->getSession()->getFlashBag()->add('info',  $stmt->rowCount().' RankingPosPadel deleted ('.$date_from->format("Y-m-d").' // id#'.$rankingExist[0]["id"].').');
-						}
-
-						// and then delete the rankings
-						$sql = '
-				    DELETE FROM RankingDouble WHERE id = :idR
-				    ';
-						$stmt = $em->getConnection()->prepare($sql);
-						$nbDeletes = $stmt->execute(['idR' => $rankingExist[0]["id"]]);
-						if ($nbDeletes>0) {
-							$request->getSession()->getFlashBag()->add('info', 'RankingPadel deleted ('.$date_from->format("Y-m-d").' // id#'.$rankingExist[0]["id"].').');
-						}
-
-					}
-					
-	      }
-
-
-      }
-
-      $sql = '
-		    SELECT DISTINCT idPlayer1 FROM MatchsPaddle WHERE date <= :date
-		    ';
-			$stmt = $em->getConnection()->prepare($sql);
-			$exec = $stmt->execute(['date' => $date_from->format("Y-m-d")]);
-			$players1 = $exec->fetchAll();
-			
-			$sql = '
-		    SELECT DISTINCT idPlayer2 FROM MatchsPaddle WHERE date <= :date
-		    ';
-			$stmt = $em->getConnection()->prepare($sql);
-			$exec = $stmt->execute(['date' => $date_from->format("Y-m-d")]);
-			$players2 = $exec->fetchAll();
-
-			$sql = '
-		    SELECT DISTINCT idPlayer3 FROM MatchsPaddle WHERE date <= :date
-		    ';
-			$stmt = $em->getConnection()->prepare($sql);
-			$exec = $stmt->execute(['date' => $date_from->format("Y-m-d")]);
-			$players3 = $exec->fetchAll();
-
-			$sql = '
-		    SELECT DISTINCT idPlayer4 FROM MatchsPaddle WHERE date <= :date
-		    ';
-			$stmt = $em->getConnection()->prepare($sql);
-			$exec = $stmt->execute(['date' => $date_from->format("Y-m-d")]);
-			$players4 = $exec->fetchAll();
-			
-			
-		  if ($based_ranking!="init") {
-		  	$sql = ' SELECT id, idPlayer1, idPlayer2, idPlayer3, idPlayer4, tie FROM MatchsPaddle WHERE date < :date AND date>= :date_based ';
-		  	$stmt = $em->getConnection()->prepare($sql);
-				$exec = $stmt->execute(['date' => $date_from->format("Y-m-d"), 'date_based' => $rankingpaddle->getDate()->format("Y-m-d")]);
-		  }
-		  else {
-		  	$sql = 'SELECT id, idPlayer1, idPlayer2, idPlayer3, idPlayer4, tie FROM MatchsPaddle WHERE date < :date';
-		  	$stmt = $em->getConnection()->prepare($sql);
-				$exec = $stmt->execute(['date' => $date_from->format("Y-m-d")]);
-		  }
-			
-			$matchs = $exec->fetchAll();
-
-			$arrPlayers=array();
-			$arrPlayersDisplay=array();
-
-			foreach ($players1 as $row) {
-				$arrPlayers[]=$row["idPlayer1"];
-			}
-			foreach ($players2 as $row) {
-				$arrPlayers[]=$row["idPlayer2"];
-			}
-			foreach ($players3 as $row) {
-				$arrPlayers[]=$row["idPlayer3"];
-			}
-			foreach ($players4 as $row) {
-				$arrPlayers[]=$row["idPlayer4"];
-			}
-
-			$elo = new EloRatingSystem(100, 50);
-
-			foreach($arrPlayers as $pId) {
-				$player = $em->getRepository('App\Entity\Player')->findOneBy(array("id" => $pId));
-				$arrPlayersDisplay[$pId]=$player->getNameshort();
-
-				// get the ranking expected
-				if ($based_ranking=="init") {
-					$basedRate[$pId]=$player->getInitialRatingPaddle();
-				}
-				else {
-					$rankPos = $em->getRepository('App\Entity\Rankingpospaddle')->findOneBy(array("idrankingpaddle" => $based_ranking, "idplayer" => $player->getId()));
-					if ($rankPos) {
-						$basedRate[$pId] = $rankPos->getScore();
-					}
-					else {
-						$basedRate[$pId] = $player->getInitialRatingPaddle();
-						//echo "RIEN".$based_ranking."/".$player->getId()." - ".$basedRate[$pId]."<br>";
-					}
-				}
-
-				$elo->addCompetitor(new EloCompetitor($player->getId(), $player->getNameshort(), $basedRate[$pId]));
-			}
-			
-			foreach($matchs as $m) {
-				if ($m["tie"]==1) $tie=true;
-				else $tie=false;
-
-				//$elo->addResultDouble($m["idPlayer1"], $m["idPlayer2"], $m["idPlayer3"], $m["idPlayer4"], $tie);
-
-				$elo->addResultDouble(
-			    		array("id" => $m["idPlayer1"], "rating" => $basedRate[$m["idPlayer1"]]), 
-			    		array("id" => $m["idPlayer2"], "rating" => $basedRate[$m["idPlayer2"]]), 
-			    		array("id" => $m["idPlayer3"], "rating" => $basedRate[$m["idPlayer3"]]), 
-			    		array("id" => $m["idPlayer4"], "rating" => $basedRate[$m["idPlayer4"]]), 
-			    		$tie
-			    	);
-
-			}
-
-			$elo->updateRatings();
-
-		  $tabRank = $elo->getRankings();
-
-		  if ($generate_ranking==1) {
-
-				$rankingpaddle=new Rankingpaddle();
-				$rankingpaddle->setDate($date_from);
-				$rankingpaddle->setDategeneration(new \DateTime(date("Y-m-d H:i:s")));
-
-				$em->persist($rankingpaddle);
-        $em->flush();
-        $request->getSession()->getFlashBag()->add('success', 'Rankingpaddle created');
-		  }
-
-		  $iR = 0;
-		  $oldR=0;
-		  $pos=0;
-		  foreach ($tabRank as $idName => $val) {
-		  	$iR++;
-		    $row=array();
-		    $expl_rank=explode("#", $idName);
-
-		    if ($oldR!=$val) {
-		    	$pos=$iR;
-		    }
-
-		    $row["id"]=$expl_rank[0];
-		    $row["rank"]=$pos;
-		    $row["name"]=$expl_rank[1];
-		    $row["rating"]=$val;
-
-		    $arrRankFinal[]=$row;
-
-		    if ($generate_ranking==1) {
-		    	$rankingpaddle_pos = new Rankingpospaddle();
-		    	$player = $em->getRepository('App\Entity\Player')->findOneBy(array("id" => $expl_rank[0]));
-		    	
-		    	$rankingpaddle_pos->setIdrankingpaddle($rankingpaddle);
-		    	$rankingpaddle_pos->setIdplayer($player);
-		    	$rankingpaddle_pos->setPosition($pos);
-		    	$rankingpaddle_pos->setScore($val);
-
-					$em->persist($rankingpaddle_pos);
-		    }
-
-		    $oldR=$val;
-		  }
-
-			if ($generate_ranking==1) {
-
-				foreach($matchs as $m) {
-					$match = $em->getRepository('App\Entity\Matchspaddle')->findOneBy(array("id" => $m["id"]));
-					$match->setIdrankingpaddle($rankingpaddle->getId());
-					$em->persist($match);
-				}
-
-       	$em->flush();
-			}
-
-			*/
-
 
 			$arrResults = $this->calculateRankings ($em, $date_from, $generate_ranking, $based_ranking);
       if (isset($arrResults["messages"])) {
@@ -789,6 +588,15 @@ class RankingspaddleController extends AbstractController
 
 				}
 			}
+
+			// WIN RATIO
+			foreach($detailsPlayer as $idP => $dataDeatils) {
+				if ($detailsPlayer[$idP]["wins"]+$detailsPlayer[$idP]["defeats"] != 0)
+					$detailsPlayer[$idP]["winratio"]=number_format(100*($detailsPlayer[$idP]["wins"]/($detailsPlayer[$idP]["wins"]+$detailsPlayer[$idP]["defeats"])), 1)."%";
+				else $detailsPlayer[$idP]["winratio"]="-";
+			}
+			$arrTotal["winratio"]=number_format(100*($arrTotal["wins"]/($arrTotal["wins"]+$arrTotal["defeats"])), 1)."%";
+
 
 			$arrTotal["total"]=$arrTotal["wins"]+$arrTotal["ties"]+$arrTotal["defeats"];
 

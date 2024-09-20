@@ -553,7 +553,7 @@ class RankingsController extends AbstractController
 				}
 				if (!isset($detailsPlayer[$tie["idPlayer1"]]["defeats"])) {
 					$detailsPlayer[$tie["idPlayer1"]]["defeats"]=0;
-				}
+			}
 
 				$arrTotal["ties"]+=$tie["tot"];
 
@@ -613,6 +613,15 @@ class RankingsController extends AbstractController
 			}
 
 			$arrTotal["total"]=$arrTotal["wins"]+$arrTotal["ties"]+$arrTotal["defeats"];
+
+
+			// WIN RATIO
+			foreach($detailsPlayer as $idP => $dataDeatils) {
+				if ($detailsPlayer[$idP]["wins"]+$detailsPlayer[$idP]["defeats"] != 0)
+					$detailsPlayer[$idP]["winratio"]=number_format(100*($detailsPlayer[$idP]["wins"]/($detailsPlayer[$idP]["wins"]+$detailsPlayer[$idP]["defeats"])), 1)."%";
+				else $detailsPlayer[$idP]["winratio"]="-";
+			}
+			$arrTotal["winratio"]=number_format(100*($arrTotal["wins"]/($arrTotal["wins"]+$arrTotal["defeats"])), 1)."%";
 
 			// ORDER BY 
 	  	$rabbits=$em->getRepository('App\Entity\Rabbit')->findBy(array("isover" =>false), array('id' => 'DESC'));
