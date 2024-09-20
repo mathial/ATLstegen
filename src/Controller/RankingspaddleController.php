@@ -592,10 +592,10 @@ class RankingspaddleController extends AbstractController
 			// WIN RATIO
 			foreach($detailsPlayer as $idP => $dataDeatils) {
 				if ($detailsPlayer[$idP]["wins"]+$detailsPlayer[$idP]["defeats"] != 0)
-					$detailsPlayer[$idP]["winratio"]=number_format(100*($detailsPlayer[$idP]["wins"]/($detailsPlayer[$idP]["wins"]+$detailsPlayer[$idP]["defeats"])), 1)."%";
-				else $detailsPlayer[$idP]["winratio"]="-";
+					$detailsPlayer[$idP]["loseratio"]=number_format(100*($detailsPlayer[$idP]["defeats"]/($detailsPlayer[$idP]["wins"]+$detailsPlayer[$idP]["ties"]+$detailsPlayer[$idP]["defeats"])), 1)."%";
+				else $detailsPlayer[$idP]["loseratio"]="-";
 			}
-			$arrTotal["winratio"]=number_format(100*($arrTotal["wins"]/($arrTotal["wins"]+$arrTotal["defeats"])), 1)."%";
+			$arrTotal["loseratio"]="";
 
 
 			$arrTotal["total"]=$arrTotal["wins"]+$arrTotal["ties"]+$arrTotal["defeats"];
