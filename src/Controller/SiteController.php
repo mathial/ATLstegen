@@ -109,7 +109,7 @@ class SiteController extends AbstractController
 //            $line["nameP1"]=$mat->getIdplayer1()->getNameshort();
 //            $line["nameP2"]=$mat->getIdplayer2()->getNameshort();
             $line["date"]=$mat->getDate()->format("Y-m-d");
-            $line["score"]=$mat->getDate()->format("Y-m-d");
+            $line["score"]=$mat->getScore();
             $line["context"]=$mat->getContext();
             $line["conditions"]=$mat->getConditions();
             $line["ptsEvol"]=$mat->getPtsevol();
