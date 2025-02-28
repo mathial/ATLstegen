@@ -209,7 +209,9 @@ class MatchsController extends Controller
         //echo "function calculateEvol :".$this->calculateEvol($mat["id"])."<br>";
         //echo "stored evol :".$arrMEvol[$mat["id"]]."<br>";
 
-        if (number_format($this->calculateEvol($mat["id"]), 1)!=$arrMEvol[$mat["id"]]) echo "ERROR!".$mat["id"]." : ".$this->calculateEvol($mat["id"])."/".$arrMEvol[$mat["id"]]."<br>";
+        if ($this->getUser()!== NULL && in_array('ROLE_ADMIN', $this->getUser()->getRoles(), true)) {
+          if (number_format($this->calculateEvol($mat["id"]), 1)!=$arrMEvol[$mat["id"]]) echo "ERROR!".$mat["id"]." : ".$this->calculateEvol($mat["id"])."/".$arrMEvol[$mat["id"]]."<br>";
+        }
       }
       else {
 
