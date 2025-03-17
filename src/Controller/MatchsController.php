@@ -408,7 +408,7 @@ class MatchsController extends Controller
       'choices' => array(
         "Stege" => "Stege", 
         "Stege (söndag 21-22)" => "Stege (söndag 21-22)", 
-        "Division League - Round#15" => "Division League - Round#15", 
+        "Division League - Round#16" => "Division League - Round#16", 
         "A-serien (ATL)" => "A-serien", 
         "Måndagstennis (LBTK)" => "LBTK-Måndagstennis", 
         /*"Summer tournament 2024 (august)" => "Summer tournament 2024 (august)", */
