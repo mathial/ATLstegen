@@ -411,7 +411,7 @@ class MatchsController extends Controller
         "Division League - Round#16" => "Division League - Round#16", 
         "A-serien (ATL)" => "A-serien", 
         "Måndagstennis (LBTK)" => "LBTK-Måndagstennis", 
-        /*"Summer tournament 2024 (august)" => "Summer tournament 2024 (august)", */
+        "Summer tournament 2025 (JUNE)" => "Summer tournament 2025 (JUNE)",
         "ATL Klubbmästerskap" => "ATL Klubbmästerskap",
         "Svenska Tennisligan" => "Svenska Tennisligan",
         "Sprinttennis tournament" => "Sprinttennis tournament"
