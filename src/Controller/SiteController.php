@@ -311,7 +311,7 @@ class SiteController extends AbstractController
     }
 
     /**
-     * @Route("/longformat-tournament-2021", name="longformat_tournament_2021")
+     * @Route("/summer-longformat-tournament-2021", name="summer_longformat_tournament_2021")
      */
     public function tennisLongFormatTournament2021()
     {

@@ -411,7 +411,7 @@ class MatchsController extends Controller
         "Division League - Round#16" => "Division League - Round#16", 
         "A-serien (ATL)" => "A-serien", 
         "Måndagstennis (LBTK)" => "LBTK-Måndagstennis", 
-        "Summer tournament 2025 (JUNE)" => "Summer tournament 2025 (JUNE)",
+        "Summer tournament 2025 (june)" => "Summer tournament 2025 (june)",
         "ATL Klubbmästerskap" => "ATL Klubbmästerskap",
         "Svenska Tennisligan" => "Svenska Tennisligan",
         "Sprinttennis tournament" => "Sprinttennis tournament"
@@ -1269,10 +1269,8 @@ class MatchsController extends Controller
 
     $context="";
 
-    if ($year=="2021") $context="Longformat tournament ".$year;
-    else {
-      $context="Summer tournament ".$year;
-    }
+    $context="Summer tournament ".$year;
+
     $dql   = 'SELECT m FROM App\Entity\Matchs m WHERE m.context LIKE :context ORDER BY m.date DESC';
     $query = $em->createQuery($dql)
             ->setParameter('context', $context."%");;
