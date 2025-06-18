@@ -32,7 +32,7 @@
           <td>{{ match.context }}</td>
           <td class="cond-{{ match.conditions|replace({' ': ''}) }}">{{ match.conditions }}</td>
           <td>{% if match.ptsEvol >0  %}+{% endif %}
-          {{ match.ptsEvol | round(1, 'floor') }}</td>
+          {{ match.ptsEvol | number_format(1) }}</td>
         </tr>
       {% endfor %}
     </table>
