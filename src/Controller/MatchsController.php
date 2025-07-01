@@ -412,6 +412,7 @@ class MatchsController extends Controller
         "A-serien (ATL)" => "A-serien", 
         "Måndagstennis (LBTK)" => "LBTK-Måndagstennis", 
         "Summer tournament 2025 (june)" => "Summer tournament 2025 (june)",
+        "Summer tournament 2025 (july)" => "Summer tournament 2025 (july)",
         "ATL Klubbmästerskap" => "ATL Klubbmästerskap",
         "Svenska Tennisligan" => "Svenska Tennisligan",
         "Sprinttennis tournament" => "Sprinttennis tournament"
