@@ -411,11 +411,13 @@ class RankingsController extends AbstractController
 		   'required' => false,
 		   'data' => ($activeOnly==1 ? true : false)
 		))
+		/*
 		->add('rabbit_range', CheckboxType::class, array(
 			'label' => "With rabbit range (+/- 75pts to be allowed to challenge a rabbit holder).",
 		   'required' => false,
 		   'data' => ($rabbitRange==1 ? true : false)
 		))
+		*/
 		->add("Select", SubmitType::class);
 
 		$form = $formBuilder->getForm();
