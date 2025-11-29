@@ -271,6 +271,16 @@ class SiteController extends AbstractController
     }
 
     /**
+     * @Route("/summer-tournaments", name="generation_matchup")
+     */
+    public function tennisGenerationMatchup()
+    {
+        return $this->render('site/generation_matchup.html.twig', [
+            'controller_name' => 'SiteController',
+        ]);
+    }
+
+    /**
      * @Route("/summer-tournaments", name="summer_tournaments")
      */
     public function tennisSummerTournaments()

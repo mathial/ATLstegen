@@ -1257,6 +1257,38 @@ class MatchsController extends Controller
 
   /**
    * @Route(
+   * "/matchs/listMatchsGenerationMatchup/{maxpage}/{page}", 
+   * name="matchs_generation_matchup", 
+   * requirements={
+   *   "maxpage"="\d+", 
+   *   "page"="\d+" 
+   * })
+   */
+  public function listMatchsGenerationMatchup($maxpage, $page, Request $request)
+  {
+    $em = $this->getDoctrine()->getManager();
+
+    $context="Generation Matchup";
+
+    $dql   = 'SELECT m FROM App\Entity\Matchs m WHERE m.context LIKE :context ORDER BY m.date DESC';
+    $query = $em->createQuery($dql)
+            ->setParameter('context', $context."%");;
+
+    $paginator  = $this->get('knp_paginator');
+
+    $listMatchs = $paginator->paginate(
+      $query, 
+      $request->query->getInt('page', 1),
+      $maxpage
+    );
+
+    return $this->render('site/matchs_list_generation_matchup.html.twig', array("listMatchs" => $listMatchs));
+    
+  }
+
+
+  /**
+   * @Route(
    * "/matchs/listMatchsLongTournament/{year}/{maxpage}/{page}", 
    * name="matchs_list_longtournament", 
    * requirements={
@@ -1268,8 +1300,6 @@ class MatchsController extends Controller
   public function listMatchsLongTournament($year, $maxpage, $page, Request $request)
   {
     $em = $this->getDoctrine()->getManager();
-
-    $context="";
 
     $context="Summer tournament ".$year;
 

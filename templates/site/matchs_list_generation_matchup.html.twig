@@ -1,0 +1,41 @@
+{% extends "common/layout.html.twig" %}
+
+{% block body %}
+
+  <h3>List Matchs of the Generation Matchups  - ({{ listMatchs|length }}) </h3>
+
+  <div class="table-responsive">
+    <table class="table">
+      <tr>
+        {# <th>{{ knp_pagination_sortable(listMatchs, '#', 'm.id') }}</th> #}
+        <th>{{ knp_pagination_sortable(listMatchs, 'Date', 'm.date') }}</th>
+        <th>Player1</th>
+        <th>Player2</th>
+        <th>Score</th>
+        <th>{{ knp_pagination_sortable(listMatchs, 'Context', 'm.context') }}</th>
+        <th>{{ knp_pagination_sortable(listMatchs, 'Conditions', 'm.conditions') }}</th>
+        <th>Pts evol</th>
+      </tr>
+
+      {% for match in listMatchs %}
+        <tr>
+          {# <td>{{ match.id }}</td> #}
+          <td>{{ match.date|date("Y-m-d") }}</td>
+          {% if match.tie!=1 %}
+            <td class="winner-player">
+          {% else %}
+            <td>
+          {% endif %}
+          <a href="{{ path('player_view', {'id':match.idplayer1.id}) }}">{{ match.idplayer1.nameshort }}</a></td>
+          <td><a href="{{ path('player_view', {'id':match.idplayer2.id}) }}">{{ match.idplayer2.nameshort }}</a></td>
+          <td>{{ match.score }}</td>
+          <td>{{ match.context }}</td>
+          <td class="cond-{{ match.conditions|replace({' ': ''}) }}">{{ match.conditions }}</td>
+          <td>{% if match.ptsEvol >0  %}+{% endif %}
+          {{ match.ptsEvol | number_format(1) }}</td>        </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+{% endblock %}
+

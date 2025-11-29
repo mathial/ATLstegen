@@ -152,6 +152,7 @@ class MatchsdoubleController extends Controller
       'choices' => array(
         "Stege" => "Stege", 
         "A-serien (ATL)" => "A-serien", 
+        "Generation Matchup" => "Generation Matchup",
         "Måndagstennis (LBTK)" => "LBTK-Måndagstennis", 
         "Vinnarbana" => "Vinnarbana"),
       'required'   => true,
