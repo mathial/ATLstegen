@@ -414,6 +414,7 @@ class MatchsController extends Controller
         "Summer tournament 2025 (august)" => "Summer tournament 2025 (august)",
         "Summer tournament 2025 (july)" => "Summer tournament 2025 (july)",
         "ATL Klubbmästerskap" => "ATL Klubbmästerskap",
+        "Generation Matchup" => "Generation Matchup",
         "Svenska Tennisligan" => "Svenska Tennisligan",
         "Sprinttennis tournament" => "Sprinttennis tournament"
       ),
