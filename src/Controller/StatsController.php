@@ -60,10 +60,14 @@ class StatsController extends Controller
     $formBuilder = $this->createFormBuilder();
 
     $list2ndParam=array();
-    if ($stat=="nbmatchscontext")
+    if ($stat=="nbmatchscontext") {
+      $label = "Context";
       $list2ndParam=$this->getContexts();
-    elseif ($stat=="nbmatchscondition")
+    }
+    elseif ($stat=="nbmatchscondition") {
+      $label = "Context";
       $list2ndParam=$this->getConditions();
+    }
 
     $formBuilder
     ->add('stat', ChoiceType::class, array(
@@ -77,7 +81,7 @@ class StatsController extends Controller
       'data' => $stat
     ))
     ->add('scdparam', ChoiceType::class, [
-      'label'    => 'AAAA',
+      'label'    => $label,
       'choices' => array_combine(array_values($list2ndParam), array_keys($list2ndParam)),
       'data' => $scdparam
     ])

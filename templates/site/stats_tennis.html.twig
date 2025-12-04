@@ -4,14 +4,14 @@
 
 {% block body %}
 
-  <h3>STATS</h3>
+  <h3>Some statistics...</h3>
 
   <div class="form">
     {{ form(form) }}
   </div>
 
 
-  <h3>{{ stat }}</h3>
+  
 
   <div><i>{{ desc }}</i></div>
 
@@ -33,7 +33,7 @@
           {% for yr in years %}
             <td>{{ playersStat[iP][yr] }}</td>
           {% endfor %}
-          <td>{{ playersStat[iP].tot }}</td>
+          <th>{{ playersStat[iP].tot }}</th>
         </tr>
       {% endfor %}
     </table>
