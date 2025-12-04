@@ -41,7 +41,7 @@ class SiteController extends AbstractController
                         "Division League" => array("alltime" => 0), 
                         "Stegen Slutspel" => array("alltime" => 0), 
                         "TOTAL" => array("alltime" => 0));*/
-        $finalNbM=array();
+        $finalNbM=array("TOTAL" => $initYears);
 
         foreach($nbmatchs as $nbm) {
 
@@ -66,6 +66,9 @@ class SiteController extends AbstractController
             $finalNbM[$contextIndex][$nbm["yr"]]+=$nbm["nbM"];
          
             $finalNbM[$contextIndex]["alltime"]+=$nbm["nbM"];
+
+            $finalNbM["TOTAL"][$nbm["yr"]]+=$nbm["nbM"];
+            $finalNbM["TOTAL"]["alltime"]+=$nbm["nbM"];
 
         }
 //print_r($finalNbM);
