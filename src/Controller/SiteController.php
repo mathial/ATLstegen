@@ -11,6 +11,68 @@ use App\Entity\Rankingpos;
 
 class SiteController extends AbstractController
 {
+    private function getYears() {
+        $years=array();
+        for ($iY=2017;$iY<=date("Y");$iY++) {
+          $years[]=$iY;
+        }
+        return $years;
+    }
+    private function getGenericSats() {
+
+        $em = $this->getDoctrine()->getManager();
+
+        $sql='SELECT COUNT(*) AS nbM, context, YEAR(date) as yr FROM Matchs
+              GROUP BY YEAR(date), context' ;
+
+        $stmt = $em->getConnection()->prepare($sql);
+        $exec = $stmt->execute();
+        $nbmatchs = $exec->fetchAll();
+
+        $years=$this->getYears();
+
+        $initYears=array();
+        foreach($years as $yr){
+            $initYears[$yr]=0;
+        }
+        $initYears["alltime"]=0;
+
+        /*$finalNbM=array("Summer tournament" => array("alltime" => 0), 
+                        "Division League" => array("alltime" => 0), 
+                        "Stegen Slutspel" => array("alltime" => 0), 
+                        "TOTAL" => array("alltime" => 0));*/
+        $finalNbM=array();
+
+        foreach($nbmatchs as $nbm) {
+
+            if (strpos($nbm["context"], "Summer tournament") !== false) {
+                $contextIndex="Summer tournament";
+            }
+            elseif (strpos($nbm["context"], "Division League") !== false) {
+                $contextIndex="Division League";
+            }
+            elseif (strpos($nbm["context"], "Stegen Slutspel") !== false) {
+                $contextIndex="Stegen Slutspel";
+            }
+            else { 
+                $contextIndex=$nbm["context"];
+            }
+//print_r($nbm);
+
+            if (!isset($finalNbM[$contextIndex])) {
+                $finalNbM[$contextIndex]=$initYears;
+            }
+
+            $finalNbM[$contextIndex][$nbm["yr"]]+=$nbm["nbM"];
+         
+            $finalNbM[$contextIndex]["alltime"]+=$nbm["nbM"];
+
+        }
+//print_r($finalNbM);
+        return $finalNbM;
+    }
+
+
 
     private function getTopLastTennisPerf($nbMax=3) {
 
@@ -232,16 +294,22 @@ class SiteController extends AbstractController
      */
     public function indexTennis()
     {   
+        $years=$this->getYears();
+
         $rtTopLast=$this->getTopLastTennisPerf();
 
         $rtBestUpsets=$this->getBestUpsets(30);
 
         $rtSeries=$this->getBestSeries();
 
+        $rtGenericStats=$this->getGenericSats();
+
 //print_r($rtSeries);
 
         return $this->render('site/tennis_index.html.twig', [
             'controller_name' => 'SiteController',
+            'years' => $years,
+            'genericStats' => $rtGenericStats,
             'top3TennisPerf' => $rtTopLast["top"],
             'last3TennisPerf' => $rtTopLast["last"],
             'bestUpsets' => $rtBestUpsets,

@@ -3,6 +3,36 @@
 {% block body %}
   <h1>Tennis homepage</h1>
 
+  <h3>Big figures</h3>
+
+  <p><i>Total number of single matches per context och per year</i></p>
+
+  <div class="table-responsive">
+	  <table class="table">
+	    <tr>
+	      <th>Context</th>
+        {% for yr in years %}
+          <th>{{ yr }}</th>
+        {% endfor %}
+ 	      <th>TOTAL</th>
+	    </tr>
+
+	    {% set rank = 1 %}
+			{% for context,valYr in genericStats %}
+				<tr>
+	        <th>{{ context }}</th>
+	        {% for yr in years %}
+	          <td>{{ valYr[yr] }}</td>
+	        {% endfor %}
+        	<th>{{ valYr.alltime }}</th>
+
+				</tr>
+
+				{% set rank = rank + 1 %}
+			{% endfor %}
+		</table>
+	</div>  
+
   <h3>Primary targets for next week!</h3>
   <p><i>Top 3 players of the week</i></p>
   <div class="table-responsive">
