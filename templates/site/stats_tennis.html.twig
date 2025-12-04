@@ -1,0 +1,43 @@
+{% form_theme form 'bootstrap/bootstrap_4_layout.html.twig' %}
+
+{% extends "common/layout.html.twig" %}
+
+{% block body %}
+
+  <h3>STATS</h3>
+
+  <div class="form">
+    {{ form(form) }}
+  </div>
+
+
+  <h3>{{ stat }}</h3>
+
+  <div><i>{{ desc }}</i></div>
+
+  <br><br>
+
+  <div class="table-responsive">
+    <table class="table">
+      <tr>
+        <th>Player</th>
+        {% for yr in years %}
+          <th>{{ yr }}</th>
+        {% endfor %}
+        <th>TOT</th>
+      </tr>
+
+      {% for iP,player in playersStatSort %}
+        <tr>
+          <td><a href="{{ path('player_view', {'id':iP}) }}">{{ playersStat[iP].name }}</a></td>
+          {% for yr in years %}
+            <td>{{ playersStat[iP][yr] }}</td>
+          {% endfor %}
+          <td>{{ playersStat[iP].tot }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+{% endblock %}
+
