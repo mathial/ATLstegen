@@ -41,6 +41,8 @@ class StatsController extends Controller
       "atlklubbmasterskap" => "ATL Klubbmästerskap",
       "generationMatchup" => "Generation Matchup",
       "svenskaTennisligan" => "Svenska Tennisligan",
+      "stegenslutspel" => "Stegen Slutspel %",
+      "knutspel" => "Knutspelen %",
       "sprinttennistournament" => "Sprinttennis tournament" 
     );
     return $contexts;
@@ -139,7 +141,7 @@ class StatsController extends Controller
       if ($scdparam!="all")
         $where=" WHERE context LIKE '".$list2ndParam[$scdparam]."'";
     }
-    elseif ($stat=="nbmatchscondition" && $scdparam!="all") {
+    elseif ($stat=="nbmatchscondition") {
       $desc="Players who played the most single matches through history. You can pick the conditions.";
       if ($scdparam!="all")
         $where=" WHERE conditions LIKE '".$list2ndParam[$scdparam]."'";
