@@ -29,30 +29,57 @@ use App\Entity\Rabbit;
 class StatsController extends Controller
 {
 
+  function getContexts() {
+    $contexts=array(
+      "all" => "all", 
+      "stege" => "Stege", 
+      "stegesondag2122" => "Stege (söndag 21-22)", 
+      "divisionleague" => "Division League %", 
+      "aserien" => "A-serien", 
+      "lbtkmandagstennis" => "LBTK-Måndagstennis", 
+      "summertournaments" => "Summer tournament %",
+      "atlklubbmasterskap" => "ATL Klubbmästerskap",
+      "generationMatchup" => "Generation Matchup",
+      "svenskaTennisligan" => "Svenska Tennisligan",
+      "sprinttennistournament" => "Sprinttennis tournament" 
+    );
+    return $contexts;
+  }
 
-  function getFormStats($stat, $year) {
+  function getConditions() {
+    $conditions=array(
+      "all" => "all", 
+      "hardindoor" => "hard indoor", 
+      "clayoutdoor" => "clay outdoor"
+    );
+    return $conditions;
+  }
+
+  function getFormStats($stat, $scdparam) {
 
     $formBuilder = $this->createFormBuilder();
 
-    $years=array("all-time");
-    for ($iY=2017;$iY<=date("Y");$iY++) {
-      $years[]=$iY;
-    }
+    $list2ndParam=array();
+    if ($stat=="nbmatchscontext")
+      $list2ndParam=$this->getContexts();
+    elseif ($stat=="nbmatchscondition")
+      $list2ndParam=$this->getConditions();
 
     $formBuilder
     ->add('stat', ChoiceType::class, array(
       'placeholder' => 'Pick an item in the list!',
       'label'    => '',
       'choices' => array(
-        "Number of matches played per players" => "nbmatchs", 
+        "Number of matches played per players (context)" => "nbmatchscontext", 
+        "Number of matches played per players (conditions)" => "nbmatchscondition", 
       ),
       'required'   => true,
       'data' => $stat
     ))
-    ->add('year', ChoiceType::class, [
-      'label'    => '',
-      'choices' => array_combine($years, $years),
-      'data' => $year
+    ->add('scdparam', ChoiceType::class, [
+      'label'    => 'AAAA',
+      'choices' => array_combine(array_values($list2ndParam), array_keys($list2ndParam)),
+      'data' => $scdparam
     ])
     ->add('go', SubmitType::class, array('label' => 'Go!'));
 
@@ -64,24 +91,29 @@ class StatsController extends Controller
 
   /**
    * @Route(
-   * "/stats/{stat}/{year}", 
+   * "/stats/{stat}/{scdparam}", 
    * name="stats_tennis", 
    * requirements={
    *   "stat"="[A-Za-z0-9\-]+", 
-   *   "year"="[A-Za-z0-9\-]+"
+   *   "scdparam"="[A-Za-z0-9\-]+"
    * })
    */
-  public function calculateStats($stat, $year, Request $request)
+  public function calculateStats($stat, $scdparam, Request $request)
   {
-    //if (is_null($stat)) 
-      $stat="nbmatchs";
-    if (is_null($year)) 
-      $year="all-time";
+    if (is_null($stat)) 
+      $stat="nbmatchscontext";
+    if (is_null($scdparam)) 
+      $scdparam="all";
 
     $maxpage=100;
     $desc="";
-    
-    $form = $this->getFormStats($stat, $year);
+
+    if ($stat=="nbmatchscontext")
+      $list2ndParam=$this->getContexts();
+    elseif ($stat=="nbmatchscondition")
+      $list2ndParam=$this->getConditions();
+
+    $form = $this->getFormStats($stat, $scdparam);
 
     $form->handleRequest($request);
 
@@ -89,65 +121,70 @@ class StatsController extends Controller
       $data = $form->getData();
 
       $stat=$data['stat'];
-      $year=$data['year'];
+      $scdparam=$data['scdparam'];
 
-      $url = $this->generateUrl('stats_tennis', array('stat' => $stat, 'year' => $year));
+      $url = $this->generateUrl('stats_tennis', array('stat' => $stat, 'scdparam' => $scdparam));
       return $this->redirect($url);
     } 
 
+    $desc="";
+    $where="";
 
-    if ($stat=="nbmatchs"){
-      $desc="Players who played the most matches through history. You can pick all-time (since 2017) or a specific year.";
-      $where="";
-      if ($year!="all-time" && is_numeric($year) && $year>=2010)
-        $where=" WHERE YEAR(date)=".$year;
-
-      $em = $this->getDoctrine()->getManager();
-
-      // get all the matches played per year
-      $sql   = 'SELECT SUM(nbM) as totM, idP, P.nameShort, yr from(
-                  SELECT count(*) as nbM, idPlayer1 as idP, YEAR(date) as yr FROM `Matchs` '.$where.' GROUP BY idPlayer1, YEAR(date) 
-                  union
-                  SELECT count(*) as nbM, idPlayer2 as idP, YEAR(date) as yr FROM `Matchs` '.$where.' GROUP BY idPlayer2, YEAR(date) 
-                ) as cm, Player P 
-                WHERE cm.idP=P.id
-                group by idP, yr
-                ORDER BY idP  ';
-                //LIMIT '.$maxpage;
-      $stmt = $em->getConnection()->prepare($sql);
-
-      $exec = $stmt->execute();
-      $players = $exec->fetchAll();
-
-      //print_r($players);exit();
-
-      $years=array();
-      for ($iY=2017;$iY<=date("Y");$iY++) {
-        $years[]=$iY;
-      }
-      // last total column
-      //$years[]="tot";
-
-      $playersRecapNbMatch=array();
-      $playersRecapNbMatchTotal=array();
-      foreach($players as $pl) {
-        if (!isset($playersRecapNbMatch[$pl["idP"]])) {
-          $playersRecapNbMatch[$pl["idP"]]["tot"]=0;
-          $playersRecapNbMatch[$pl["idP"]]["name"]=$pl["nameShort"];
-          foreach ($years as $yr) 
-            $playersRecapNbMatch[$pl["idP"]][$yr]=0;
-        }
-
-        $playersRecapNbMatch[$pl["idP"]][$pl["yr"]]=$pl["totM"];
-        $playersRecapNbMatch[$pl["idP"]]["tot"]+=$pl["totM"];
-        $playersRecapNbMatchTotal[$pl["idP"]]=$playersRecapNbMatch[$pl["idP"]]["tot"];
-      }
-
-      arsort($playersRecapNbMatchTotal);
-      //print_r($playersRecapNbMatch);
-
+    if ($stat=="nbmatchscontext")  {
+      $desc="Players who played the most single matches through history. You can pick the context.";
+      if ($scdparam!="all")
+        $where=" WHERE context LIKE '".$list2ndParam[$scdparam]."'";
+    }
+    elseif ($stat=="nbmatchscondition" && $scdparam!="all") {
+      $desc="Players who played the most single matches through history. You can pick the conditions.";
+      if ($scdparam!="all")
+        $where=" WHERE conditions LIKE '".$list2ndParam[$scdparam]."'";
     }
 
+    $em = $this->getDoctrine()->getManager();
+
+    // get all the matches played per year
+    $sql   = 'SELECT SUM(nbM) as totM, idP, P.nameShort, yr from(
+                SELECT count(*) as nbM, idPlayer1 as idP, YEAR(date) as yr FROM `Matchs` '.$where.' GROUP BY idPlayer1, YEAR(date) 
+                union
+                SELECT count(*) as nbM, idPlayer2 as idP, YEAR(date) as yr FROM `Matchs` '.$where.' GROUP BY idPlayer2, YEAR(date) 
+              ) as cm, Player P 
+              WHERE cm.idP=P.id
+              group by idP, yr
+              ORDER BY idP  ';
+              //LIMIT '.$maxpage;
+    //echo $sql;
+    $stmt = $em->getConnection()->prepare($sql);
+
+    $exec = $stmt->execute();
+    $players = $exec->fetchAll();
+
+    //print_r($players);exit();
+
+    $years=array();
+    for ($iY=2017;$iY<=date("Y");$iY++) {
+      $years[]=$iY;
+    }
+    // last total column
+    //$years[]="tot";
+
+    $playersRecapNbMatch=array();
+    $playersRecapNbMatchTotal=array();
+    foreach($players as $pl) {
+      if (!isset($playersRecapNbMatch[$pl["idP"]])) {
+        $playersRecapNbMatch[$pl["idP"]]["tot"]=0;
+        $playersRecapNbMatch[$pl["idP"]]["name"]=$pl["nameShort"];
+        foreach ($years as $yr) 
+          $playersRecapNbMatch[$pl["idP"]][$yr]=0;
+      }
+
+      $playersRecapNbMatch[$pl["idP"]][$pl["yr"]]=$pl["totM"];
+      $playersRecapNbMatch[$pl["idP"]]["tot"]+=$pl["totM"];
+      $playersRecapNbMatchTotal[$pl["idP"]]=$playersRecapNbMatch[$pl["idP"]]["tot"];
+    }
+
+    arsort($playersRecapNbMatchTotal);
+    //print_r($playersRecapNbMatch);
 
 
     return $this->render('site/stats_tennis.html.twig', 
@@ -155,6 +192,7 @@ class StatsController extends Controller
           'form' => $form->createView(),
           "stat" => $stat, 
           "desc" => $desc, 
+          "scdparam" => $scdparam, 
           "years" => $years, 
           "playersStat" => $playersRecapNbMatch,
           "playersStatSort" => $playersRecapNbMatchTotal
