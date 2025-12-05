@@ -133,15 +133,18 @@ class StatsController extends Controller
       return $this->redirect($url);
     } 
 
+    $title="";
     $desc="";
     $where="";
 
     if ($stat=="nbmatchscontext")  {
+      $title="Most matches played (".$scdparam.")";
       $desc="Players who played the most single matches through history. You can pick the context.";
       if ($scdparam!="all")
         $where=" WHERE context LIKE '".$list2ndParam[$scdparam]."'";
     }
     elseif ($stat=="nbmatchscondition") {
+      $title="Most matches played (".$scdparam.")";
       $desc="Players who played the most single matches through history. You can pick the conditions.";
       if ($scdparam!="all")
         $where=" WHERE conditions LIKE '".$list2ndParam[$scdparam]."'";
@@ -197,6 +200,7 @@ class StatsController extends Controller
         array(
           'form' => $form->createView(),
           "stat" => $stat, 
+          "title" => $title, 
           "desc" => $desc, 
           "scdparam" => $scdparam, 
           "years" => $years, 

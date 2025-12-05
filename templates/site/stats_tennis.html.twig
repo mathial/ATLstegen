@@ -11,7 +11,7 @@
   </div>
 
 
-  
+  <h3>{{ title }}</h3>
 
   <div><i>{{ desc }}</i></div>
 
@@ -20,6 +20,7 @@
   <div class="table-responsive">
     <table class="table">
       <tr>
+        <th>#</th>
         <th>Player</th>
         {% for yr in years %}
           <th>{{ yr }}</th>
@@ -29,6 +30,7 @@
 
       {% for iP,player in playersStatSort %}
         <tr>
+          <th>{{ loop.index }}</th>
           <td><a href="{{ path('player_view', {'id':iP}) }}">{{ playersStat[iP].name }}</a></td>
           {% for yr in years %}
             <td>{{ playersStat[iP][yr] }}</td>
