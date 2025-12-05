@@ -18,7 +18,8 @@ class SiteController extends AbstractController
         }
         return $years;
     }
-    private function getGenericSats() {
+
+    private function getGenericSatsNbMatchs() {
 
         $em = $this->getDoctrine()->getManager();
 
@@ -73,6 +74,35 @@ class SiteController extends AbstractController
         }
 //print_r($finalNbM);
         return $finalNbM;
+    }
+
+    private function getGenericSatsNbPlayers() {
+
+        $em = $this->getDoctrine()->getManager();
+
+        $sql='SELECT COUNT(DISTINCT idP) as nbP, yr FROM(
+                SELECT idPlayer1 as idP, YEAR(date) as yr FROM Matchs GROUP BY YEAR(date), idPlayer1
+                UNION
+                SELECT idPlayer2 as idP, YEAR(date) as yr FROM Matchs GROUP BY YEAR(date), idPlayer2
+            ) as listP
+            GROUP BY yr
+            ORDER BY yr' ;
+
+        $stmt = $em->getConnection()->prepare($sql);
+        $exec = $stmt->execute();
+        $nbplayers = $exec->fetchAll();
+        $years=$this->getYears();
+
+        $rtFinal=array();
+        foreach($years as $yr){
+            $rtFinal[$yr]=0;
+        }
+
+        foreach($nbplayers as $nbp) { 
+            $rtFinal[$nbp["yr"]]=$nbp["nbP"];
+        }
+
+        return $rtFinal;
     }
 
 
@@ -305,14 +335,17 @@ class SiteController extends AbstractController
 
         $rtSeries=$this->getBestSeries();
 
-        $rtGenericStats=$this->getGenericSats();
+        $rtGenericStatsNbMatchs=$this->getGenericSatsNbMatchs();
 
-//print_r($rtSeries);
+        $rtGenericStatsNbPlayers=$this->getGenericSatsNbPlayers();
+
+print_r($rtGenericStatsNbPlayers);
 
         return $this->render('site/tennis_index.html.twig', [
             'controller_name' => 'SiteController',
             'years' => $years,
-            'genericStats' => $rtGenericStats,
+            'genericStatsNbMatchs' => $rtGenericStatsNbMatchs,
+            'genericStatsNbPlayers' => $rtGenericStatsNbPlayers,
             'top3TennisPerf' => $rtTopLast["top"],
             'last3TennisPerf' => $rtTopLast["last"],
             'bestUpsets' => $rtBestUpsets,

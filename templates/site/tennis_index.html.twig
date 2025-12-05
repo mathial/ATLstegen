@@ -17,8 +17,7 @@
  	      <th>TOTAL</th>
 	    </tr>
 
-	    {% set rank = 1 %}
-			{% for context,valYr in genericStats %}
+			{% for context,valYr in genericStatsNbMatchs %}
 				<tr>
 	        <th>{{ context }}</th>
 	        {% for yr in years %}
@@ -28,8 +27,28 @@
 
 				</tr>
 
-				{% set rank = rank + 1 %}
 			{% endfor %}
+		</table>
+	</div>  
+
+  <p><i>Number of different players playing at least one match per year</i></p>
+
+  <div class="table-responsive">
+	  <table class="table">
+	    <tr>
+	      <th>Context</th>
+        {% for yr in years %}
+          <th>{{ yr }}</th>
+        {% endfor %}
+	    </tr>
+
+			<tr>
+        <th>Nb players</th>
+        {% for yr in years %}
+          <td>{{ genericStatsNbPlayers[yr] }}</td>
+        {% endfor %}
+			</tr>
+
 		</table>
 	</div>  
 
