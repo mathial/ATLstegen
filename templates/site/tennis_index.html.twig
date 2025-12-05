@@ -40,6 +40,7 @@
         {% for yr in years %}
           <th>{{ yr }}</th>
         {% endfor %}
+	      <th>TOTAL</th>
 	    </tr>
 
 			<tr>
@@ -47,6 +48,7 @@
         {% for yr in years %}
           <td>{{ genericStatsNbPlayers[yr] }}</td>
         {% endfor %}
+	      <th>{{ genericStatsNbPlayers.TOTAL }}</th>
 			</tr>
 
 		</table>

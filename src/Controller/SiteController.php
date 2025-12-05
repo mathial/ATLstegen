@@ -102,6 +102,19 @@ class SiteController extends AbstractController
             $rtFinal[$nbp["yr"]]=$nbp["nbP"];
         }
 
+        // getting the total number of different players since start
+        $sql='SELECT COUNT(DISTINCT idP) as nbP FROM(
+                SELECT idPlayer1 as idP, YEAR(date) as yr FROM Matchs idPlayer1
+                UNION
+                SELECT idPlayer2 as idP, YEAR(date) as yr FROM Matchs idPlayer2
+            ) as listP' ;
+
+        $stmt = $em->getConnection()->prepare($sql);
+        $exec = $stmt->execute();
+        $nbplayers = $exec->fetchAll();
+
+        $rtFinal["TOTAL"]=$nbplayers[0]["nbP"];
+
         return $rtFinal;
     }
 
@@ -339,7 +352,7 @@ class SiteController extends AbstractController
 
         $rtGenericStatsNbPlayers=$this->getGenericSatsNbPlayers();
 
-print_r($rtGenericStatsNbPlayers);
+//print_r($rtGenericStatsNbPlayers);
 
         return $this->render('site/tennis_index.html.twig', [
             'controller_name' => 'SiteController',
