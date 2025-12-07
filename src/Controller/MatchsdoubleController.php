@@ -153,6 +153,7 @@ class MatchsdoubleController extends Controller
         "Stege" => "Stege", 
         "A-serien (ATL)" => "A-serien", 
         "Generation Matchup" => "Generation Matchup",
+        "Christmas Tournament" => "Christmas Tournament", 
         "Måndagstennis (LBTK)" => "LBTK-Måndagstennis", 
         "Vinnarbana" => "Vinnarbana"),
       'required'   => true,

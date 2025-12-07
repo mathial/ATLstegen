@@ -410,11 +410,12 @@ class MatchsController extends Controller
         "Stege (söndag 21-22)" => "Stege (söndag 21-22)", 
         "Division League - Round#18" => "Division League - Round#18", 
         "A-serien (ATL)" => "A-serien", 
+        "Generation Matchup" => "Generation Matchup",
+        "Christmas Tournament" => "Christmas Tournament", 
         "Måndagstennis (LBTK)" => "LBTK-Måndagstennis", 
         "Summer tournament 2025 (august)" => "Summer tournament 2025 (august)",
         "Summer tournament 2025 (july)" => "Summer tournament 2025 (july)",
         "ATL Klubbmästerskap" => "ATL Klubbmästerskap",
-        "Generation Matchup" => "Generation Matchup",
         "Svenska Tennisligan" => "Svenska Tennisligan",
         "Sprinttennis tournament" => "Sprinttennis tournament"
       ),
