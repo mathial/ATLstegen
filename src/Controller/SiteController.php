@@ -398,6 +398,16 @@ class SiteController extends AbstractController
     }
 
     /**
+     * @Route("/christmas-tournaments", name="christmas_tournament")
+     */
+    public function tennisChristmasTournament()
+    {
+        return $this->render('site/christmas_tournament.html.twig', [
+            'controller_name' => 'SiteController',
+        ]);
+    }
+
+    /**
      * @Route("/summer-tournaments", name="summer_tournaments")
      */
     public function tennisSummerTournaments()

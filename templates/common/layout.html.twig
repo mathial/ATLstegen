@@ -117,10 +117,13 @@
             </li>
 
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Generation MU <span class="caret"></span></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Events <span class="caret"></span></a>
               <ul class="dropdown-menu">
-                <li><a href="{{ path('generation_matchup') }}">Infos</a></li>
-                <li><a href="{{ path('matchs_generation_matchup', {'maxpage':100, 'page':1}) }}">Matches</a> </li>
+                <li><a href="{{ path('christmas_tournament') }}">Christmas Tournament 2025</a></li>
+                <li><a href="{{ path('matchs_christmas_tournament_singles', {'maxpage':100, 'page':1}) }}">Christmas Tournament single matches</a> </li>
+                <li role="separator" class="divider"></li>
+                <li><a href="{{ path('generation_matchup') }}">Generation Matchups 2025</a></li>
+                <li><a href="{{ path('matchs_generation_matchup', {'maxpage':100, 'page':1}) }}">Generation MU matches</a> </li>
               </ul>
             </li>
             <!--

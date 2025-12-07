@@ -1283,7 +1283,38 @@ class MatchsController extends Controller
       $maxpage
     );
 
-    return $this->render('site/matchs_list_generation_matchup.html.twig', array("listMatchs" => $listMatchs));
+    return $this->render('site/matchs_list_event.html.twig', array("listMatchs" => $listMatchs, "eventName" => "Generation Matchup 2025"));
+
+  }
+
+  /**
+   * @Route(
+   * "/matchs/listMatchsChristmasTournament/{maxpage}/{page}", 
+   * name="matchs_christmas_tournament_singles", 
+   * requirements={
+   *   "maxpage"="\d+", 
+   *   "page"="\d+" 
+   * })
+   */
+  public function listMatchsChristmasTournament($maxpage, $page, Request $request)
+  {
+    $em = $this->getDoctrine()->getManager();
+
+    $context="Christmas Tournament";
+
+    $dql   = 'SELECT m FROM App\Entity\Matchs m WHERE m.context LIKE :context ORDER BY m.date DESC';
+    $query = $em->createQuery($dql)
+            ->setParameter('context', $context."%");;
+
+    $paginator  = $this->get('knp_paginator');
+
+    $listMatchs = $paginator->paginate(
+      $query, 
+      $request->query->getInt('page', 1),
+      $maxpage
+    );
+
+    return $this->render('site/matchs_list_event.html.twig', array("listMatchs" => $listMatchs, "eventName" => "Christmas Tournament 2025"));
     
   }
 
