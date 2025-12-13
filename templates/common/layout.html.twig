@@ -76,7 +76,6 @@
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">TENNIS <span class="caret"></span></a>
               <ul class="dropdown-menu">
-                <li><a href="{{ path('tennis_index') }}">Stats</a></li>
                 <li><a href="{{ path('rankings_view') }}">Single Rankings</a></li>
                 <li><a href="{{ path('rankings_double_view') }}">Double Rankings</a></li>
                 <li role="separator" class="divider"></li>
@@ -84,6 +83,9 @@
                 <li><a href="{{ path('matchsdouble_list', {'maxpage':50, 'page':1}) }}">Double Matchs list</a></li>
                 <li role="separator" class="divider"></li>
                 <li><a href="{{ path('tennis_calendar_events') }}">Calendar / events</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a href="{{ path('tennis_index') }}">Stats</a></li>
+                <li><a href="{{ path('stats_tennis', {'stat':'nbmatchscontext', 'scdparam':'all'}) }}">More stats :)</a></li>
                
                 <!--<li><a href="{{ path('race_slutspel') }}">Race to Lund 2021 Slutspel !</a></li>-->
               </ul>
@@ -191,8 +193,6 @@
                 <li role="separator" class="divider"></li>
                 <li><a href="{{ path('sunday_contest') }}">Sunday 21-22 contest</a></li>
                 <li><a href="{{ path('rabbit_new') }}">Generate new rabbit</a></li>
-                <li role="separator" class="divider"></li>
-                <li><a href="{{ path('stats_tennis', {'stat':'nbmatchscontext', 'scdparam':'all'}) }}">Stats</a></li>
               </ul>
             </li>
             {% endif %}
