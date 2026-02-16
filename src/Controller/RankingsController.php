@@ -411,7 +411,7 @@ class RankingsController extends AbstractController
 		   'data' => ($withRatingIndex==1 ? true : false)
 		))
 		->add('active_only', CheckboxType::class, array(
-			'label' => "Only active players.",
+			'label' => "Only active players (inactive players in grey)",
 		   'required' => false,
 		   'data' => ($activeOnly==1 ? true : false)
 		));
@@ -427,7 +427,7 @@ class RankingsController extends AbstractController
 		if ($this->getUser()!== NULL) {
 			$formBuilder
 			->add('colors_alreadyplayed', CheckboxType::class, array(
-				'label' => "Show me who i already played against.",
+				'label' => "Show me who i already played against (yellow)",
 			   'required' => false,
 			   'data' => ($colorsPlayers==1 ? true : false)
 			));
