@@ -364,11 +364,11 @@ class RankingsController extends AbstractController
 
 
 	/**
-   * @Route("/rankings/view", name="rankings_view", defaults={"id" = null, "RI" = 0, "AO" = 1, "RR" = 0})
-   * @Route("/rankings/view/{id}", name="rankings_view_id", defaults={"RI" = 0, "AO" = 1})
-   * @Route("/rankings/view/{id}/{RI}/{AO}/{RR}", name="rankings_view_id_ao")
+   * @Route("/rankings/view", name="rankings_view", defaults={"id" = null, "RI" = 0, "AO" = 1, "CP" = 1})
+   * @Route("/rankings/view/{id}", name="rankings_view_id", defaults={"RI" = 0, "AO" = 1, "CP" = 1})
+   * @Route("/rankings/view/{id}/{RI}/{AO}/{CP}", name="rankings_view_id_ao")
    */
-  public function viewRanking($id=null, $RI=0, $AO=1, $RR=0, Request $request)
+  public function viewRanking($id=null, $RI=0, $AO=1, $CP=0, Request $request)
   {
   	$em = $this->getDoctrine()->getManager();
 
@@ -383,8 +383,12 @@ class RankingsController extends AbstractController
   	else $defaultId=$ranking->getId();
 
   	$activeOnly=$AO;
+  	if ($this->getUser()!== NULL)
+	  	$colorsPlayers=$CP;
+	  else $colorsPlayers=0;
+  	$listIdOpponents=array();
   	$withRatingIndex=$RI;
-  	$rabbitRange=$RR;
+  	//$rabbitRange=$RR;
 
 		$arrRank=array();
 		$rankings = $em->getRepository('App\Entity\Ranking')->findBy(array(), array('date' => 'DESC'));
@@ -410,7 +414,7 @@ class RankingsController extends AbstractController
 			'label' => "Only active players.",
 		   'required' => false,
 		   'data' => ($activeOnly==1 ? true : false)
-		))
+		));
 		/*
 		->add('rabbit_range', CheckboxType::class, array(
 			'label' => "With rabbit range (+/- 75pts to be allowed to challenge a rabbit holder).",
@@ -418,7 +422,19 @@ class RankingsController extends AbstractController
 		   'data' => ($rabbitRange==1 ? true : false)
 		))
 		*/
-		->add("Select", SubmitType::class);
+
+		// connected user : add display already met opponents
+		if ($this->getUser()!== NULL) {
+			$formBuilder
+			->add('colors_alreadyplayed', CheckboxType::class, array(
+				'label' => "Show me who i already played against.",
+			   'required' => false,
+			   'data' => ($colorsPlayers==1 ? true : false)
+			));
+		}
+		
+		$formBuilder->add("Select", SubmitType::class);
+
 
 		$form = $formBuilder->getForm();
 
@@ -430,9 +446,10 @@ class RankingsController extends AbstractController
 	      $idRanking=$data['id_ranking'];
 	      $activeOnly=(isset($data['active_only']) && $data['active_only']!="" ? $data['active_only'] : 0);
 	      $withRatingIndex=(isset($data['with_rating_index']) && $data['with_rating_index']!="" ? $data['with_rating_index'] : 0);
-	      $rabbitRange=(isset($data['rabbit_range']) && $data['rabbit_range']!="" ? $data['rabbit_range'] : 0);
+	      //$rabbitRange=(isset($data['rabbit_range']) && $data['rabbit_range']!="" ? $data['rabbit_range'] : 0);
+				$colorsPlayers=(isset($data['colors_alreadyplayed']) && $data['colors_alreadyplayed']!="" ? $data['colors_alreadyplayed'] : 0);
 
-	      $url = $this->generateUrl('rankings_view_id_ao', array('id' => $idRanking, 'RI' => $withRatingIndex, 'AO' => $activeOnly, 'RR' => $rabbitRange));
+	      $url = $this->generateUrl('rankings_view_id_ao', array('id' => $idRanking, 'RI' => $withRatingIndex, 'AO' => $activeOnly, 'CP' => $colorsPlayers));
 	      return $this->redirect($url);
 		}	
 		/*elseif ($id<>null) {
@@ -469,6 +486,15 @@ class RankingsController extends AbstractController
 
   	if ($ranking && $detailsRankings) {
 
+  		if ($colorsPlayers) {
+  			//echo "user connected";
+  			//print_r($this->getUser()->getIdplayer()->getId());
+  			$idPlayerUser=$this->getUser()->getIdplayer()->getId();
+  			if (is_numeric($idPlayerUser)) {
+	  			$listIdOpponents = $em->getRepository('App\Entity\Player')->getListOpponents($idPlayerUser);
+	  			//print_r($listIdOpponents);
+  			}
+  		}
 
   		// SCORE EVOL
   		foreach ($detailsRankings as $det) {
@@ -656,7 +682,8 @@ class RankingsController extends AbstractController
 	    'detailsPlayer' => $detailsPlayer,
 	    'activeOnly' => $activeOnly,
 	    'withRatingIndex' => $withRatingIndex,
-	    'rabbitRange' => $rabbitRange,
+	    'colorsPlayers' => $colorsPlayers,
+	    'listIdOpponents' => $listIdOpponents,
 	    'arrTotal' => $arrTotal,
 	    'arrRabbits' => $arrRabbits,
 	    'arrRabbitsId' => $arrRabbitsId,

@@ -45,14 +45,20 @@
             <tr class="inactive-player">
             {% endif %}
               <td>{{ rank }}</td>
-              <td><a href="{{ path('player_view', {'id':det.idplayer.id}) }}">{{ det.idplayer.nameshort }}</a> 
+              <td>
+                {% if colorsPlayers == 1 and det.idplayer.id in listIdOpponents %} <span class="playerAlreadyMet"> {% endif %}
+                <a href="{{ path('player_view', {'id':det.idplayer.id}) }}">{{ det.idplayer.nameshort }}</a> 
                 {% if det.idplayer.id in arrRabbits|keys %} 
                   <img src="{{ asset('img/rabbit.png') }}" class="rabbit-ranking">
                   {% set nextRabbitRating = nextRabbitRating + 1 %}
-                {% endif %}</td>
+                {% endif %}
+                </span>
+              </td>
               {% if withRatingIndex==1 %}
               <td>{{ detailsPlayer[det.idplayer.id]["RI"]|number_format(0, '.', ' ') }}</td>
               {% endif %}
+
+              {#
               {% if rabbitRange == 1 and nextRabbitRating in arrRabbitsId|keys and (det.score - arrRabbits[arrRabbitsId[nextRabbitRating]])|abs <= 75 %}
                 <td class="rabbitRange"><b>
               {% elseif rabbitRange == 1 and (nextRabbitRating-1) in arrRabbitsId|keys and (det.score - arrRabbits[arrRabbitsId[nextRabbitRating-1]])|abs <= 75 %}
@@ -60,6 +66,9 @@
               {% else %}
                 <td><b>
               {% endif %}
+              #}
+
+              <td><b>
                 {% if detailsPlayer[det.idplayer.id]["best"]|number_format(0, '.', ' ') == det.score|number_format(0, '.', ' ') %}<span style="color:#FF1493">{% endif %}
                 {{ det.score|number_format(0, '.', ' ') }}
               </b></td>

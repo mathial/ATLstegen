@@ -98,3 +98,7 @@ footer {
 .rabbitRange {
 	background-color:#FFB6C1;
 }
+
+.playerAlreadyMet {
+	background-color: #FFD700;
+}

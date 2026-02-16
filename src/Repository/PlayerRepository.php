@@ -64,4 +64,22 @@ class PlayerRepository extends EntityRepository {
 
     return $rt;
   }
+
+  public function getListOpponents($idP) {
+    $list=array(10,20);
+
+    $em = $this->getEntityManager();
+    $sql='SELECT distinct idPlayer1 as idP FROM Matchs WHERE idPLayer2=:idPlayer
+          UNION
+          SELECT distinct idPlayer2 as idP FROM Matchs WHERE idPLayer1=:idPlayer
+          ORDER BY idP';
+    $stmt = $em->getConnection()->prepare($sql);
+    $exec = $stmt->execute(['idPlayer' => $idP]);
+    $listP = $exec->fetchAll();
+
+    foreach ($listP as $pl) {
+      $list[]=$pl["idP"];
+    }   
+    return $list;
+  }
 }
