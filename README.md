@@ -93,5 +93,5 @@ sudo apt-install mysql-server
 sudo apt-install phpmyadmin
 CREATE DATABASE atlstege;
 sudo mysql atlstege < 2024-02-26.atl-stege.sql 
-CREATE USER 'atlstegen'@'localhost' IDENTIFIED BY 'atlstegen';
-GRANT ALL PRIVILEGES ON atlstege.* TO 'atlstegen'@'localhost' WITH GRANT OPTION;
+CREATE USER 'atlstegen'@'localhost' IDENTIFIED BY 'SEE PASSWORD';
+GRANT ALL PRIVILEGES ON atlstegen.* TO 'atlstegen'@'localhost' WITH GRANT OPTION;
