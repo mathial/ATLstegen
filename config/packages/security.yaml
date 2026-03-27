@@ -1,0 +1,36 @@
+security:
+    enable_authenticator_manager: true
+
+    password_hashers:
+        App\Entity\User:
+            algorithm: auto
+
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: username
+
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        main:
+            lazy: true
+            provider: app_user_provider
+            # Use your new LoginFormAuthenticator
+            custom_authenticators:
+                - App\Security\LoginFormAuthenticator
+            logout:
+                path: app_logout
+            # Optionally enable remember_me if you want
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 604800 # 1 week
+                path: /
+
+    access_control:
+        # Example: restrict /admin to ROLE_ADMIN
+        # - { path: ^/admin, roles: ROLE_ADMIN }
+        # - { path: ^/profile, roles: ROLE_USER }
