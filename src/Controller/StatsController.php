@@ -2,20 +2,23 @@
 
 namespace App\Controller;
 
-use \Symfony\Component\Form\Extension\Core\Type\FormType;
-use \Symfony\Component\Form\Extension\Core\Type\TextType;
-use \Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use \Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use \Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use \Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use \Symfony\Component\Form\Extension\Core\Type\NumberType;
-use \Symfony\Component\Form\Extension\Core\Type\DateType;
-use \Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Doctrine\ORM\EntityRepository;
 
+use App\Controller\EntityManagerTrait;
+use Doctrine\ORM\EntityManagerInterface;
+
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -26,8 +29,16 @@ use App\Entity\EloCompetitor;
 use App\Entity\Rabbit;
 
 
-class StatsController extends Controller
+class StatsController extends AbstractController
 {
+
+  use EntityManagerTrait;
+
+  // ✅ Constructor injection
+  public function __construct(EntityManagerInterface $em)
+  {
+    $this->setEntityManager($em);
+  } 
 
   function getContexts() {
     $contexts=array(
@@ -150,7 +161,7 @@ class StatsController extends Controller
         $where=" WHERE conditions LIKE '".$list2ndParam[$scdparam]."'";
     }
 
-    $em = $this->getDoctrine()->getManager();
+    $em = $this->em();
 
     // get all the matches played per year
     $sql   = 'SELECT SUM(nbM) as totM, idP, P.nameShort, yr from(

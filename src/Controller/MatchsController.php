@@ -2,20 +2,24 @@
 
 namespace App\Controller;
 
-use \Symfony\Component\Form\Extension\Core\Type\FormType;
-use \Symfony\Component\Form\Extension\Core\Type\TextType;
-use \Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use \Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use \Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use \Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use \Symfony\Component\Form\Extension\Core\Type\NumberType;
-use \Symfony\Component\Form\Extension\Core\Type\DateType;
-use \Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Doctrine\ORM\EntityRepository;
 
+use App\Controller\EntityManagerTrait;
+use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
+
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -30,12 +34,22 @@ use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mime\Email;
 
-class MatchsController extends Controller
+class MatchsController extends AbstractController
 {
+  use EntityManagerTrait;
+
+  private PaginatorInterface $paginator;
+
+  // ✅ Constructor injection
+  public function __construct(EntityManagerInterface $em, PaginatorInterface $paginator)
+  {
+      $this->setEntityManager($em);
+      $this->paginator = $paginator;
+  }
 
   public function calculateEvol($idMatch) {
 
-    $em = $this->getDoctrine()->getManager();
+    $em = $this->em();
     $mat = $em->getRepository('App\Entity\Matchs')->findOneBy(['id' => $idMatch]);
 
     $rankId="";
@@ -139,7 +153,7 @@ class MatchsController extends Controller
    */
   public function list($maxpage, $page, Request $request)
   {
-    $em = $this->getDoctrine()->getManager();
+    $em = $this->em();
 
     $filter="";
     $where="";
@@ -155,7 +169,7 @@ class MatchsController extends Controller
     $dql   = "SELECT m FROM App\Entity\Matchs m ".$where." ORDER BY m.date DESC, m.id DESC";
     $query = $em->createQuery($dql);
 
-    $paginator  = $this->get('knp_paginator');
+    ////$paginator  = $this->get('knp_paginator');
 
     if (is_numeric($maxpage)) {
       $limitpage=$maxpage;
@@ -171,7 +185,7 @@ class MatchsController extends Controller
       // throw $this->createNotFoundException("Page ".$page." doesn't exist.");
     }
 
-    $listMatchs = $paginator->paginate(
+    $listMatchs = $this->paginator->paginate(
       $query, 
       $request->query->getInt('page', $page),
       $limitpage
@@ -482,7 +496,7 @@ class MatchsController extends Controller
   {
     if ($this->getUser()!== NULL) {
 
-      $em = $this->getDoctrine()->getManager();
+      $em = $this->em();
       
       $match = new Matchs();
       
@@ -614,7 +628,7 @@ class MatchsController extends Controller
 
     if ($this->getUser()!== NULL && in_array('ROLE_ADMIN', $this->getUser()->getRoles(), true)) {
 
-      $em = $this->getDoctrine()->getManager();
+      $em = $this->em();
       $match = $em->getRepository('App\Entity\Matchs')->findOneBy(['id' => $id]);
 
       $form=$this->getFormMatch($match, "edit");
@@ -658,7 +672,7 @@ class MatchsController extends Controller
 
     if ($this->getUser()!== NULL && in_array('ROLE_ADMIN', $this->getUser()->getRoles(), true)) {
 
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->em();
         $match = $em->getRepository('App\Entity\Matchs')->findOneBy(['id' => $id]);
 
         $em->remove($match);
@@ -681,7 +695,7 @@ class MatchsController extends Controller
    */
   public function sundayContest(Request $request)
   {
-    $em = $this->getDoctrine()->getManager();
+    $em = $this->em();
 
     $contextName="Stege (söndag 21-22)";
 
@@ -818,7 +832,7 @@ class MatchsController extends Controller
    */
   public function raceTournament(Request $request)
   {
-    $em = $this->getDoctrine()->getManager();
+    $em = $this->em();
 
     $arrRace=array();
 
@@ -883,15 +897,15 @@ class MatchsController extends Controller
    */
   public function listMatchsSlutSpel($year, $maxpage, $page, Request $request)
   {
-    $em = $this->getDoctrine()->getManager();
+    $em = $this->em();
 
     $dql   = 'SELECT m FROM App\Entity\Matchs m WHERE m.context = :context ORDER BY m.date DESC';
     $query = $em->createQuery($dql)
             ->setParameter('context', "Stegen Slutspel ".$year);;
 
-    $paginator  = $this->get('knp_paginator');
+    //$paginator  = $this->get('knp_paginator');
 
-    $listMatchs = $paginator->paginate(
+    $listMatchs = $this->paginator->paginate(
       $query, 
       $request->query->getInt('page', 1),
       50
@@ -917,7 +931,7 @@ class MatchsController extends Controller
    */
   public function h2h($idplayer1, $idplayer2, Request $request)
   {
-    $em = $this->getDoctrine()->getManager();
+    $em = $this->em();
 
     $player1 = $em->getRepository('App\Entity\Player')->findOneBy(array('id'=>$idplayer1));
     $player2 = $em->getRepository('App\Entity\Player')->findOneBy(array('id'=>$idplayer2));
@@ -1020,9 +1034,9 @@ class MatchsController extends Controller
       else $recapRt["D"]++;
     }
 
-    $paginator  = $this->get('knp_paginator');
+    //$paginator  = $this->get('knp_paginator');
 
-    $listMatchs = $paginator->paginate(
+    $listMatchs = $this->paginator->paginate(
       $query, 
       $request->query->getInt('page', 1),
       50
@@ -1046,7 +1060,7 @@ class MatchsController extends Controller
     $error="";
     $arrMatch=array();
 
-    $em = $this->getDoctrine()->getManager();
+    $em = $this->em();
 
     $arrPlayer=array();
     $players = $em->getRepository('App\Entity\Player')->findBy(array(), array('nameshort' => 'ASC'));
@@ -1267,7 +1281,7 @@ class MatchsController extends Controller
    */
   public function listMatchsGenerationMatchup($maxpage, $page, Request $request)
   {
-    $em = $this->getDoctrine()->getManager();
+    $em = $this->em();
 
     $context="Generation Matchup";
 
@@ -1275,9 +1289,9 @@ class MatchsController extends Controller
     $query = $em->createQuery($dql)
             ->setParameter('context', $context."%");;
 
-    $paginator  = $this->get('knp_paginator');
+    //$paginator  = $this->get('knp_paginator');
 
-    $listMatchs = $paginator->paginate(
+    $listMatchs = $this->paginator->paginate(
       $query, 
       $request->query->getInt('page', 1),
       $maxpage
@@ -1298,7 +1312,7 @@ class MatchsController extends Controller
    */
   public function listMatchsChristmasTournament($maxpage, $page, Request $request)
   {
-    $em = $this->getDoctrine()->getManager();
+    $em = $this->em();
 
     $context="Christmas Tournament";
 
@@ -1306,9 +1320,9 @@ class MatchsController extends Controller
     $query = $em->createQuery($dql)
             ->setParameter('context', $context."%");;
 
-    $paginator  = $this->get('knp_paginator');
+    //$paginator  = $this->get('knp_paginator');
 
-    $listMatchs = $paginator->paginate(
+    $listMatchs = $this->paginator->paginate(
       $query, 
       $request->query->getInt('page', 1),
       $maxpage
@@ -1331,7 +1345,7 @@ class MatchsController extends Controller
    */
   public function listMatchsLongTournament($year, $maxpage, $page, Request $request)
   {
-    $em = $this->getDoctrine()->getManager();
+    $em = $this->em();
 
     $context="Summer tournament ".$year;
 
@@ -1339,9 +1353,9 @@ class MatchsController extends Controller
     $query = $em->createQuery($dql)
             ->setParameter('context', $context."%");;
 
-    $paginator  = $this->get('knp_paginator');
+    //$paginator  = $this->get('knp_paginator');
 
-    $listMatchs = $paginator->paginate(
+    $listMatchs = $this->paginator->paginate(
       $query, 
       $request->query->getInt('page', 1),
       $maxpage
@@ -1365,15 +1379,15 @@ class MatchsController extends Controller
    */
   public function listMatchsDivisionLeague($round, $maxpage, $page, Request $request)
   {
-    $em = $this->getDoctrine()->getManager();
+    $em = $this->em();
 
     $dql   = 'SELECT m FROM App\Entity\Matchs m WHERE m.context = :context ORDER BY m.date DESC';
     $query = $em->createQuery($dql)
             ->setParameter('context', "Division League - Round#".$round);;
 
-    $paginator  = $this->get('knp_paginator');
+    //$paginator  = $this->get('knp_paginator');
 
-    $listMatchs = $paginator->paginate(
+    $listMatchs = $this->paginator->paginate(
       $query, 
       $request->query->getInt('page', 1),
       $maxpage
@@ -1397,14 +1411,14 @@ class MatchsController extends Controller
    */
   public function listAllRabbitMatchs($maxpage, $page, Request $request)
   {
-    $em = $this->getDoctrine()->getManager();
+    $em = $this->em();
 
     $dql   = 'SELECT m FROM App\Entity\Matchs m WHERE m.idrabbit is not null ORDER BY m.date DESC';
     $query = $em->createQuery($dql);
 
-    $paginator  = $this->get('knp_paginator');
+    //$paginator  = $this->get('knp_paginator');
 
-    $listMatchs = $paginator->paginate(
+    $listMatchs = $this->paginator->paginate(
       $query, 
       $request->query->getInt('page', 1),
       $maxpage
@@ -1436,7 +1450,7 @@ class MatchsController extends Controller
       //$date = date("Y-m-d H:i:s", strtotime($request->get('date')));
       $date= new \DateTime($request->get('date'));
 
-      $em = $this->getDoctrine()->getManager();
+      $em = $this->em();
 
       $matches = $em->getRepository('App\Entity\Matchs')->findBy(array(
         'idplayer1' => $idJ1,

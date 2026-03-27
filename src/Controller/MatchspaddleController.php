@@ -2,18 +2,22 @@
 
 namespace App\Controller;
 
-use \Symfony\Component\Form\Extension\Core\Type\FormType;
-use \Symfony\Component\Form\Extension\Core\Type\TextType;
-use \Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use \Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use \Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use \Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use \Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Doctrine\ORM\EntityRepository;
 
+use App\Controller\EntityManagerTrait;
+use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
+
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -27,8 +31,19 @@ use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mime\Email;
 
-class MatchspaddleController extends Controller
+class MatchspaddleController extends AbstractController
 {
+    use EntityManagerTrait;
+
+    private PaginatorInterface $paginator;
+
+    // ✅ Constructor injection
+    public function __construct(EntityManagerInterface $em, PaginatorInterface $paginator)
+    {
+        $this->setEntityManager($em);
+        $this->paginator = $paginator;
+    }
+
     /**
      * @Route("/matchspadel", name="matchspadel")
      */
@@ -197,7 +212,7 @@ class MatchspaddleController extends Controller
   {
     if ($this->getUser()!== NULL) {
 
-      $em = $this->getDoctrine()->getManager();
+      $em = $this->em();
       
       $match = new Matchspaddle();
       
@@ -308,7 +323,7 @@ class MatchspaddleController extends Controller
 
     if ($this->getUser()!== NULL && in_array('ROLE_ADMIN', $this->getUser()->getRoles(), true)) {
 
-      $em = $this->getDoctrine()->getManager();
+      $em = $this->em();
       $match = $em->getRepository('App\Entity\Matchspaddle')->findOneBy(['id' => $id]);
 
       $form=$this->getFormMatch($match, "edit");
@@ -353,7 +368,7 @@ class MatchspaddleController extends Controller
 
     if ($this->getUser()!== NULL && in_array('ROLE_ADMIN', $this->getUser()->getRoles(), true)) {
 
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->em();
         $match = $em->getRepository('App\Entity\Matchspaddle')->findOneBy(['id' => $id]);
 
         $em->remove($match);
@@ -379,7 +394,7 @@ class MatchspaddleController extends Controller
    */
   public function list($maxpage, $page, Request $request)
   {
-    $em = $this->getDoctrine()->getManager();
+    $em = $this->em();
 
     $filter="";
     $where="";
@@ -395,7 +410,7 @@ class MatchspaddleController extends Controller
     $dql   = "SELECT m FROM App:Matchspaddle m ".$where." ORDER BY m.date DESC, m.id DESC";
     $query = $em->createQuery($dql);
 
-    $paginator  = $this->get('knp_paginator');
+    //$paginator  = $this->get('knp_paginator');
 
     if (is_numeric($maxpage)) {
       $limitpage=$maxpage;
@@ -411,7 +426,7 @@ class MatchspaddleController extends Controller
       // throw $this->createNotFoundException("Page ".$page." doesn't exist.");
     }
 
-    $listMatchs = $paginator->paginate(
+    $listMatchs = $this->paginator->paginate(
       $query, 
       $request->query->getInt('page', $page),
       $limitpage

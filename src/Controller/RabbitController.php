@@ -2,21 +2,24 @@
 
 namespace App\Controller;
 
-use \Symfony\Component\Form\Extension\Core\Type\FormType;
-use \Symfony\Component\Form\Extension\Core\Type\TextType;
-use \Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use \Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use \Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use \Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use \Symfony\Component\Form\Extension\Core\Type\DateType;
-use \Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 
-use \Symfony\Component\HttpFoundation\JsonResponse;
+use App\Controller\EntityManagerTrait;
+use Doctrine\ORM\EntityManagerInterface;
+
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Doctrine\ORM\EntityRepository;
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -24,8 +27,15 @@ use App\Entity\Rabbit;
 use App\Entity\Player;
 
 
-class RabbitController extends Controller
+class RabbitController extends AbstractController
 {
+  use EntityManagerTrait;
+
+  // ✅ Constructor injection
+  public function __construct(EntityManagerInterface $em)
+  {
+      $this->setEntityManager($em);
+  }  
 
   function getFormRabbit($rabbit, $mode) {
 
@@ -111,7 +121,7 @@ class RabbitController extends Controller
   {
     if ($this->getUser()!== NULL && in_array('ROLE_ADMIN', $this->getUser()->getRoles(), true)) {
 
-      $em = $this->getDoctrine()->getManager();
+      $em = $this->em();
       
       $rabbit = new Rabbit();
       
@@ -158,7 +168,7 @@ class RabbitController extends Controller
 
     if ($this->getUser()!== NULL && in_array('ROLE_ADMIN', $this->getUser()->getRoles(), true)) {
 
-      $em = $this->getDoctrine()->getManager();
+      $em = $this->em();
       $rabbit = $em->getRepository('App\Entity\Rabbit')->findOneBy(['id' => $id]);
 
       $form=$this->getFormRabbit($rabbit, "edit");
@@ -198,7 +208,7 @@ class RabbitController extends Controller
    */
   public function list(Request $request)
   {
-    $em = $this->getDoctrine()->getManager();
+    $em = $this->em();
 
     $listRabbits = $em->getRepository('App\Entity\Rabbit')->findBy(array(), array('id' => 'ASC'));
 

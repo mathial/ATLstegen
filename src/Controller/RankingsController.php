@@ -6,12 +6,15 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 
-use \Symfony\Component\Form\Extension\Core\Type\FormType;
-use \Symfony\Component\Form\Extension\Core\Type\TextType;
-use \Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use \Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use \Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use \Symfony\Component\Form\Extension\Core\Type\DateType;
+use App\Controller\EntityManagerTrait;
+use Doctrine\ORM\EntityManagerInterface;
+
+use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 
 use App\Entity\EloRatingSystem;
 use App\Entity\EloCompetitor;
@@ -22,6 +25,15 @@ use App\Entity\Rankingpos;
 
 class RankingsController extends AbstractController
 {
+
+  use EntityManagerTrait;
+
+  // ✅ Constructor injection
+  public function __construct(EntityManagerInterface $em)
+  {
+      $this->setEntityManager($em);
+  }  
+
   /**
    * @Route("/rankings", name="rankings")
    */
@@ -272,7 +284,7 @@ class RankingsController extends AbstractController
 	  $matchs = array();
 		$date_from="";
 		
-		$em = $this->getDoctrine()->getManager();
+		$em = $this->em();
 
 		$arrRank=array();
 		$rankings = $em->getRepository('App\Entity\Ranking')->findBy(array(), array('date' => 'DESC'));
@@ -370,7 +382,7 @@ class RankingsController extends AbstractController
    */
   public function viewRanking($id=null, $RI=0, $AO=1, $CP=0, Request $request)
   {
-  	$em = $this->getDoctrine()->getManager();
+  	$em = $this->em();
 
   	if ($id<>null) {
 			$ranking = $em->getRepository('App\Entity\Ranking')->findOneBy(array('id' => $id));

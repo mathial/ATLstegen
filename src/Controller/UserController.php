@@ -2,27 +2,38 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 
-use \Symfony\Component\Form\Extension\Core\Type\FormType;
-use \Symfony\Component\Form\Extension\Core\Type\TextType;
-use \Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use \Symfony\Component\Form\Extension\Core\Type\EmailType;
-use \Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use \Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use \Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use \Symfony\Component\Form\Extension\Core\Type\DateType;
-use \Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use App\Controller\EntityManagerTrait;
+use Doctrine\ORM\EntityManagerInterface;
+
+use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Doctrine\ORM\EntityRepository;
 
 use App\Entity\User;
 use App\Entity\Player;
 
-class UserController extends Controller
+class UserController extends AbstractController
 {
+  
+  use EntityManagerTrait;
+
+  // ✅ Constructor injection
+  public function __construct(EntityManagerInterface $em)
+  {
+    $this->setEntityManager($em);
+  } 
   
   /**
    * @Route(
@@ -32,7 +43,7 @@ class UserController extends Controller
    */
   public function list(Request $request)
   {
-    $em = $this->getDoctrine()->getManager();
+    $em = $this->em();
 
     $listUsers = $em->getRepository('App\Entity\User')->findBy(array(), array('username' => 'ASC'));
 
@@ -103,7 +114,7 @@ class UserController extends Controller
    */
   public function new(Request $request) {
 
-    $em = $this->getDoctrine()->getManager();
+    $em = $this->em();
     $user = new User();
 
     $form=$this->getFormUser($user, "add");
@@ -156,7 +167,7 @@ class UserController extends Controller
    */
   public function updateUserAction($id, Request $request) {
 
-    $em = $this->getDoctrine()->getManager();
+    $em = $this->em();
     $user = $em->getRepository('App\Entity\User')->findOneBy(['id' => $id]);
 
     $form=$this->getFormUser($user, "edit");
@@ -201,7 +212,7 @@ class UserController extends Controller
 
   public function changePasswordAction(Request $request) {
 
-    $em = $this->getDoctrine()->getManager();
+    $em = $this->em();
     //$user = $em->getRepository('App\Entity\User')->findOneBy(['id' => $id]);
     $user = $this->get('security.token_storage')->getToken()->getUser();
 

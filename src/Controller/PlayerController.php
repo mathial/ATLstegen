@@ -2,19 +2,23 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use App\Controller\EntityManagerTrait;
+use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
+
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 
-use \Symfony\Component\Form\Extension\Core\Type\FormType;
-use \Symfony\Component\Form\Extension\Core\Type\TextType;
-use \Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use \Symfony\Component\Form\Extension\Core\Type\EmailType;
-use \Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use \Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use \Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use \Symfony\Component\Form\Extension\Core\Type\DateType;
-use \Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Doctrine\ORM\EntityRepository;
 
@@ -23,8 +27,19 @@ use App\Entity\EloCompetitor;
 use App\Entity\Player;
 use App\Entity\Country;
 
-class PlayerController extends Controller
+class PlayerController extends AbstractController
 {
+  use EntityManagerTrait;
+
+  private PaginatorInterface $paginator;
+
+  // ✅ Constructor injection
+  public function __construct(EntityManagerInterface $em, PaginatorInterface $paginator)
+  {
+      $this->setEntityManager($em);
+      $this->paginator = $paginator;
+  }  
+  
   /**
    * @Route("/players/view/{id}", 
    * name="player_view", 
@@ -34,7 +49,7 @@ class PlayerController extends Controller
    */
   public function view($id, Request $request)
   {
-    $em = $this->getDoctrine()->getManager();
+    $em = $this->em();
 
     $player = $em->getRepository('App\Entity\Player')->findOneBy(array('id'=>$id));
     $lastRTS = $em->getRepository('App\Entity\Player')->getLastRanking($id);
@@ -236,7 +251,7 @@ class PlayerController extends Controller
    */
   public function viewMatches($id, $page, Request $request)
   {
-    $em = $this->getDoctrine()->getManager();
+    $em = $this->em();
 
     $player = $em->getRepository('App\Entity\Player')->findOneBy(array('id'=>$id));
     $lastR = $em->getRepository('App\Entity\Player')->getLastRanking($id);
@@ -248,7 +263,7 @@ class PlayerController extends Controller
     $dql   = "SELECT m FROM App:Matchs m ".$where." ORDER BY m.date DESC";
     $query = $em->createQuery($dql);
 
-    $paginator  = $this->get('knp_paginator');
+    //$paginator  = $this->get('knp_paginator');
 
     if (is_numeric($maxpage)) {
       $limitpage=$maxpage;
@@ -264,7 +279,7 @@ class PlayerController extends Controller
       // throw $this->createNotFoundException("Page ".$page." doesn't exist.");
     }
 
-    $listMatchs = $paginator->paginate(
+    $listMatchs = $this->paginator->paginate(
       $query, 
       $request->query->getInt('page', $page),
       $limitpage
@@ -402,7 +417,7 @@ class PlayerController extends Controller
    */
   public function viewMatchesPaddle($id, $page, Request $request)
   {
-    $em = $this->getDoctrine()->getManager();
+    $em = $this->em();
 
     $player = $em->getRepository('App\Entity\Player')->findOneBy(array('id'=>$id));
     $lastR = $em->getRepository('App\Entity\Player')->getLastRanking($id, "Paddle");
@@ -414,7 +429,7 @@ class PlayerController extends Controller
     $dql   = "SELECT m FROM App:Matchspaddle m ".$where." ORDER BY m.date DESC";
     $query = $em->createQuery($dql);
 
-    $paginator  = $this->get('knp_paginator');
+    //$paginator  = $this->get('knp_paginator');
 
     if (is_numeric($maxpage)) {
       $limitpage=$maxpage;
@@ -430,7 +445,7 @@ class PlayerController extends Controller
       // throw $this->createNotFoundException("Page ".$page." doesn't exist.");
     }
 
-    $listMatchs = $paginator->paginate(
+    $listMatchs = $this->paginator->paginate(
       $query, 
       $request->query->getInt('page', $page),
       $limitpage
@@ -629,7 +644,7 @@ class PlayerController extends Controller
    */
   public function viewMatchesDouble($id, $page, Request $request)
   {
-    $em = $this->getDoctrine()->getManager();
+    $em = $this->em();
 
     $player = $em->getRepository('App\Entity\Player')->findOneBy(array('id'=>$id));
     $lastR = $em->getRepository('App\Entity\Player')->getLastRanking($id, "Double");
@@ -641,7 +656,7 @@ class PlayerController extends Controller
     $dql   = "SELECT m FROM App:Matchsdouble m ".$where." ORDER BY m.date DESC";
     $query = $em->createQuery($dql);
 
-    $paginator  = $this->get('knp_paginator');
+    //$paginator  = $this->get('knp_paginator');
 
     if (is_numeric($maxpage)) {
       $limitpage=$maxpage;
@@ -657,7 +672,7 @@ class PlayerController extends Controller
       // throw $this->createNotFoundException("Page ".$page." doesn't exist.");
     }
 
-    $listMatchs = $paginator->paginate(
+    $listMatchs = $this->paginator->paginate(
       $query, 
       $request->query->getInt('page', $page),
       $limitpage
@@ -853,7 +868,7 @@ class PlayerController extends Controller
    */
   public function viewEvolution($id, Request $request)
   {
-    $em = $this->getDoctrine()->getManager();
+    $em = $this->em();
 
     $arrDate=array();
 
@@ -1001,7 +1016,7 @@ class PlayerController extends Controller
    */
   public function list($maxpage, $page, Request $request)
   {
-    $em = $this->getDoctrine()->getManager();
+    $em = $this->em();
 
     $filter="";
     $where="";
@@ -1017,7 +1032,7 @@ class PlayerController extends Controller
     $dql   = "SELECT p FROM App:Player p ".$where." ORDER BY p.namelong";
     $query = $em->createQuery($dql);
 
-    $paginator  = $this->get('knp_paginator');
+    //$paginator  = $this->get('knp_paginator');
 
     if (is_numeric($maxpage)) {
       $limitpage=$maxpage;
@@ -1033,7 +1048,7 @@ class PlayerController extends Controller
       // throw $this->createNotFoundException("Page ".$page." doesn't exist.");
     }
 
-    $listPlayers = $paginator->paginate(
+    $listPlayers = $this->paginator->paginate(
       $query, 
       $request->query->getInt('page', $page),
       $limitpage
@@ -1144,7 +1159,7 @@ class PlayerController extends Controller
    */
   public function new(Request $request) {
 
-    $em = $this->getDoctrine()->getManager();
+    $em = $this->em();
     $player = new Player();
 
     $form=$this->getFormPlayer($player, "add");
@@ -1210,7 +1225,7 @@ class PlayerController extends Controller
    */
   public function updatePlayerAction($id, Request $request) {
 
-    $em = $this->getDoctrine()->getManager();
+    $em = $this->em();
     $player = $em->getRepository('App\Entity\Player')->findOneBy(['id' => $id]);
 
     $form=$this->getFormPlayer($player, "edit");
@@ -1247,7 +1262,7 @@ class PlayerController extends Controller
 
   /*public function getBestRating ($id, $date) {
 
-    $em = $this->getDoctrine()->getManager();
+    $em = $this->em();
     $player = $em->getRepository('App\Entity\Player')->findOneBy(['id' => $id]);
 
      // get the closest ranking
@@ -1277,7 +1292,7 @@ class PlayerController extends Controller
       return 0;
     }
     else {
-      $em = $this->getDoctrine()->getManager();
+      $em = $this->em();
 
       $player=$user->getIdplayer();
 

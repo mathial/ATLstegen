@@ -5,12 +5,24 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
+use App\Controller\EntityManagerTrait;
+use Doctrine\ORM\EntityManagerInterface;
+
 use App\Entity\Player;
 use App\Entity\Ranking;
 use App\Entity\Rankingpos;
 
 class SiteController extends AbstractController
 {
+
+    use EntityManagerTrait;
+
+    // ✅ Constructor injection
+    public function __construct(EntityManagerInterface $em)
+    {
+      $this->setEntityManager($em);
+    } 
+
     private function getYears() {
         $years=array();
         for ($iY=2017;$iY<=date("Y");$iY++) {
@@ -21,7 +33,7 @@ class SiteController extends AbstractController
 
     private function getGenericSatsNbMatchs() {
 
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->em();
 
         $sql='SELECT COUNT(*) AS nbM, context, YEAR(date) as yr FROM Matchs
               GROUP BY YEAR(date), context' ;
@@ -78,7 +90,7 @@ class SiteController extends AbstractController
 
     private function getGenericSatsNbPlayers() {
 
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->em();
 
         $sql='SELECT COUNT(DISTINCT idP) as nbP, yr FROM(
                 SELECT idPlayer1 as idP, YEAR(date) as yr FROM Matchs GROUP BY YEAR(date), idPlayer1
@@ -122,7 +134,7 @@ class SiteController extends AbstractController
 
     private function getTopLastTennisPerf($nbMax=3) {
 
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->em();
 
         // TENNIS
 
@@ -204,7 +216,7 @@ class SiteController extends AbstractController
     }
 
     private function getBestUpsets ($nbRows=20) {
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->em();
 
         $matches = $em->getRepository('App\Entity\Matchs')->findBy(array(), array("ptsevol"=> "DESC"), $nbRows);
 
@@ -231,7 +243,7 @@ class SiteController extends AbstractController
 
     private function getStackedContextTennisMatches() {
 
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->em();
 
 
         $sql='
@@ -262,7 +274,7 @@ class SiteController extends AbstractController
 
     private function getBestSeries($minMatchsPlayed=5, $nbDays=60) {
 
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->em();
 
 
         $sql='
