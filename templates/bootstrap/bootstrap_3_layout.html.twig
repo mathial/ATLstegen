@@ -1,0 +1,98 @@
+{# templates/bootstrap/bootstrap_3_layout.html.twig #}
+{% use "form_div_layout.html.twig" %}
+
+{# ------------------------------
+   Simple widget (input, textarea, etc.)
+-------------------------------- #}
+{% block form_widget_simple %}
+    {# Apply Bootstrap 3 form-control to all non-hidden fields #}
+    {% if form.vars.type is not defined or form.vars.type != 'hidden' %}
+        {% set attr = attr|merge({class: (attr.class|default('') ~ ' form-control')|trim}) %}
+    {% endif %}
+
+    {# Handle type="range" or "color" (no required attribute) #}
+    {% if form.vars.type is defined and (form.vars.type == 'range' or form.vars.type == 'color') %}
+        {% set required = false %}
+    {% endif %}
+
+    {{ parent() }}
+{% endblock form_widget_simple %}
+
+{# ------------------------------
+   Textarea widget
+-------------------------------- #}
+{% block textarea_widget %}
+    {% set attr = attr|merge({class: (attr.class|default('') ~ ' form-control')|trim}) %}
+    {{ parent() }}
+{% endblock textarea_widget %}
+
+{# ------------------------------
+   Choice dropdowns (collapsed select)
+-------------------------------- #}
+{% block choice_widget_collapsed %}
+    {% set attr = attr|merge({class: (attr.class|default('') ~ ' form-control')|trim}) %}
+    {{ parent() }}
+{% endblock choice_widget_collapsed %}
+
+{# ------------------------------
+   Checkboxes and radios
+-------------------------------- #}
+{# --- Checkbox widget --- #}
+{% block checkbox_widget %}
+    <label class="checkbox-inline" style="margin-bottom: 8px; display: inline-block;">
+        <input type="checkbox" {{ block('widget_attributes') }}
+               {% if value is defined %} value="{{ value }}"{% endif %}
+               {% if checked %} checked="checked"{% endif %} />
+        {{ form.vars.label }}
+    </label>
+{% endblock checkbox_widget %}
+
+{% block checkbox_row %}
+    <div style="margin-bottom: 8px;">
+        {{ form_widget(form) }}
+        {{ form_errors(form) }}
+    </div>
+{% endblock checkbox_row %}
+
+
+{% block radio_widget %}
+    <div class="radio">
+        <label>
+            {{ parent() }}
+            {{ form_label(form) }}
+        </label>
+    </div>
+{% endblock radio_widget %}
+
+{# ------------------------------
+   Form row (wraps label + field + errors)
+-------------------------------- #}
+{% block form_row %}
+    <div class="form-group{% if not valid %} has-error{% endif %}">
+        {{ form_label(form) }}
+        {{ form_widget(form) }}
+        {{ form_errors(form) }}
+    </div>
+{% endblock form_row %}
+
+{# ------------------------------
+   Help text
+-------------------------------- #}
+{% block form_help %}
+    {% if help is not empty %}
+        <p class="help-block">{{ help|trans({}, translation_domain) }}</p>
+    {% endif %}
+{% endblock form_help %}
+
+{# ------------------------------
+   Submit buttons
+-------------------------------- #}
+{% block submit_widget %}
+    {% set attr = attr|merge({class: (attr.class|default('btn btn-primary'))|trim}) %}
+    {{ parent() }}
+{% endblock submit_widget %}
+
+{% block button_widget %}
+    {% set attr = attr|merge({class: (attr.class|default('btn btn-default'))|trim}) %}
+    {{ parent() }}
+{% endblock button_widget %}
