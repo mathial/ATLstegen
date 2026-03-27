@@ -4,48 +4,29 @@ use Symfony\Component\Dotenv\Dotenv;
 
 require dirname(__DIR__).'/vendor/autoload.php';
 
-if (!array_key_exists('APP_ENV', $_SERVER)) {
-    $_SERVER['APP_ENV'] = $_ENV['APP_ENV'] ?? null;
-}
-
-if ('prod' !== $_SERVER['APP_ENV']) {
+// Load .env if APP_ENV is not already defined
+if (!isset($_SERVER['APP_ENV']) && !isset($_ENV['APP_ENV'])) {
     if (!class_exists(Dotenv::class)) {
-        throw new RuntimeException('The "APP_ENV" environment variable is not set to "prod". Please run "composer require symfony/dotenv" to load the ".env" files configuring the application.');
+        throw new RuntimeException('The "symfony/dotenv" package is required to load ".env" files.');
     }
 
-    $path = dirname(__DIR__).'/.env';
     $dotenv = new Dotenv();
 
+    // Use loadEnv if available (Symfony 6+)
     if (method_exists($dotenv, 'loadEnv')) {
-        $dotenv->loadEnv($path);
+        $dotenv->loadEnv(dirname(__DIR__).'/.env');
     } else {
-        // fallback code in case your Dotenv component is not 4.2 or higher (when loadEnv() was added)
-
-        if (file_exists($path) || !file_exists($p = "$path.dist")) {
+        // fallback for older Symfony versions
+        $path = dirname(__DIR__).'/.env';
+        if (file_exists($path)) {
             $dotenv->load($path);
-        } else {
-            $dotenv->load($p);
-        }
-
-        if (null === $env = $_SERVER['APP_ENV'] ?? $_ENV['APP_ENV'] ?? null) {
-            $dotenv->populate(array('APP_ENV' => $env = 'dev'));
-        }
-
-        if ('test' !== $env && file_exists($p = "$path.local")) {
-            $dotenv->load($p);
-            $env = $_SERVER['APP_ENV'] ?? $_ENV['APP_ENV'] ?? $env;
-        }
-
-        if (file_exists($p = "$path.$env")) {
-            $dotenv->load($p);
-        }
-
-        if (file_exists($p = "$path.$env.local")) {
-            $dotenv->load($p);
         }
     }
 }
 
-$_SERVER['APP_ENV'] = $_ENV['APP_ENV'] = $_SERVER['APP_ENV'] ?: $_ENV['APP_ENV'] ?: 'dev';
-$_SERVER['APP_DEBUG'] = $_SERVER['APP_DEBUG'] ?? $_ENV['APP_DEBUG'] ?? 'prod' !== $_SERVER['APP_ENV'];
-$_SERVER['APP_DEBUG'] = $_ENV['APP_DEBUG'] = (int) $_SERVER['APP_DEBUG'] || filter_var($_SERVER['APP_DEBUG'], FILTER_VALIDATE_BOOLEAN) ? '1' : '0';
+// Ensure APP_ENV is set
+$_SERVER['APP_ENV'] = $_ENV['APP_ENV'] = $_SERVER['APP_ENV'] ?? $_ENV['APP_ENV'] ?? 'dev';
+
+// Ensure APP_DEBUG is set
+$_SERVER['APP_DEBUG'] = $_ENV['APP_DEBUG'] = $_SERVER['APP_DEBUG'] ?? $_ENV['APP_DEBUG'] ?? ($_SERVER['APP_ENV'] !== 'prod');
+$_SERVER['APP_DEBUG'] = $_ENV['APP_DEBUG'] = filter_var($_SERVER['APP_DEBUG'], FILTER_VALIDATE_BOOLEAN) ? '1' : '0';
