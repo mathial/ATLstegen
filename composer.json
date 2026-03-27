@@ -5,17 +5,16 @@
         "php": ">=8.0.2",
         "ext-ctype": "*",
         "ext-iconv": "*",
-
-        "doctrine/doctrine-bundle": "^2.18",
+        "doctrine/doctrine-bundle": "^2.8",
         "doctrine/doctrine-migrations-bundle": "^3.2",
-        "doctrine/orm": "^2.15",
-
+        "doctrine/orm": "^2.14",
         "knplabs/knp-paginator-bundle": "^5.9",
         "sensio/framework-extra-bundle": "^6.2",
-
         "symfony/apache-pack": "^1.0",
         "symfony/asset": "^6.4",
+        "symfony/cache": "6.4.*",
         "symfony/console": "^6.4",
+        "symfony/dotenv": "6.4.*",
         "symfony/flex": "^2.9",
         "symfony/form": "^6.4",
         "symfony/framework-bundle": "^6.4",
@@ -26,7 +25,6 @@
         "symfony/yaml": "^6.4"
     },
     "require-dev": {
-        "symfony/dotenv": "^6.4",
         "symfony/maker-bundle": "^1.67"
     },
     "config": {
