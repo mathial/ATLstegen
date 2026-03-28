@@ -18,7 +18,7 @@ php composer.phar update
 
 php composer.phar require symfony/apache-pack
 
-sudo php bin/console cache:clear
+php bin/console cache:clear
 ```
 
 if the copy does not work, try without https.
