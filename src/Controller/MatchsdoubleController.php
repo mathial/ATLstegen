@@ -15,6 +15,7 @@ use Doctrine\ORM\EntityRepository;
 use App\Controller\EntityManagerTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\Security\Core\Security;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -36,12 +37,14 @@ class MatchsdoubleController extends AbstractController
     use EntityManagerTrait;
 
     private PaginatorInterface $paginator;
+    private Security $security;
 
     // ✅ Constructor injection
-    public function __construct(EntityManagerInterface $em, PaginatorInterface $paginator)
+    public function __construct(EntityManagerInterface $em, PaginatorInterface $paginator, Security $security)
     {
         $this->setEntityManager($em);
         $this->paginator = $paginator;
+        $this->security = $security;
     }
 
     /**
@@ -73,7 +76,7 @@ class MatchsdoubleController extends AbstractController
 
     // for the new matches, set the user idPlayer as default
     if ($mode=="add") {
-      $user = $this->get('security.token_storage')->getToken()->getUser();
+      $user = $this->getUser();
       $playerDefault=$user->getIdplayer();
 
       $formBuilder
@@ -231,7 +234,7 @@ class MatchsdoubleController extends AbstractController
 
         if ($form->isValid()) {
 
-          $user = $this->get('security.token_storage')->getToken()->getUser();
+          $user = $this->getUser();
           $match->setIduseradd($user);
 
           $em->persist($match);
