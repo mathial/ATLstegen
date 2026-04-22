@@ -47,7 +47,6 @@ To enable the swap you can use for example:
 /sbin/swapon /var/swap.1
 
 
-
 #Local version Mathieu
 ```
 #/Applications/MAMP/bin/startMysql.sh
