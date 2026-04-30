@@ -400,7 +400,7 @@ class SiteController extends AbstractController
     }
 
     /**
-     * @Route("/summer-tournaments", name="generation_matchup")
+     * @Route("/generation-matchup", name="generation_matchup")
      */
     public function tennisGenerationMatchup()
     {
