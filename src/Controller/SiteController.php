@@ -430,6 +430,16 @@ class SiteController extends AbstractController
     }
 
     /**
+     * @Route("/summer-tournament-2025", name="summer_longformat_tournament_2025")
+     */
+    public function tennisSummerTournament2025()
+    {
+        return $this->render('site/summer_tournaments_2025.html.twig', [
+            'controller_name' => 'SiteController',
+        ]);
+    }
+
+    /**
      * @Route("/summer-tournament-2024", name="summer_longformat_tournament_2024")
      */
     public function tennisSummerTournament2024()
