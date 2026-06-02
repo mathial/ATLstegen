@@ -430,8 +430,7 @@ class MatchsController extends AbstractController
         "Generation Matchup" => "Generation Matchup",
         "Christmas Tournament" => "Christmas Tournament", 
         "Måndagstennis (LBTK)" => "LBTK-Måndagstennis", 
-        "Summer tournament 2025 (august)" => "Summer tournament 2025 (august)",
-        "Summer tournament 2025 (july)" => "Summer tournament 2025 (july)",
+        "Summer tournament 2026 (june)" => "Summer tournament 2026 (june)",
         "ATL Klubbmästerskap" => "ATL Klubbmästerskap",
         "Svenska Tennisligan" => "Svenska Tennisligan",
         "Sprinttennis tournament" => "Sprinttennis tournament"
