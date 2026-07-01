@@ -431,6 +431,7 @@ class MatchsController extends AbstractController
         "Christmas Tournament" => "Christmas Tournament", 
         "Måndagstennis (LBTK)" => "LBTK-Måndagstennis", 
         "Summer tournament 2026 (june)" => "Summer tournament 2026 (june)",
+        "Summer tournament 2026 (july)" => "Summer tournament 2026 (july)",
         "ATL Klubbmästerskap" => "ATL Klubbmästerskap",
         "Svenska Tennisligan" => "Svenska Tennisligan",
         "Sprinttennis tournament" => "Sprinttennis tournament"
