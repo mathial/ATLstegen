@@ -432,6 +432,7 @@ class MatchsController extends AbstractController
         "Måndagstennis (LBTK)" => "LBTK-Måndagstennis", 
         "Summer tournament 2026 (june)" => "Summer tournament 2026 (june)",
         "Summer tournament 2026 (july)" => "Summer tournament 2026 (july)",
+        "Summer tournament 2026 (august)" => "Summer tournament 2026 (august)",
         "ATL Klubbmästerskap" => "ATL Klubbmästerskap",
         "Svenska Tennisligan" => "Svenska Tennisligan",
         "Sprinttennis tournament" => "Sprinttennis tournament"
