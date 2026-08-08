@@ -425,7 +425,7 @@ class MatchsController extends AbstractController
       'choices' => array(
         "Stege" => "Stege", 
         "Stege (söndag 21-22)" => "Stege (söndag 21-22)", 
-        "Division League - Round#20" => "Division League - Round#20", 
+        "Division League - Round#21" => "Division League - Round#21", 
         "A-serien (ATL)" => "A-serien", 
         "Generation Matchup" => "Generation Matchup",
         "Christmas Tournament" => "Christmas Tournament", 
