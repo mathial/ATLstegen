@@ -490,6 +490,16 @@ class SiteController extends AbstractController
     }
 
     /**
+     * @Route("/the-division-league-old", name="division_league_oldsystem")
+     */
+    public function tennisDivisionLeagueOldSystem()
+    {
+        return $this->render('site/division_league_oldsystem.html.twig', [
+            'controller_name' => 'SiteController',
+        ]);
+    }
+
+    /**
      * @Route("/chase-the-rabbits", name="rabbit_rules")
      */
     public function tennisChaseTheRabbit()

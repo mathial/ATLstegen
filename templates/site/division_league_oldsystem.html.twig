@@ -1,0 +1,103 @@
+{% extends "common/layout.html.twig" %}
+
+{% block body %}
+
+  <h1>The Division LEAGUE !</h3>
+
+  <p><b>Scores should be reported on two places</b>, first in <a href="https://docs.google.com/spreadsheets/d/193o7RsolU8e86oEfyByBpFHkiM3Tb4ttLdaS_vpBpyk/edit" target="_blank">the dedicated GDrive spreadsheet</a>, where you can check the standings as well.<br>
+  Then the score has to be added as weel in the database here. If you have an account, please do it yourself. If not, please send a message to Mathieu ;-)</p>
+  <br>
+
+  <p><b><i>The 22nd round starts the 26th of October (v44) and will end the 10th of January (v01)</i></b></p>
+  <p>Season 1 : Rounds 1 to 4, 4th of October 2021 => 29th of May 2022</p>
+  <p>Season 2 : Rounds 5 to 8, 15th of August 2022 => 1st of June 2023</p>
+  <p>Season 3 : Rounds 9 to 12, 21st of August 2023 => 31st of May 2024</p>
+  <p>Season 4 : Rounds 13 to 16, 26th of August 2024 => 31st of May 2025</p>
+  <p>Season 5 : Rounds 17 to 20, 25th of August 2025 => 31st of May 2026</p>
+  <p>Season 6 : Rounds 21 to 24, 24th of August 2026 => 31st of May 2027</p>
+  <!--
+  <p><i>1st round : 4th of October 2021 (v40) => 21st of November 2021 (v46)</i></p>
+  <p><i>2nd round : 22nd of November 2021 (v47) => 23rd of January 2022 (v3)</i></p>
+  <p><i>3rd round : 24th of January 2022 (v4) => 27th of Mars 2022 (v12)</i></b></p>
+  <p><i>4th round : 28th of Mars 2022 (v13) => 29th of May 2022 (v21)</i></p>
+  <p><i>5th round : 15th of August 2022 (v33) => 23rd of Okt 2022 (v42)</i></p>
+  <p><i>6th round : 4th of October 2022 (v43) => 15th of January 2023 (v02)</i></p>
+  <p><i>7th round : 16th of January 2023 (v03) => 26th of March 2023 (v12)</i></p>
+  <p><i>8th round : 27th of Mars 2023 (v13) => 1st of June 2023 (v22)</i></p>
+  <p><i>9th round : 21st of August 2023 (v34) => 22nd of October 2023 (v42)</i></p>
+  <p><i>10th round : 23rd of October 2023 (v43) => 7th of January 2024 (v01)</i></p>
+  <p><i>11th round : 8th of January 2024 (v2) => 17th of March 2024 (v11)</i></p>
+  <p><i>12th round : 18th of Mars 2024 (v12) => 31st of May 2024 (v22)</i></p>
+  <p><i>13th round : 26th of August 2024 (v35) => 13th of October 2024 (v41)</i></p>
+  <p><i>14th round : 14th of October 2024 (v42) => 29th of December 2024 (v52)</i></p>
+  <p><i>15th round : 2nd of January 2025 (v2) => 16th of March 2025 (v11)</i></p>
+  <p><i>16th round : 17th of March 2025 (v12) => 31st of May 2025 (v22)</i></p>
+  <p><i>17th round : 25th of August 2025 (v35) => 28th of October 2025 (v43)</i></p>
+  <p><i>18th round : 29th of October 2025 (v44) => 11th of January 2026 (v02)</i></p>
+  <p><i>19th round : 12th of January 2026 (v3) => 22nd of March 2026 (v12)</i></p>
+  <p><i>20th round : 23rd of Mars 2026 (v13) => 31st of May 2026 (v22)</i></p>
+  <p><i>21st round : 24th of August 2026 (v35) => 25th of Oktober 2026 (v43)</i></p>
+  -->
+  <br>
+  <ul>
+    <li>Single tennis matches.</li>
+    <li>Divisions of 5, 6 or 7 players with similar levels. </li>
+    <li>Every player meets the other 4/5/6 of his/her division. </li>
+    <li>You have 8 to 10 weeks to play all your matches. </li>
+    <li>You plan them the way you want, by contacting your opponents. </li>
+    <li>No registration fee, but you pay your booking courts and balls as usual when you book a spot in ATL.</li>
+    <li>A match is a one-hour match (details will come soon).</li>
+    <li>At the end of the 8-10 weeks, top 2 players of each div go to upper division. Bottom 2 go down.</li>
+    <li>Even if you're away one or 2 weeks, it's fine, as long as you make sure to play your 5 matches within the 8-10 weeks ;-)</li>
+    <li>Open to everyone, juniors and seniors, beginners and rising stars !</li>
+  </ul>
+
+  <p>Please register by sending an email to : mathieu.blanchet@gmail.com, or drop me message on Signal/Whatsapp</p>
+
+
+
+  <h3 id="formatmatch">About the match format</h3>
+
+  <ul>
+   <li>it must be played during a one hour spot (ATL or elsewhere). The lower ranked player (use the column rating-index value!) has the priority to choose the surface and place, in case you disagree ;-)</li>
+   <li>we cannot play with regular sets in only one hour. So we count all the games until the end. Scores can be 11/5, 13/2, 7/7, whatever</li>
+   <li>you don't have to buy a new can of balls. But if possible don't use the one your dog loves. Again, the lower ranked player has the priority to decide in case you disagree ;-)</li>
+   <li>the big question is how to end a time-limited match ? The best way to do it is to start the final game approximately when 5 minutes remain on the clock. <b>Make sure that you and your opponent agree that you're about to play the final game !</b>. If needed you can as well decide to play a tie-break(to 5, 7, 10...), or to play the final game with no-ad. Whatever, as long as you and your opponent agree on the rules. Unfinished games do not count!</li>
+   <li>if it's a tie, then it's a tie :)</li>
+  </ul>
+
+  <h3>The division system</h3>
+
+  <ul>
+   <li>check <a href="https://docs.google.com/spreadsheets/d/193o7RsolU8e86oEfyByBpFHkiM3Tb4ttLdaS_vpBpyk/edit#gid=2070877802" target="_blank">the dedicated GDrive spreadsheet</a></li>
+   <li>please report your score once the match is played. Both in the spreadsheet and here if possible.</li>
+   <li>the scale used is : 3 points for a win. 2 points for a tie. 1 point for a loss. 0 for a withdrawal.</li>
+   <li>at the end of the round, the best 2 players move up, the last 2 move down.</li>
+   <li>if 2 or more players end with the same amount of points, we decide between them by using : 1- their head-to-head result during this round. 2- the number of matches played without W/O. 3- the game difference. 4- the number of games scored.</li>
+   <li>if some matches are not played at the end of the round, because one player was injured or away for a long time, or noot responding to any messages : this player will get a W/O (0pt), the other one will get a win with a 2-0 score, and some points (average of his/her result during the round).</li>
+   <li>if a match is planned and then cancelled the very final days of the round, without any other alternative to get this match played, the W/O will be only for the player "guilty" of the cancellation. The other one will get a win and some points (average of his/her result during the round).</li>
+   <li>if some matches are not played at the end of the round, because the two players did not find a way to arrange it : both of them will get a W/O (0pt)</li>
+  </ul>
+
+  <p><b>The matches that were not organized before the final day of the round will get both of you 0 point !</b> If one player is injured and can’t play, then the other one will get the win reward (3points) with the score of 2-0.</p>
+
+  <h3 id="newround">New Round</h3>
+
+  <p><b>New players can join a round in progress (if there are spots available) or a new round</b>, and some players will maybe stop. I'll make sure to guarantee some justice regarding the up/down moves, and regarding the spots obtained by the newcomers. Priority will be given to players who played the first round. Newcomers will fill in the blanks. And of course we can create more divisions if needed!</p>
+
+  <h3 id="detailsRatingsAvg">Details for the averange ratings used to create the divs, or add new players</h3>
+
+  <!--<p>Please find below the list of players used for the 1st round. The average rankings is the Stegen rankings from 2021 (average of all the unique ratings for each players). Newcomers get an estimation.</p>-->
+  <p>Since the round 2 we started to use this method : <b>average of the <u>unique</u> ratings for each players during the last 6months.</b></p>
+
+<!--
+  <p><i>2nd round newcomers :</i></p>
+  <p style="text-align:center" id="division_round2_newcomers"><img src="{{ asset('img/league_2ndround_ratings_newcomers.png') }}"></p>
+
+  <p><i>1st round list :</i></p>
+  <p style="text-align:center" id="entrylist-div1234"><img src="{{ asset('img/league-round1-div1234.png') }}"></p>
+  <p style="text-align:center" id="entrylist-div567"><img src="{{ asset('img/league-round1-div567.png') }}"></p>
+-->
+
+{% endblock %}
+
