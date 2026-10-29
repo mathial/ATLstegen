@@ -214,7 +214,8 @@ class UserController extends AbstractController
 
     $em = $this->em();
     //$user = $em->getRepository('App\Entity\User')->findOneBy(['id' => $id]);
-    $user = $this->get('security.token_storage')->getToken()->getUser();
+    //$user = $this->get('security.token_storage')->getToken()->getUser();
+    $user = $this->getUser();
 
     $formBuilder = $this->createFormBuilder($user);
 

@@ -1285,7 +1285,8 @@ class PlayerController extends AbstractController
    */
   public function editMyProfile(Request $request) {
 
-    $user = $this->get('security.token_storage')->getToken()->getUser();
+    //$user = $this->get('security.token_storage')->getToken()->getUser();
+    $user = $this->getUser();
 
     if (!isset($user)) {
       $request->getSession()->getFlashBag()->add('error', 'User not logged in');
