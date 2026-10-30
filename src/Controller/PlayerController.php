@@ -1299,11 +1299,99 @@ class PlayerController extends AbstractController
 
       $formBuilder = $this->createFormBuilder($player);
 
-      $formBuilder
+      $formBuilder 
+      ->add('phone', TextType::class, array(
+        'label'    => 'Phone number',
+        'required' => false,
+        'attr'     => [
+          'placeholder' => '+46 707 70 70 70',
+        ]
+      ))
       ->add('email', EmailType::class, array(
         'label'    => 'Email',
         'required' => false,
-      ));
+        'attr'     => [
+          'placeholder' => 'example@tennis.com',
+        ]
+      )) 
+      ->add('separator', FormType::class, [
+          'mapped' => false,
+          'inherit_data' => true,
+          'label' => 'Availabilities'
+      ])
+      ->add('availabilityweekdaysdaytime', ChoiceType::class, [
+        'label' => 'Weekdays – Daytime',
+        'required' => false,
+        'placeholder' => 'Please select',
+        'choices' => [
+            'Often' => 'often',
+            'Sometimes' => 'sometimes',
+            'Never' => 'never',
+        ],
+        'empty_data' => '',
+      ])
+      ->add('availabilityweekdaysevenings', ChoiceType::class, [
+        'label' => 'Weekdays – Evenings',
+        'required' => false,
+        'placeholder' => 'Please select',
+        'choices' => [
+            'Often' => 'often',
+            'Sometimes' => 'sometimes',
+            'Never' => 'never',
+        ],
+        'empty_data' => '',
+      ])
+      ->add('availabilityweekend', ChoiceType::class, [
+        'label' => 'Week-ends',
+        'required' => false,
+        'placeholder' => 'Please select',
+        'choices' => [
+            'Often' => 'often',
+            'Sometimes' => 'sometimes',
+            'Never' => 'never',
+        ],
+        'empty_data' => '',
+      ])
+      ->add('availabilityfridayevening', ChoiceType::class, [
+        'label' => 'Friday evenings',
+        'required' => false,
+        'placeholder' => 'Please select',
+        'choices' => [
+            'Often' => 'often',
+            'Sometimes' => 'sometimes',
+            'Never' => 'never',
+        ],
+        'empty_data' => '',
+      ])
+      ->add('availabilitysundaystegen', ChoiceType::class, [
+        'label' => 'Sunday Stegen kl21-22',
+        'required' => false,
+        'placeholder' => 'Please select',
+        'choices' => [
+            'Often' => 'often',
+            'Sometimes' => 'sometimes',
+            'Never' => 'never',
+        ],
+        'empty_data' => '',
+      ])
+      ->add('availabilitycomment', TextType::class, [
+        'label' => 'Comment',
+        'required' => false,
+        'attr'     => [
+          'placeholder' => 'except week42, available wednesday mornings, etc...',
+        ],
+        'empty_data' => '',
+      ])   
+      ->add('idcountry', EntityType::class, array(
+        'label'   => 'Displayed nationality (only one, sorry...)',
+        'class' => Country::class,
+        'query_builder' => function (EntityRepository $er) {
+          return $er->createQueryBuilder('c')
+              ->orderBy('c.name', 'ASC');
+        },
+        'choice_label' => 'name',
+      ))
+      ;
       $formBuilder
       ->add('update', SubmitType::class, array('label' => 'Update'))
       ;

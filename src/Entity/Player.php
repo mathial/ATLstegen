@@ -115,6 +115,48 @@ class Player
      */
     private $idcountry;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="availabilityWeekdaysDaytime", type="string", length=255, nullable=false, options={"default"=""})
+     */
+    private $availabilityweekdaysdaytime = '';
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="availabilityWeekdaysEvenings", type="string", length=255, nullable=false, options={"default"=""})
+     */
+    private $availabilityweekdaysevenings = '';
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="availabilityWeekend", type="string", length=255, nullable=false, options={"default"=""})
+     */
+    private $availabilityweekend = '';
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="availabilityFridayEvening", type="string", length=255, nullable=false, options={"default"=""})
+     */
+    private $availabilityfridayevening = '';
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="availabilitySundayStegen", type="string", length=255, nullable=false, options={"default"=""})
+     */
+    private $availabilitysundaystegen = '';
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="availabilityComment", type="text", nullable=false)
+     */
+    private $availabilitycomment = '';
+
     public function getId(): ?int
     {
         return $this->id;
@@ -288,5 +330,70 @@ class Player
         return $this;
     }
 
+    public function getAvailabilityWeekdaysDaytime(): ?string
+    {
+        return $this->availabilityweekdaysdaytime;
+    }
 
+    public function setAvailabilityWeekdaysDaytime(?string $value): self
+    {
+        $this->availabilityweekdaysdaytime = $value ?? '';
+        return $this;
+    }
+
+
+    public function getAvailabilityWeekdaysEvenings(): ?string
+    {
+        return $this->availabilityweekdaysevenings;
+    }
+
+    public function setAvailabilityWeekdaysEvenings(string $value): self
+    {
+        $this->availabilityweekdaysevenings = $value ?? '';
+        return $this;
+    }
+
+    public function getAvailabilityWeekend(): ?string
+    {
+        return $this->availabilityweekend;
+    }
+
+    public function setAvailabilityWeekend(string $value): self
+    {
+        $this->availabilityweekend = $value ?? '';
+        return $this;
+    }
+
+    public function getAvailabilityFridayEvening(): ?string
+    {
+        return $this->availabilityfridayevening;
+    }
+
+    public function setAvailabilityFridayEvening(string $value): self
+    {
+        $this->availabilityfridayevening = $value ?? '';
+        return $this;
+    }
+
+    public function getAvailabilitySundayStegen(): ?string
+    {
+        return $this->availabilitysundaystegen;
+    }
+
+    public function setAvailabilitySundayStegen(string $value): self
+    {
+        $this->availabilitysundaystegen = $value ?? '';
+        return $this;
+    }
+
+    public function getAvailabilityComment(): ?string
+    {
+        return $this->availabilitycomment;
+    }
+
+    public function setAvailabilityComment(string $value): self
+    {
+        $this->availabilitycomment = $value ?? '';
+        return $this;
+    }
 }
