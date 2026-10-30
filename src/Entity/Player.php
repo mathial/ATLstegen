@@ -157,6 +157,13 @@ class Player
      */
     private $availabilitycomment = '';
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="preferredVenues", type="string", length=255, nullable=false, options={"default"="any"})
+     */
+    private $preferredvenues = 'any';
+
     public function getId(): ?int
     {
         return $this->id;
@@ -347,7 +354,7 @@ class Player
         return $this->availabilityweekdaysevenings;
     }
 
-    public function setAvailabilityWeekdaysEvenings(string $value): self
+    public function setAvailabilityWeekdaysEvenings(?string $value): self
     {
         $this->availabilityweekdaysevenings = $value ?? '';
         return $this;
@@ -358,7 +365,7 @@ class Player
         return $this->availabilityweekend;
     }
 
-    public function setAvailabilityWeekend(string $value): self
+    public function setAvailabilityWeekend(?string $value): self
     {
         $this->availabilityweekend = $value ?? '';
         return $this;
@@ -369,7 +376,7 @@ class Player
         return $this->availabilityfridayevening;
     }
 
-    public function setAvailabilityFridayEvening(string $value): self
+    public function setAvailabilityFridayEvening(?string $value): self
     {
         $this->availabilityfridayevening = $value ?? '';
         return $this;
@@ -380,7 +387,7 @@ class Player
         return $this->availabilitysundaystegen;
     }
 
-    public function setAvailabilitySundayStegen(string $value): self
+    public function setAvailabilitySundayStegen(?string $value): self
     {
         $this->availabilitysundaystegen = $value ?? '';
         return $this;
@@ -391,9 +398,21 @@ class Player
         return $this->availabilitycomment;
     }
 
-    public function setAvailabilityComment(string $value): self
+    public function setAvailabilityComment(?string $value): self
     {
         $this->availabilitycomment = $value ?? '';
         return $this;
     }
+
+    public function getPreferredVenues(): ?string
+    {
+        return $this->preferredvenues;
+    }
+
+    public function setPreferredVenues(?string $value): self
+    {
+        $this->preferredvenues = $value ?? 'any';
+        return $this;
+    }
+
 }

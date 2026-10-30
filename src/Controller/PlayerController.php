@@ -1094,6 +1094,70 @@ class PlayerController extends AbstractController
       },
       'choice_label' => 'name',
     ))
+    ->add('availabilityweekdaysdaytime', ChoiceType::class, [
+        'label' => 'Weekdays – Daytime',
+        'required' => false,
+        'placeholder' => 'Please select',
+        'choices' => [
+            'Often' => 'often',
+            'Sometimes' => 'sometimes',
+            'Never' => 'never',
+        ],
+        'empty_data' => '',
+      ])
+    ->add('availabilityweekdaysevenings', ChoiceType::class, [
+      'label' => 'Weekdays – Evenings',
+      'required' => false,
+      'placeholder' => 'Please select',
+      'choices' => [
+          'Often' => 'often',
+          'Sometimes' => 'sometimes',
+          'Never' => 'never',
+      ],
+      'empty_data' => '',
+    ])
+    ->add('availabilityweekend', ChoiceType::class, [
+      'label' => 'Week-ends',
+      'required' => false,
+      'placeholder' => 'Please select',
+      'choices' => [
+          'Often' => 'often',
+          'Sometimes' => 'sometimes',
+          'Never' => 'never',
+      ],
+      'empty_data' => '',
+    ])
+    ->add('availabilityfridayevening', ChoiceType::class, [
+      'label' => 'Friday evenings',
+      'required' => false,
+      'placeholder' => 'Please select',
+      'choices' => [
+          'Often' => 'often',
+          'Sometimes' => 'sometimes',
+          'Never' => 'never',
+      ],
+      'empty_data' => '',
+    ])
+    ->add('availabilitysundaystegen', ChoiceType::class, [
+      'label' => 'Sunday Stegen kl21-22',
+      'required' => false,
+      'placeholder' => 'Please select',
+      'choices' => [
+          'Often' => 'often',
+          'Sometimes' => 'sometimes',
+          'Never' => 'never',
+      ],
+      'empty_data' => '',
+    ])
+    ->add('availabilitycomment', TextType::class, [
+      'label' => 'Comment',
+      'required' => false,
+      'attr'     => [
+        'placeholder' => 'except week42, available wednesday mornings, etc...',
+      ],
+      'empty_data' => '',
+    ])  
+
     ->add('initialRatingTennis', IntegerType::class, array(
       'required'   => true,
     ))
@@ -1104,6 +1168,7 @@ class PlayerController extends AbstractController
     ->add('initialRatingDouble', IntegerType::class, array(
       'required'   => true,
     ))
+
     // ->add('username', TextType::class, array(
     //   'required'   => false,
     // ))
@@ -1382,6 +1447,13 @@ class PlayerController extends AbstractController
         ],
         'empty_data' => '',
       ])   
+      ->add('preferredvenues', TextType::class, [
+          'label' => 'Preferred venues',
+          'required' => false,
+          'attr' => [
+              'placeholder' => 'VictoriaStadion, Gerdahallen, Vikinghallen, etc',
+          ],
+      ])
       ->add('idcountry', EntityType::class, array(
         'label'   => 'Displayed nationality (only one, sorry...)',
         'class' => Country::class,
