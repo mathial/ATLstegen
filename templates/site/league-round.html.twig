@@ -1,0 +1,73 @@
+{% extends "common/layout.html.twig" %}
+
+{% block body %}
+
+    <div class="container">
+
+        <h1>{{ leagueRound.name }}</h1>
+
+        <p>
+            From {{ leagueRound.dateStart|date('d M Y') }}
+            to {{ leagueRound.dateFinish|date('d M Y') }}
+        </p>
+
+        <h3>Entry List</h3>
+
+        <p><i>Availabilities columns : weekdays daytime, weekdays evenings, week-end, friday evenings, sunday Stegen kl21-22, comments</i></p>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Player</th>
+                    <th>Ri-6m</th>
+                    <th colspan=6 width="20%">Availabilities</th>
+                    <th>Venues</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% set rank = 1 %}
+                {% for participant in participants %}
+                    <tr>
+                        <td>{{ rank }}</td>
+                        <td>
+                            <a href="{{ path('player_view', {'id':participant.idplayer.id}) }}">
+                                {{ participant.idplayer.nameshort }}
+                            </a>
+                        </td>
+                        <td>{{ participant.rating }}</td>
+                        <td class="availability{{ participant.idplayer.availabilityWeekdaysDaytime  }}">
+                            {{ participant.idplayer.availabilityWeekdaysDaytime |slice(0, 1)|upper }}
+                        </td>
+                        <td class="availability{{ participant.idplayer.availabilityWeekdaysEvenings  }}">
+                            {{ participant.idplayer.availabilityWeekdaysEvenings |slice(0, 1)|upper }}
+                        </td>
+                        <td class="availability{{ participant.idplayer.availabilityWeekend   }}">
+                            {{ participant.idplayer.availabilityWeekend  |slice(0, 1)|upper }}
+                        </td>
+                        <td class="availability{{ participant.idplayer.availabilityFridayEvening   }}">
+                            {{ participant.idplayer.availabilityFridayEvening |slice(0, 1)|upper }}
+                        </td>
+                        <td class="availability{{ participant.idplayer.availabilitySundayStegen   }}">
+                            {{ participant.idplayer.availabilitySundayStegen  |slice(0, 1)|upper }}
+                        </td>
+                        <td>
+                            <i>{{ participant.idplayer.availabilityComment }}</i>
+                        </td>
+                        <td>
+                            <i>{{ participant.idplayer.preferredVenues }}</i>
+                        </td>
+                    </tr>
+                    {% set rank = rank + 1 %}
+                {% else %}
+                    <tr>
+                        <td colspan="3">No participants found.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+{% endblock %}

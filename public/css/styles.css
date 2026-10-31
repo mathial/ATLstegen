@@ -100,5 +100,16 @@ footer {
 }
 
 .playerAlreadyMet {
-	background-color: #FFD700;
+	/*background-color: #FFD700;*/
+	background-color: #008000;
+}
+
+.availabilityoften {
+	background-color: #008000;
+}
+.availabilitysometimes {
+	background-color: #FFA500;
+}
+.availabilitynever {
+	background-color: #B22222;
 }
