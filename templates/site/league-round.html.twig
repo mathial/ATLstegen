@@ -21,7 +21,7 @@
                     <th>#</th>
                     <th>Player</th>
                     <th>Ri-6m</th>
-                    <th colspan=6 width="20%">Availabilities</th>
+                    <th colspan=6 width="50%">Availabilities</th>
                     <th>Venues</th>
                 </tr>
             </thead>
@@ -52,10 +52,10 @@
                         <td class="availability{{ participant.idplayer.availabilitySundayStegen   }}">
                             {{ participant.idplayer.availabilitySundayStegen  |slice(0, 1)|upper }}
                         </td>
-                        <td>
+                        <td style="text-align:left;">
                             <i>{{ participant.idplayer.availabilityComment }}</i>
                         </td>
-                        <td>
+                        <td style="text-align:left;">
                             <i>{{ participant.idplayer.preferredVenues }}</i>
                         </td>
                     </tr>
