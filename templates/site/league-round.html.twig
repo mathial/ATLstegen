@@ -35,6 +35,11 @@
                             <a href="{{ path('player_view', {'id':participant.idplayer.id}) }}">
                                 {{ participant.idplayer.nameshort }}
                             </a>
+                            {% if participant.idplayer.id in participantIdForPhone %}
+                                <small class="text-muted">
+                                    {{ participant.idplayer.phone }}
+                                </small>
+                            {% endif %}
                         </td>
                         <td>{{ participant.rating }}</td>
                         <td class="availability{{ participant.idplayer.availabilityWeekdaysDaytime  }}">
