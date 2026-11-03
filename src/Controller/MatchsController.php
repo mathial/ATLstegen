@@ -1399,8 +1399,15 @@ class MatchsController extends AbstractController
     $formBuilder = $this->createFormBuilder([ 'round' => $round ]);
 
     $formBuilder 
-      ->add('round', ChoiceType::class, [ 'choices' => $arrRounds, 'label' => 'Select round', 'required' => true, ]) 
-      ->add('Select', SubmitType::class);
+      ->add('round', ChoiceType::class, [
+        'choices' => $arrRounds, 
+        'label' => 'Select round', 
+        'required' => true, 
+        'attr' => [
+            'onchange' => 'this.form.submit();'
+        ]
+      ]) 
+      ;
 
     $form = $formBuilder->getForm();
 
