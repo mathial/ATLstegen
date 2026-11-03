@@ -1,0 +1,62 @@
+{% form_theme form 'bootstrap/bootstrap_3_layout.html.twig' %}
+
+    {% extends "common/layout.html.twig" %}
+
+    {% block body %}
+
+    <div class="form">
+        {{ form(form) }}
+    </div>
+
+    <h3>League Standings - Round #{{ round }}</h3>
+
+    <div class="table-responsive">
+
+        <table class="table">
+
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Player</th>
+                    <th>Points</th>
+                    <th>W</th>
+                    <th>T</th>
+                    <th>L</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for playerId, data in standings %}
+
+                    <tr>
+                        <td>{{ loop.index }}</td>
+
+                        <td>
+                            <a href="{{ path('player_view', {'id': data.player.id}) }}">
+                                {{ data.player.nameshort }}
+                            </a>
+                        </td>
+
+                        <td><strong>{{ data.points }}</strong></td>
+                        <td>{{ data.wins }}</td>
+                        <td>{{ data.ties }}</td>
+                        <td>{{ data.losses }}</td>
+                    </tr>
+
+                {% else %}
+
+                    <tr>
+                        <td colspan="6">No participants found for this round.</td>
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    {% endblock %}

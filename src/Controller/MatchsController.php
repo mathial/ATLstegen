@@ -1373,6 +1373,121 @@ class MatchsController extends AbstractController
 
 
   /**
+
+   * @Route(
+   * "/matchs/leagueStandings/{round}",
+   * name="matchs_league_standings",
+   * requirements={"round"="\d+"},
+   * defaults={"round"=22}
+   * ) 
+  */ 
+  public function leagueStandings($round = 22, Request $request) { 
+
+    $em = $this->em();
+    $arrRounds = array();
+
+    // Retrieve available rounds (starting from round 22) 
+    $dqlRounds = ' SELECT DISTINCT l.roundnumber 
+    FROM App\Entity\LeagueRoundParticipant p,  App\Entity\LeagueRound l 
+    WHERE l.id=p.idleagueround
+    AND l.roundnumber >= :minRound 
+    ORDER BY l.roundnumber DESC ';
+    $roundsResult = $em->createQuery($dqlRounds) ->setParameter('minRound', 22) ->getResult();
+
+    foreach ($roundsResult as $result) { $arrRounds['Round #' . $result['roundnumber']] = (int) $result['roundnumber']; }
+
+
+    // Create the form 
+    $formBuilder = $this->createFormBuilder([ 'round' => $round ]);
+    $formBuilder ->add('round', ChoiceType::class, [ 
+      'choices' => $arrRounds, 
+      'label' => 'Select round', 
+      'required' => true, 
+      'attr' => [ 'onchange' => 'this.form.submit();' ] 
+    ]);
+
+    $form = $formBuilder->getForm();
+    $form->handleRequest($request);
+
+    // If submitted, redirect to the selected round URL 
+    if ($form->isSubmitted() && $form->isValid()) { 
+      $selectedRound = $form->get('round')->getData();
+
+      $url = $this->generateUrl('matchs_league_standings', array('round' => $selectedRound));
+      return $this->redirect($url);
+    }
+
+    // Retrieve participants for the selected round 
+    $dqlParticipants = ' SELECT p 
+    FROM App\Entity\LeagueRoundParticipant p,  App\Entity\LeagueRound l
+    WHERE l.id=p.idleagueround
+    AND l.roundnumber = :round ';
+    $participants = $em->createQuery($dqlParticipants) ->setParameter('round', $round) ->getResult();
+
+    // Retrieve matches for the selected round 
+    $dqlMatches = ' SELECT m FROM App\Entity\Matchs m WHERE m.context = :context ORDER BY m.date DESC ';
+    $matches = $em->createQuery($dqlMatches) ->setParameter('context', 'League - Round#' . $round) ->getResult();
+
+    // Initialize standings $standings = [];
+
+    foreach ($participants as $participant) { 
+      $player = $participant->getIdplayer(); 
+      $playerId = $player->getId();
+      $standings[$playerId] = [
+         'player' => $player,
+         'points' => 0,
+         'wins' => 0,
+         'ties' => 0,
+         'losses' => 0
+      ];
+    }
+
+    // Calculate points 
+    foreach ($matches as $match) { 
+      $player1Id = $match->getIdplayer1()->getId(); 
+      $player2Id = $match->getIdplayer2()->getId();
+
+      if (!isset($standings[$player1Id])) {
+        $request->getSession()->getFlashBag()->add('error', 'Error with player not registered in this round : '.$match->getIdplayer1()->getNameshort()." (match against ".$match->getIdplayer2()->getNameshort().")");
+      }
+      elseif (!isset($standings[$player2Id])) {
+        $request->getSession()->getFlashBag()->add('error', 'Error with player not registered in this round : '.$match->getIdplayer2()->getNameshort()." (match against ".$match->getIdplayer1()->getNameshort().")");
+      }
+      else {
+        if ($match->getTie() == 1) {
+           // Draw: 2 points for each player
+           $standings[$player1Id]['points'] += 2;
+           $standings[$player2Id]['points'] += 2;
+
+           $standings[$player1Id]['ties']++;
+           $standings[$player2Id]['ties']++;
+        } else {
+           // Player 1 wins: 3 points
+           $standings[$player1Id]['points'] += 3;
+           $standings[$player2Id]['points'] += 1;
+
+           $standings[$player1Id]['wins']++;
+           $standings[$player2Id]['losses']++;
+        }
+      }
+    }
+
+    // Sort standings by points (descending) 
+    usort($standings,function($a, $b) { 
+      return $b['points'] <=> $a['points']; 
+    });
+
+    return $this->render('site/league_standings.html.twig', [ 
+      'round' => $round, 
+      'rounds' => $arrRounds, 
+      'form' => $form->createView(), 
+      'standings' => $standings 
+    ]); 
+  }
+
+
+
+  /**
    * @Route(
    * "/matchs/listMatchsLeague/{round}", 
    * name="matchs_list_league", 
