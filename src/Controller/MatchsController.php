@@ -1371,35 +1371,60 @@ class MatchsController extends AbstractController
     
   }
 
+
   /**
    * @Route(
-   * "/matchs/listMatchsDivisionLeague/{round}/{maxpage}/{page}", 
-   * name="matchs_list_divisionleague", 
+   * "/matchs/listMatchsLeague/{round}", 
+   * name="matchs_list_league", 
    * requirements={
    *   "round"="\d+", 
-   *   "maxpage"="\d+", 
-   *   "page"="\d+" 
-   * })
+   * }),
+   * defaults={"round"=1}
    */
-  public function listMatchsDivisionLeague($round, $maxpage, $page, Request $request)
+  public function listMatchsLeague($round = 1, Request $request)
   {
     $em = $this->em();
+    $arrRounds=array();
+
+    // Retrieve all available rounds from the database 
+    $qRounds = ' SELECT DISTINCT m.context FROM App\Entity\Matchs m WHERE m.context LIKE :context ORDER BY m.context DESC ';
+
+    $roundsResult = $em->createQuery($qRounds) ->setParameter('context', 'Division League - Round#%') ->getResult();
+    foreach ($roundsResult as $result) { 
+      if (preg_match('/Round#(\d+)/', $result['context'], $matches)) { 
+        $arrRounds[$result['context']] = (int) $matches[1];
+      } 
+    }
+    // Create the form 
+    $formBuilder = $this->createFormBuilder([ 'round' => $round ]);
+
+    $formBuilder 
+      ->add('round', ChoiceType::class, [ 'choices' => $arrRounds, 'label' => 'Select round', 'required' => true, ]) 
+      ->add('Select', SubmitType::class);
+
+    $form = $formBuilder->getForm();
+
+    $form->handleRequest($request);
+
+    // If submitted, redirect to the selected round URL 
+    if ($form->isSubmitted() && $form->isValid()) { 
+      $selectedRound = $form->get('round')->getData();
+
+      $url = $this->generateUrl('matchs_list_league', array('round' => $selectedRound));
+      return $this->redirect($url);
+    }
 
     $dql   = 'SELECT m FROM App\Entity\Matchs m WHERE m.context = :context ORDER BY m.date DESC';
-    $query = $em->createQuery($dql)
-            ->setParameter('context', "Division League - Round#".$round);;
+    $listMatchs = $em->createQuery($dql)
+            ->setParameter('context', "Division League - Round#".$round)
+            ->getResult();
 
-    //$paginator  = $this->get('knp_paginator');
-
-    $listMatchs = $this->paginator->paginate(
-      $query, 
-      $request->query->getInt('page', 1),
-      $maxpage
-    );
-
-    return $this->render('site/matchs_list_divisionleague.html.twig', array("listMatchs" => $listMatchs,
-      'round' => $round
-    ));
+    return $this->render('site/matchs_list_league.html.twig', [ 
+      'listMatchs' => $listMatchs, 
+      'round' => $round, 
+      'rounds' => $arrRounds, 
+      'form' => $form->createView()  
+    ]);
     
   }
 

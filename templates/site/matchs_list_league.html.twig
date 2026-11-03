@@ -1,0 +1,46 @@
+{% form_theme form 'bootstrap/bootstrap_3_layout.html.twig' %}
+  {% extends "common/layout.html.twig" %}
+
+  {% block body %}
+
+    <div class="form">
+      {{ form(form) }}
+    </div>
+
+    <h3>List of matches - Division LEAGUE - Round#{{ round }} - ({{ listMatchs|length }})  </h3>
+
+    <div class="table-responsive">
+      <table class="table">
+        <tr>
+          <th>Date</th>
+          <th>Player1</th>
+          <th>Player2</th>
+          <th>Score</th>
+          <th>Context</th>
+          <th>Conditions</th>
+          <th>Pts evol</th>
+        </tr>
+
+        {% for match in listMatchs %}
+          <tr>
+            {# <td>{{ match.id }}</td> #}
+            <td>{{ match.date|date("Y-m-d") }}</td>
+            {% if match.tie!=1 %}
+              <td class="winner-player">
+            {% else %}
+              <td>
+            {% endif %}
+            <a href="{{ path('player_view', {'id':match.idplayer1.id}) }}">{{ match.idplayer1.nameshort }}</a></td>
+            <td><a href="{{ path('player_view', {'id':match.idplayer2.id}) }}">{{ match.idplayer2.nameshort }}</a></td>
+            <td>{{ match.score }}</td>
+            <td>{{ match.context }}</td>
+            <td class="cond-{{ match.conditions|replace({' ': ''}) }}">{{ match.conditions }}</td>
+            <td>{% if match.ptsEvol >0  %}+{% endif %}
+            {{ match.ptsEvol | number_format(1) }}</td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+
+  {% endblock %}
+
