@@ -425,7 +425,7 @@ class MatchsController extends AbstractController
       'choices' => array(
         "Stege" => "Stege", 
         "Stege (söndag 21-22)" => "Stege (söndag 21-22)", 
-        "Division League - Round#22" => "Division League - Round#22", 
+        "League - Round#22" => "League - Round#22", 
         "A-serien (ATL)" => "A-serien", 
         "Generation Matchup" => "Generation Matchup",
         "Christmas Tournament" => "Christmas Tournament", 
@@ -1389,7 +1389,7 @@ class MatchsController extends AbstractController
     // Retrieve all available rounds from the database 
     $qRounds = ' SELECT DISTINCT m.context FROM App\Entity\Matchs m WHERE m.context LIKE :context ORDER BY m.context DESC ';
 
-    $roundsResult = $em->createQuery($qRounds) ->setParameter('context', 'Division League - Round#%') ->getResult();
+    $roundsResult = $em->createQuery($qRounds) ->setParameter('context', 'League - Round#%') ->getResult();
     foreach ($roundsResult as $result) { 
       if (preg_match('/Round#(\d+)/', $result['context'], $matches)) { 
         $arrRounds[$result['context']] = (int) $matches[1];
@@ -1416,7 +1416,7 @@ class MatchsController extends AbstractController
 
     $dql   = 'SELECT m FROM App\Entity\Matchs m WHERE m.context = :context ORDER BY m.date DESC';
     $listMatchs = $em->createQuery($dql)
-            ->setParameter('context', "Division League - Round#".$round)
+            ->setParameter('context', "League - Round#".$round)
             ->getResult();
 
     return $this->render('site/matchs_list_league.html.twig', [ 
