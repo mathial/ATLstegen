@@ -280,7 +280,7 @@ class SiteController extends AbstractController
         $sql='
         SELECT SUM(tot) as bigTot, idPlayer FROM
             (SELECT COUNT(*) AS tot, idPlayer1 AS idPlayer FROM Matchs M WHERE date >= DATE(NOW()) - INTERVAL :nbDays DAY GROUP BY idPlayer1
-            UNION
+            UNION ALL
             SELECT COUNT(*) AS tot, idPlayer2 AS idPlayer FROM Matchs M  WHERE date >= DATE(NOW()) - INTERVAL :nbDays DAY GROUP BY idPlayer2
             ) AS unionplayersmatch
         GROUP BY idPlayer  
