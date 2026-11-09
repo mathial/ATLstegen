@@ -88,13 +88,13 @@ class SiteController extends AbstractController
         return $finalNbM;
     }
 
-    private function getGenericSatsNbPlayers() {
+    private function getGenericStatsNbPlayers() {
 
         $em = $this->em();
 
         $sql='SELECT COUNT(DISTINCT idP) as nbP, yr FROM(
                 SELECT idPlayer1 as idP, YEAR(date) as yr FROM Matchs GROUP BY YEAR(date), idPlayer1
-                UNION
+                UNION ALL
                 SELECT idPlayer2 as idP, YEAR(date) as yr FROM Matchs GROUP BY YEAR(date), idPlayer2
             ) as listP
             GROUP BY yr
@@ -362,7 +362,7 @@ class SiteController extends AbstractController
 
         $rtGenericStatsNbMatchs=$this->getGenericSatsNbMatchs();
 
-        $rtGenericStatsNbPlayers=$this->getGenericSatsNbPlayers();
+        $rtGenericStatsNbPlayers=$this->getGenericStatsNbPlayers();
 
 //print_r($rtGenericStatsNbPlayers);
 
