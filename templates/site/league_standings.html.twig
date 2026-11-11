@@ -10,6 +10,8 @@
 
     <h3>League Standings - Round #{{ round }}</h3>
 
+    <p><i>P : matches played - W : wins - T : ties - L : losses - EP : extra points </i></p>
+
     <div class="table-responsive">
 
         <table class="table">
@@ -19,9 +21,11 @@
                     <th>#</th>
                     <th>Player</th>
                     <th>Points</th>
+                    <th>EP</th>
                     <th>W</th>
                     <th>T</th>
                     <th>L</th>
+                    <th>P</th>
                 </tr>
             </thead>
 
@@ -39,9 +43,13 @@
                         </td>
 
                         <td><strong>{{ data.points }}</strong></td>
+                        <td>{% if data.extrapoints > 0 %}
+                            (+ {{ data.extrapoints }})
+                        {% endif %}</td>
                         <td>{{ data.wins }}</td>
                         <td>{{ data.ties }}</td>
                         <td>{{ data.losses }}</td>
+                        <td>{{ data.played }}</td>
                     </tr>
 
                 {% else %}

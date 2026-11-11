@@ -1434,11 +1434,14 @@ class MatchsController extends AbstractController
       $player = $participant->getIdplayer(); 
       $playerId = $player->getId();
       $standings[$playerId] = [
-         'player' => $player,
-         'points' => 0,
-         'wins' => 0,
-         'ties' => 0,
-         'losses' => 0
+        'player' => $player,
+        'points' => 0,
+        'played' => 0,
+        'wins' => 0,
+        'ties' => 0,
+        'losses' => 0,
+        'extrapoints' => 0,
+        'rating' => $participant->getRating()
       ];
     }
 
@@ -1454,20 +1457,26 @@ class MatchsController extends AbstractController
         $request->getSession()->getFlashBag()->add('error', 'Error with player not registered in this round : '.$match->getIdplayer2()->getNameshort()." (match against ".$match->getIdplayer1()->getNameshort().")");
       }
       else {
+        $standings[$player1Id]['played']++;
         if ($match->getTie() == 1) {
-           // Draw: 2 points for each player
-           $standings[$player1Id]['points'] += 2;
-           $standings[$player2Id]['points'] += 2;
+          // Draw: 2 points for each player
+          $standings[$player1Id]['points'] += 2;
+          $standings[$player2Id]['points'] += 2;
 
-           $standings[$player1Id]['ties']++;
-           $standings[$player2Id]['ties']++;
+          $standings[$player1Id]['ties']++;
+          $standings[$player2Id]['ties']++;
         } else {
-           // Player 1 wins: 3 points
-           $standings[$player1Id]['points'] += 3;
-           $standings[$player2Id]['points'] += 1;
+          // Player 1 wins: 3 points
+          $standings[$player1Id]['points'] += 3;
+          $standings[$player2Id]['points'] += 1;
 
-           $standings[$player1Id]['wins']++;
-           $standings[$player2Id]['losses']++;
+          $standings[$player1Id]['wins']++;
+          $standings[$player2Id]['losses']++;
+
+          if ($standings[$player2Id]['rating'] > $standings[$player1Id]['rating']) {
+            $standings[$player1Id]['extrapoints']++;
+            $standings[$player1Id]['points']++;
+          }
         }
       }
     }
