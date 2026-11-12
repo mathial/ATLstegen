@@ -47,7 +47,7 @@
               <td>{{ rank }}</td>
               <td>
                 {% if 'inconnu' not in det.idplayer.idcountry.flag %}
-                  <img src="{{ asset('img/flags/' ~ det.idplayer.idcountry.flag ) }}" class="flag-country">
+                  <img src="{{ asset('img/flags/' ~ det.idplayer.idcountry.flag ) }}" class="flag-country" title="{{ det.idplayer.idcountry.name }}"">&nbsp;
                 {% endif %}
                 {% if colorsPlayers == 1 and det.idplayer.id in listIdOpponents %} <span class="playerAlreadyMet"> {% endif %}
                 <a href="{{ path('player_view', {'id':det.idplayer.id}) }}">{{ det.idplayer.nameshort }}</a> 
