@@ -30,11 +30,17 @@
             </thead>
 
             <tbody>
-
+                {% set rank = 1 %}
+                {% set oldPts = -1 %}
                 {% for playerId, data in standings %}
 
                     <tr>
-                        <td>{{ loop.index }}</td>
+                        <td>{% if data.points == oldPts %}
+                              -
+                            {% else %}
+                              {{ rank }}
+                            {% endif %}
+                        </td>
 
                         <td>
                             <a href="{{ path('player_view', {'id': data.player.id}) }}">
@@ -52,6 +58,8 @@
                         <td>{{ data.played }}</td>
                     </tr>
 
+                    {% set oldPts = data.points %}
+                    {% set rank = rank + 1 %}
                 {% else %}
 
                     <tr>

@@ -455,21 +455,15 @@ class RankingsController extends AbstractController
 		if ($form->isSubmitted() && $form->isValid()) {
 		  $data = $form->getData();
 
-	      $idRanking=$data['id_ranking'];
-	      $activeOnly=(isset($data['active_only']) && $data['active_only']!="" ? $data['active_only'] : 0);
-	      $withRatingIndex=(isset($data['with_rating_index']) && $data['with_rating_index']!="" ? $data['with_rating_index'] : 0);
-	      //$rabbitRange=(isset($data['rabbit_range']) && $data['rabbit_range']!="" ? $data['rabbit_range'] : 0);
-				$colorsPlayers=(isset($data['colors_alreadyplayed']) && $data['colors_alreadyplayed']!="" ? $data['colors_alreadyplayed'] : 0);
+      $idRanking=$data['id_ranking'];
+      $activeOnly=(isset($data['active_only']) && $data['active_only']!="" ? $data['active_only'] : 0);
+      $withRatingIndex=(isset($data['with_rating_index']) && $data['with_rating_index']!="" ? $data['with_rating_index'] : 0);
+      //$rabbitRange=(isset($data['rabbit_range']) && $data['rabbit_range']!="" ? $data['rabbit_range'] : 0);
+			$colorsPlayers=(isset($data['colors_alreadyplayed']) && $data['colors_alreadyplayed']!="" ? $data['colors_alreadyplayed'] : 0);
 
-	      $url = $this->generateUrl('rankings_view_id_ao', array('id' => $idRanking, 'RI' => $withRatingIndex, 'AO' => $activeOnly, 'CP' => $colorsPlayers));
-	      return $this->redirect($url);
+      $url = $this->generateUrl('rankings_view_id_ao', array('id' => $idRanking, 'RI' => $withRatingIndex, 'AO' => $activeOnly, 'CP' => $colorsPlayers));
+      return $this->redirect($url);
 		}	
-		/*elseif ($id<>null) {
-			$ranking = $em->getRepository('App\Entity\Ranking')->findOneBy(array('id' => $id));
-		}
-  	else {
-  		$ranking = $em->getRepository('App\Entity\Ranking')->getLastRanking();
-  	}*/
 
 		$ranking_1 =  $em->getRepository('App\Entity\Ranking')->getRankingBefore($ranking->getDate()->format("Y-m-d"));
 

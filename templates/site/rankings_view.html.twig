@@ -46,6 +46,9 @@
             {% endif %}
               <td>{{ rank }}</td>
               <td>
+                {% if 'inconnu' not in det.idplayer.idcountry.flag %}
+                  <img src="{{ asset('img/flags/' ~ det.idplayer.idcountry.flag ) }}" class="flag-country">
+                {% endif %}
                 {% if colorsPlayers == 1 and det.idplayer.id in listIdOpponents %} <span class="playerAlreadyMet"> {% endif %}
                 <a href="{{ path('player_view', {'id':det.idplayer.id}) }}">{{ det.idplayer.nameshort }}</a> 
                 {% if det.idplayer.id in arrRabbits|keys %} 
