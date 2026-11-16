@@ -90,9 +90,6 @@ footer {
 	margin-top: 20px;
 }
 
-.flag-country {
-	height:15px;
-}
 
 .rabbit-ranking {
 	height:25px;
@@ -114,4 +111,13 @@ footer {
 }
 .availabilitynever {
 	background-color: #B22222;
+}
+
+
+.flag-country {
+	height:15px;
+}
+
+.badges {
+	height:25px;
 }

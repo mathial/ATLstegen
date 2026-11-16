@@ -1441,6 +1441,7 @@ class MatchsController extends AbstractController
         'ties' => 0,
         'losses' => 0,
         'extrapoints' => 0,
+        'finisher' => false,
         'rating' => $participant->getRating()
       ];
     }
@@ -1458,6 +1459,11 @@ class MatchsController extends AbstractController
       }
       else {
         $standings[$player1Id]['played']++;
+        $standings[$player2Id]['played']++;
+        // finisher badge
+        if ($standings[$player1Id]['played']==5)
+          $standings[$player1Id]['finisher']=true;
+
         if ($match->getTie() == 1) {
           // Draw: 2 points for each player
           $standings[$player1Id]['points'] += 2;

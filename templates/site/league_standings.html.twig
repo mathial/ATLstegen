@@ -26,6 +26,7 @@
                     <th>T</th>
                     <th>L</th>
                     <th>P</th>
+                    <th>Awards</th>
                 </tr>
             </thead>
 
@@ -56,6 +57,9 @@
                         <td>{{ data.ties }}</td>
                         <td>{{ data.losses }}</td>
                         <td>{{ data.played }}</td>
+                        <td>{% if data.finisher %}
+                            <img src="{{ asset('img/badges/badge_finisher_league22.png') }}" class="badges" title="Finisher - League Round#22"">
+                        {% endif %}</td>
                     </tr>
 
                     {% set oldPts = data.points %}
