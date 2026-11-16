@@ -119,5 +119,7 @@ footer {
 }
 
 .badges {
-	height:25px;
+	height: 35px;
+	margin-top: -10px;
+	margin-bottom: -10px;
 }
