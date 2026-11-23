@@ -1463,6 +1463,8 @@ class MatchsController extends AbstractController
         // finisher badge
         if ($standings[$player1Id]['played']==5)
           $standings[$player1Id]['finisher']=true;
+        if ($standings[$player2Id]['played']==5)
+          $standings[$player2Id]['finisher']=true;
 
         if ($match->getTie() == 1) {
           // Draw: 2 points for each player
