@@ -1446,7 +1446,7 @@ class MatchsController extends AbstractController
       ];
     }
 
-    // Calculate points 
+    // Calculate points for each match
     foreach ($matches as $match) { 
       $player1Id = $match->getIdplayer1()->getId(); 
       $player2Id = $match->getIdplayer2()->getId();
@@ -1466,25 +1466,52 @@ class MatchsController extends AbstractController
 
         if ($match->getTie() == 1) {
           // Draw: 2 points for each player
-          $standings[$player1Id]['points'] += 2;
-          $standings[$player2Id]['points'] += 2;
+          //$standings[$player1Id]['points'] += 2;
+          //$standings[$player2Id]['points'] += 2;
 
           $standings[$player1Id]['ties']++;
           $standings[$player2Id]['ties']++;
         } else {
           // Player 1 wins: 3 points
-          $standings[$player1Id]['points'] += 3;
-          $standings[$player2Id]['points'] += 1;
+          //$standings[$player1Id]['points'] += 3;
+          //$standings[$player2Id]['points'] += 1;
 
           $standings[$player1Id]['wins']++;
           $standings[$player2Id]['losses']++;
 
           if ($standings[$player2Id]['rating'] > $standings[$player1Id]['rating']) {
             $standings[$player1Id]['extrapoints']++;
-            $standings[$player1Id]['points']++;
+            //$standings[$player1Id]['points']++;
           }
         }
       }
+    }
+
+    // for each player, calculates the point only for the best X performances
+    $max_best_performances=5;
+    foreach($standings as $playerId => $playerData) {
+
+      if ($standings[$playerId]['played']<=$max_best_performances) {
+        $standings[$playerId]["points"]=3*$standings[$playerId]['wins'] + 2*$standings[$playerId]['ties'] + $standings[$playerId]['losses'] + $standings[$playerId]['extrapoints'];
+      }
+      elseif ($standings[$playerId]['wins']<=$max_best_performances) { 
+        // first adds the wins and extra points
+        $standings[$playerId]["points"]=3*$standings[$playerId]['wins'] + $standings[$playerId]['extrapoints'];
+
+        if ($standings[$playerId]['wins'] + $standings[$playerId]['ties'] <= $max_best_performances) { 
+          // then adds the ties and complete with losses
+          $standings[$playerId]["points"]+= 2*$standings[$playerId]['ties'] + ($max_best_performances - ($standings[$playerId]['wins'] + $standings[$playerId]['ties']));
+        }
+        else {
+          // complete with some ties
+          $standings[$playerId]["points"]+= 2*($max_best_performances - $standings[$playerId]['wins']);
+        }
+      }
+      else {
+        // only some wins + EP
+        $standings[$playerId]["points"]= 3*$max_best_performances + $standings[$playerId]['extrapoints'];
+      }
+
     }
 
     // Sort standings by points (descending) 
