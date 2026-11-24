@@ -1385,14 +1385,44 @@ class MatchsController extends AbstractController
 
     $em = $this->em();
     $arrRounds = array();
+    $playersReach=array(); 
 
-    // Retrieve available rounds (starting from round 22) 
+    // if user logged in
+    if ($this->getUser()!== NULL && is_numeric($this->getUser()->getIdplayer()->getId())) {
+
+      $dqlPlayersReach ='
+      SELECT P.id FROM App\Entity\Player P, App\Entity\LeagueRoundParticipant LRP, App\Entity\LeagueRound LR 
+      WHERE LR.id=LRP.idleagueround 
+      AND  P.id=LRP.idplayer 
+      AND LR.roundnumber= :oneRound 
+      ORDER BY LRP.rating DESC';
+
+      $allParts = $em->createQuery($dqlPlayersReach) ->setParameter('oneRound', $round) ->getResult();
+      foreach ($allParts as $index => $onePart) { 
+        if ($onePart["id"] == $this->getUser()->getIdplayer()->getId()) {
+
+            // Get 6 participants above and 6 below
+            $start = max(0, $index - 6);
+            $end = min(count($allParts) - 1, $index + 6);
+
+            for ($i = $start; $i <= $end; $i++) {
+                $playersReach[] = $allParts[$i]["id"];
+            }
+
+            break;
+        }
+      }
+
+    }
+
+    // Retrieve available rounds (starting from round 22)
+    $firstRoundOneDivFormat=22; 
     $dqlRounds = ' SELECT DISTINCT l.roundnumber 
     FROM App\Entity\LeagueRoundParticipant p,  App\Entity\LeagueRound l 
     WHERE l.id=p.idleagueround
     AND l.roundnumber >= :minRound 
     ORDER BY l.roundnumber DESC ';
-    $roundsResult = $em->createQuery($dqlRounds) ->setParameter('minRound', 22) ->getResult();
+    $roundsResult = $em->createQuery($dqlRounds) ->setParameter('minRound', $firstRoundOneDivFormat) ->getResult();
 
     foreach ($roundsResult as $result) { $arrRounds['Round #' . $result['roundnumber']] = (int) $result['roundnumber']; }
 
@@ -1525,7 +1555,8 @@ class MatchsController extends AbstractController
       'round' => $round, 
       'rounds' => $arrRounds, 
       'form' => $form->createView(), 
-      'standings' => $standings 
+      'standings' => $standings ,
+      'playersReach' => $playersReach
     ]); 
   }
 

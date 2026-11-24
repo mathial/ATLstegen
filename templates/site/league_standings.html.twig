@@ -43,7 +43,7 @@
                             {% endif %}
                         </td>
 
-                        <td>
+                        <td {% if data.player.id in playersReach   %} class="playerAlreadyMet" {% endif %}>
                             <a href="{{ path('player_view', {'id': data.player.id}) }}">
                                 {{ data.player.nameshort }}
                             </a>
